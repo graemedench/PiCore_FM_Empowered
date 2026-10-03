@@ -38,6 +38,7 @@ class LyrionListener:
         self._commands = ThreadPoolExecutor(1, thread_name_prefix='lms-command')
         self._browse = ThreadPoolExecutor(1, thread_name_prefix='lms-browse')
         self._generation = 0
+        self._status_wake = threading.Event()
 
     def rpc(self, command, player=None):
         payload = dict(id=1, method='slim.request',
@@ -56,6 +57,7 @@ class LyrionListener:
 
     def stop(self):
         self._stop.set()
+        self._status_wake.set()
         self._thread.join(timeout=4)
         self._commands.shutdown(wait=False, cancel_futures=True)
         self._browse.shutdown(wait=False, cancel_futures=True)
@@ -73,17 +75,23 @@ class LyrionListener:
                 if connected:
                     self.log('Lyrion disconnected:', exc)
                 connected = False
-            self._stop.wait(.5 if connected else 2)
+            self._status_wake.wait(.5 if connected else 2)
+            self._status_wake.clear()
 
     def _submit(self, command):
         def work():
             try:
-                return self.rpc(command)
+                result = self.rpc(command)
+                self._status_wake.set()
+                return result
             except Exception as exc:
                 self.log('Lyrion command failed:', command[0], exc)
         return self._commands.submit(work)
 
     def transport(self, command):
+        if command in ('random', 'repeat'):
+            self.set_playback_mode('random' if command == 'random' else 'playlist')
+            return
         mapped = {'toggle': ['pause'], 'play': ['play'], 'pause': ['pause', '1'],
                   'stop': ['stop'], 'next': ['playlist', 'index', '+1'],
                   'previous': ['playlist', 'index', '-1']}
@@ -219,4 +227,4 @@ class LyrionListener:
                 self.log('Save track failed:', exc)
                 message = str(exc)
                 self.dispatch(lambda: callback(False, message))
-        self._commands.submit(work)
+        self._browse.submit(work)

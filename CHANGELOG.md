@@ -39,3 +39,20 @@ remaining problems, and rollback/rebuild implications. Never include credentials
 - Verified FM4 Favorites contains Spell through Lyrion's playlist-tracks query
   and `/mnt/sda2/Playlists/FM4 Favorites.m3u`. Button events 1–5, 7–8 are visible
   in the runtime log; complete action mapping and LED positions remain pending.
+
+## 2026-10-03 — button layout and responsiveness fix
+
+- User reported sluggish buttons and button 2 reverting to Pause. Root causes:
+  generic settings instead of the Empowered preset, 100ms scan sleeps without
+  per-key debounce, and missing random/repeat transport mappings.
+- Added FM4Buttons scan with 20ms stable debounce and about 15ms scan cadence,
+  retaining deliberate holds. Deterministic quick-tap, bounce and hold checks pass.
+- Migrated the entire button section from the pinned Empowered Graeme preset
+  once. Future starts preserve settings. Button 1 toggles play/pause; button 2
+  cycles modes; 3/4 previous/next; 5/6 radio presets and holds; 7 TIDAL mixes;
+  8 Save Track. TIDAL's old Volumio mix URI shows an explicit pending message.
+- Implemented random/repeat command mapping, wake status polling on command
+  completion, and moved playlist saving off the transport worker.
+- Live repeat/shuffle flag checks and play/pause/toggle checks pass. Measured
+  transport commands about 21–22ms. Restored pre-test playback and flags.
+- Deployed and restarted prototype. User tactile confirmation requested.

@@ -8,7 +8,7 @@
 | Library albums/artists/genres/folders | Lyrion JSON-RPC | Adapter in progress |
 | Queue and playlist browsing | Lyrion tracks/playlists queries | Adapter in progress |
 | Track playback/volume/transport | Player-specific commands | Basic panel connected; full port pending |
-| Single/all/repeat/shuffle | Lyrion queue, shuffle/repeat modes | Pending full-port verification |
+| Single/all/repeat/shuffle | Lyrion queue, shuffle/repeat modes | Live repeat/shuffle flag checks pass; button feedback pending |
 | Save Track to FM4 Favorites | Persistent Lyrion playlist append | Saved track verified in Lyrion and persistent M3U |
 | Radio presets and favourites | Sable URLs + Lyrion favourites | Pending verification |
 | Buttons and boot LEDs | Original MCP23017 controller + smbus2 | Controller initializes; events received; physical LED check pending |

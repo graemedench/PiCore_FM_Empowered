@@ -1,5 +1,6 @@
 """Sable screens with Lyrion and piCorePlayer inputs; staged hardware runner."""
 import argparse
+import json
 import queue
 import signal
 import subprocess
@@ -35,6 +36,12 @@ class PiCoreApp(App):
         self.show_osd('VOLUME', str(max(0, min(100, self.store.get().volume + int(delta)))))
 
     def handle(self, cmd, arg=None):
+        if cmd == 'play_uri' and str(arg or '').startswith('tidal://'):
+            self.show_osd('TIDAL', 'Mix connection pending')
+            return
+        if cmd in ('random', 'repeat'):
+            self._set_playback_mode('random' if cmd == 'random' else 'playlist')
+            return
         if cmd == 'save_track':
             self.show_osd('SAVING', 'Current track')
             self.listener.save_current_track(lambda ok, message:
@@ -93,6 +100,13 @@ def main():
             fonts._DIR = font_dir
             break
     app = PiCoreApp(display, Settings(args.settings), dry_run=args.sim)
+    # One-time migration restores the user's complete Empowered layout.
+    # Later startup preserves edits instead of resetting button preferences.
+    if not app.settings.get('_meta', 'pcp_button_layout', default=0):
+        preset = json.loads(Path('config/settings.graeme.json').read_text())
+        for button, cfg in preset['buttons'].items():
+            app.settings.set('buttons', button, cfg)
+        app.settings.set('_meta', 'pcp_button_layout', 1)
     app.fsm.screens['menu'] = PiCoreMenu(app)
     app._playback_settle_s = .15
     app.albumart.host = app.albumart_cinema.host = args.server.rstrip('/')
@@ -103,9 +117,9 @@ def main():
     listener.on_sources = app.fsm.screens['home'].refresh_sources
     buttons = None
     if not args.sim:
-        from ..inputs.buttons import ButtonsLeds
+        from .buttons import FM4Buttons
         from ..hardware import MCP
-        buttons = ButtonsLeds(MCP, lambda cmd, arg=None:
+        buttons = FM4Buttons(MCP, lambda cmd, arg=None:
             events.put(('callback', lambda: app.handle(cmd, arg))), app.store, app=app)
         buttons.start()
         listener.on_connect = buttons.signal_ready

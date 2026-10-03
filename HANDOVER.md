@@ -98,6 +98,10 @@ Sable appearance and snappy navigation. MCP23017 now initializes at 0x20 after
 loading i2c-dev and i2c-bcm2835; smbus2 0.6.0 installed. Buttons/LEDs are connected
 but physical checks are pending. Save Track targets **FM4 Favorites**, the name
 chosen by the user, with asynchronous read-back verification.
+Button feedback exposed generic defaults and slow scans. The runner now migrates
+the complete Empowered button preset once, and FM4Buttons uses per-key debounce
+with faster scans. Repeat/shuffle and play/pause live checks pass; see the latest
+CHANGELOG entry. TIDAL mix conversion and held Save shortcut remain unfinished.
 The full port is not yet installed or feature-complete.
 
 Architecture: input sampling separate from dispatch, independent command,
