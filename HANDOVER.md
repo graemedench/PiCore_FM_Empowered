@@ -1,6 +1,6 @@
 # piCorePlayer Empowered — living handover
 
-Updated: 3 October 2026 (Europe/London).
+Updated: end of the 3 October evening session (Europe/London).
 
 ## Purpose and user instructions
 
@@ -93,7 +93,9 @@ Implemented an initial independent Lyrion backend and piCorePlayer runner in
 `overlay/sable/pcp/`. See STAGING.md and CHANGELOG.md for the current deployment.
 Read-only live integration checks and original-screen simulation passed. The
 OLED prototype runs at `/home/tc/sable-pcp-stage`; physical confirmation pending.
-The saved boot command still starts the recovery panel. User confirmed the
+The initial saved boot command started the recovery panel. At the end-of-session
+milestone it was switched to the tested Sable prototype (see final log entry).
+User confirmed the
 Sable appearance and snappy navigation. MCP23017 now initializes at 0x20 after
 loading i2c-dev and i2c-bcm2835; smbus2 0.6.0 installed. Buttons/LEDs are connected
 but physical checks are pending. Save Track targets **FM4 Favorites**, the name
@@ -118,6 +120,21 @@ artwork; playback modes and Save Track; buttons/LEDs; IR; output switching;
 network settings; shutdown; spectrum and TIDAL plugin-specific functionality.
 Unknown API calls must have bounded timeouts. The server `apps` request timed
 out during initial inspection, so plugin browsing needs protocol verification.
+
+## Saved stopping point for tonight
+
+Elapsed counter and real left/right RMS level bars are implemented in
+`pcp/modern.py` and `pcp/levels.py`. Panel shows both; Performance omits the bars.
+Counter displays elapsed / total for known-length tracks and freezes on pause.
+User confirmed the lively screens and levels. Live PCM and layout checks passed; rendered previews
+are in `previews/`. Native pCP VISUALISER="yes" enables Squeezelite -v.
+PCM levels represent the source signal before final software volume adjustment.
+Native startup now points to `/home/tc/sable-pcp-stage/stage-start.sh`, which falls
+back to the recovery panel if initial startup fails. No reboot was required or
+tested for this final change. Recovery instructions are in STAGING.md.
+The offline staged source archive is saved locally/OneDrive; dependency pins and
+upstream revisions are recorded. A complete clean-SSD installer is still pending.
+User asked to stop for tonight after this milestone and revisit another day.
 
 ## Rebuild and backup principles
 

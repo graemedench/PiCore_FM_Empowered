@@ -20,10 +20,15 @@
     "gpiod": "2.5.0",
     "cbor2": "6.1.5",
     "luma.core": "2.6.0",
-    "luma.oled": "3.16.0"
+    "luma.oled": "3.16.0",
+    "smbus2": "0.6.0",
+    "font_extension": "dejavu-fonts-ttf.tcz"
   },
   "music_folder": "/mnt/sda2/Music",
   "playlist_folder": "/mnt/sda2/Playlists",
   "smb_share": "Music",
-  "phase": "full-interface port in progress"
+  "saved_playlist": "FM4 Favorites",
+  "startup": "/bin/sh /home/tc/sable-pcp-stage/stage-start.sh",
+  "visualizer": "native Squeezelite -v, Linux aarch64 shared memory",
+  "phase": "tested Panel prototype saved; remaining full-port features pending"
 }

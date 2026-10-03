@@ -22,7 +22,8 @@ class PiCoreApp(App):
         return 'modern'
 
     def spectrum_available(self):
-        return False
+        levels = getattr(self, 'levels', None)
+        return bool(levels and levels.available)
 
     def _transport(self, command):
         self.listener.transport(command)
@@ -114,6 +115,10 @@ def main():
             app.settings.set('buttons', button, cfg)
         app.settings.set('_meta', 'pcp_button_layout', 1)
     app.fsm.screens['menu'] = PiCoreMenu(app)
+    from .levels import AudioLevels
+    from .modern import FM4Modern
+    app.levels = AudioLevels(args.player)
+    app.fsm.screens['modern'] = FM4Modern(app)
     app._playback_settle_s = .15
     app.albumart.host = app.albumart_cinema.host = args.server.rstrip('/')
     listener = LyrionListener(app.store, lambda cb: events.put(('callback', cb)),
@@ -161,6 +166,7 @@ def main():
             encoder.join(timeout=2)
         if buttons:
             buttons.stop()
+        app.levels.close()
         display.cleanup()
 
 

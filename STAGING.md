@@ -27,8 +27,14 @@ file while a process owns it.
 ## Recovery
 
 Stop the prototype using its PID, then run
-`sudo /bin/sh /home/tc/quadify-pcp/start.sh`. A reboot also returns to the saved
-recovery panel: the persistent boot command has not been switched to Sable yet.
+`sudo /bin/sh /home/tc/quadify-pcp/start.sh` for immediate recovery. The saved
+native USER_COMMAND_1 now starts the prototype automatically; its startup script
+falls back to the recovery panel if the prototype exits during initial startup.
+To make recovery permanent, set USER_COMMAND_1 back to
+`/bin/sh /home/tc/quadify-pcp/start.sh` and run `pcp bu`.
+The prior pCP configuration is retained on the Pi as
+`pcp.cfg.before-prototype-startup`; it may contain private settings and is not
+copied into GitHub or the OneDrive source backup.
 
 ## Verified so far
 
@@ -44,5 +50,18 @@ Album/artist/genre lists are paginated. Queue currently has a 10,000-item limit.
 Playlist contents, transport changes and mode changes still need live tests.
 Settings that require unfinished adapters are temporarily hidden. Spectrum,
 audio output switching, Wi-Fi setup and IR input remain unfinished. Physical LED
-positions and the complete button mapping need confirmation. Single/all selection follows Sable's existing browse behavior;
+positions and radio/TIDAL mappings need further checks. User confirmed responsive
+transport buttons. Single/all selection follows Sable's existing browse behavior;
 repeat track/all and shuffle are mapped to Lyrion.
+
+## Audio levels and elapsed counter
+
+Native `VISUALISER="yes"` adds Squeezelite's -v export. `tools/enable-visualizer.py`
+backs up pCP configuration on the device, enables it and restores playback after
+restarting Squeezelite. Reader supports the verified Linux aarch64 layout and
+takes only a nonblocking shared read lock while copying PCM. RMS calculations
+run outside that lock. Levels show the source PCM before final player volume.
+Panel has small stereo bars and elapsed / total mm:ss; Performance has only the
+counter. Streams without known length show elapsed time alone.
+Paused time freezes. Live PCM/layout checks and saved previews verify this.
+This final native startup setting is saved but has not been reboot-tested.

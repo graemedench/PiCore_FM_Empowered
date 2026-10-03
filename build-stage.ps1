@@ -21,7 +21,8 @@ git -C $sableRoot apply (Join-Path $patchRoot 'patches/sable-empowered.patch')
 if ($LASTEXITCODE) { throw 'Upstream patch failed' }
 Copy-Item -LiteralPath (Join-Path $projectRoot 'overlay/sable/pcp') -Destination (Join-Path $sableRoot 'src/sable/pcp') -Recurse
 Copy-Item -Path (Join-Path $projectRoot 'tests/*.py') -Destination $sableRoot
+Copy-Item -Path (Join-Path $projectRoot 'tools/*.py') -Destination $sableRoot
 Copy-Item -LiteralPath (Join-Path $projectRoot 'stage-start.sh') -Destination $sableRoot
-tar -czf (Join-Path $projectRoot 'sable-pcp-stage.tar.gz') -C $sableRoot src assets config check_live.py check_transport.py check_buttons.py check_stop_resume.py stage-start.sh
+tar -czf (Join-Path $projectRoot 'sable-pcp-stage.tar.gz') -C $sableRoot src assets config check_live.py check_transport.py check_buttons.py check_stop_resume.py check_levels_screen.py enable-visualizer.py save-prototype-startup.py stage-start.sh
 if ($LASTEXITCODE) { throw 'Archive creation failed' }
 Write-Host 'Staged archive created. See STAGING.md before deployment.'

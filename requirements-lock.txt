@@ -1,0 +1,6 @@
+Pillow==12.3.0
+gpiod==2.5.0
+cbor2==6.1.5
+luma.core==2.6.0
+luma.oled==3.16.0
+smbus2==0.6.0

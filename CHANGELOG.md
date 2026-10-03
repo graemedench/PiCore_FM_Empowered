@@ -67,3 +67,23 @@ remaining problems, and rollback/rebuild implications. Never include credentials
 - Actual app/Lyrion integration test passed: held Stop pauses, tap resumes the
   same queue index, latch/timer clear, and a hard-stopped player resumes on tap.
   Restored pre-test playback, deployed and restarted the prototype.
+
+## Evening session — time, levels and saved stopping point
+
+- User requested elapsed time and small VU bars on default Panel, with no bars
+  in Performance, then asked to save and stop for tonight.
+- Enabled native pCP VISUALISER setting and restarted Squeezelite, preserving
+  playback state. Implemented real stereo RMS from its shared PCM export, using
+  a nonblocking read lock for the copy and processing outside the lock.
+- Added mm:ss elapsed counter. Pause freezes it. Performance omits levels.
+- User confirmed lively, responsive screens and visible levels; requested
+  elapsed / total format (for example 1:23 / 4:56). Applied for known-length
+  tracks; streams without a duration retain elapsed time alone.
+- Live stereo levels varied approximately 0.55–0.71 during the check. Tests pass
+  for valid PCM access, all three layouts, absent Performance bars and frozen
+  pause time. Inspected saved Panel, Performance and paused PNGs.
+- Deployed current interface. Saved native automatic startup with initial-failure
+  fallback to the original panel. Full reboot test remains for next session.
+- Saved offline staged archive, dependency pins, build helpers, notes and previews.
+  Remaining work includes IR/shutdown input, TIDAL mix mapping, shortcut saving,
+  audio output/Wi-Fi settings, fullscreen meters and a complete fresh-SSD installer.

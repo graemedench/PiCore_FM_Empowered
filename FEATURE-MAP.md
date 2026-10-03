@@ -4,7 +4,7 @@
 | --- | --- | --- |
 | SSD1322 display, encoder | Linux SPI + GPIO character API | Test panel verified by user |
 | Same fonts/layout/carousel | Reuse patched Sable screens and assets | User confirmed appearance and snappy navigation |
-| Panel / Performance / Cinema | Sable rendering + Lyrion state and artwork | Port in progress |
+| Panel / Performance / Cinema | Sable rendering + Lyrion state and artwork | Panel/Performance render verified; elapsed counter added |
 | Library albums/artists/genres/folders | Lyrion JSON-RPC | Adapter in progress |
 | Queue and playlist browsing | Lyrion tracks/playlists queries | Adapter in progress |
 | Track playback/volume/transport | Player-specific commands | Basic panel connected; full port pending |
@@ -17,7 +17,8 @@
 | USB fixed/variable, headphones variable | pCP Squeezelite output settings | Pending; preserve safe volume |
 | Network status and Wi-Fi picker | Native piCorePlayer configuration | Wired status available; Wi-Fi port pending |
 | TIDAL browsing/mixes/saving | Lyrion TIDAL plugin interface | Plugin state/API not yet verified |
-| Spectrum/VU modes | Squeezelite visualizer shared memory | Pending feasibility check |
+| Small Panel VU bars | Native Squeezelite shared-memory PCM | Real stereo levels verified; absent in Performance |
+| Full-screen spectrum/VU modes | Squeezelite visualizer shared memory | Pending implementation |
 | Storage display/library refresh | Persistent /mnt/sda2 and Lyrion rescan | Paths verified; UI pending |
 | Music SMB share | Samba4 authenticated share | Windows read/write test passed |
 | Repeatable SSD build | Pinned sources, installer, safe export | Build manifest/log started |
