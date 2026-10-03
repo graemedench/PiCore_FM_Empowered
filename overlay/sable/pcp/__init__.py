@@ -1,0 +1,1 @@
+"""piCorePlayer integration for Sable."""

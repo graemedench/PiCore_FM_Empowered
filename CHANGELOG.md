@@ -15,3 +15,18 @@
 
 Future entries should record changed files, deployment steps, checks and results,
 remaining problems, and rollback/rebuild implications. Never include credentials.
+
+## 2026-10-03 — first Sable/Lyrion prototype
+
+- Added `overlay/sable/pcp/`: bounded JSON-RPC listener, independent status,
+  browse and command workers, stale browse-response guard, original Sable runner,
+  and Linux SPI/GPIO display adapter using the tested recovery transport.
+- Added read-only live integration checks; all passed against the device.
+- Installed native DejaVu fonts; simulation renders successfully.
+- Found Lyrion main process stopped on reconnect. Restarted native service;
+  API responds. Log shows preceding TIDAL authentication errors; cause of exit
+  is not established. Do not attribute the stop to those errors without evidence.
+- Staged runtime at `/home/tc/sable-pcp-stage`; started OLED prototype as root
+  without logged errors. Physical confirmation requested from user.
+- Persistent boot remains the recovery panel. Added reproducible staged build
+  script and recovery/deployment notes; a complete fresh-SSD installer is pending.

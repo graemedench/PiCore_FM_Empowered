@@ -6,3 +6,5 @@ vendor/
 Music/
 private-backups/
 *.before
+build/
+*.tar.gz

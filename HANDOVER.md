@@ -89,7 +89,11 @@ Original pCP settings are saved as `*.before` on the Pi, not in this backup.
 Pinned Sable source has been copied to an isolated working directory and the
 Empowered modifications applied. Inspected state model, rendering, menus,
 browser, album-art cache, input handling and moOde backend as an adapter example.
-Implementing an independent Lyrion backend and piCorePlayer runner next.
+Implemented an initial independent Lyrion backend and piCorePlayer runner in
+`overlay/sable/pcp/`. See STAGING.md and CHANGELOG.md for the current deployment.
+Read-only live integration checks and original-screen simulation passed. The
+OLED prototype runs at `/home/tc/sable-pcp-stage`; physical confirmation pending.
+The saved boot command still starts the recovery panel.
 The full port is not yet installed or feature-complete.
 
 Architecture: input sampling separate from dispatch, independent command,
