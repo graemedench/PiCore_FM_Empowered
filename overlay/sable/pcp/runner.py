@@ -35,7 +35,12 @@ class PiCoreApp(App):
         self.show_osd('VOLUME', str(max(0, min(100, self.store.get().volume + int(delta)))))
 
     def handle(self, cmd, arg=None):
-        if cmd in ('save_track', 'save_shortcut', 'play_playlist'):
+        if cmd == 'save_track':
+            self.show_osd('SAVING', 'Current track')
+            self.listener.save_current_track(lambda ok, message:
+                self.show_osd('SAVED' if ok else 'SAVE FAILED', message))
+            return
+        if cmd in ('save_shortcut', 'play_playlist'):
             self.show_osd('COMING NEXT', 'Playlist saving')
             return
         return super().handle(cmd, arg)
@@ -96,6 +101,14 @@ def main():
     app.listener = listener
     listener.on_browse = app.fsm.screens['browse'].on_browse_data
     listener.on_sources = app.fsm.screens['home'].refresh_sources
+    buttons = None
+    if not args.sim:
+        from ..inputs.buttons import ButtonsLeds
+        from ..hardware import MCP
+        buttons = ButtonsLeds(MCP, lambda cmd, arg=None:
+            events.put(('callback', lambda: app.handle(cmd, arg))), app.store, app=app)
+        buttons.start()
+        listener.on_connect = buttons.signal_ready
     app.fsm.go('clock')
     listener.start()
     started = time.monotonic()
@@ -126,6 +139,8 @@ def main():
         listener.stop()
         if encoder:
             encoder.join(timeout=2)
+        if buttons:
+            buttons.stop()
         display.cleanup()
 
 

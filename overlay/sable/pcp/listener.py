@@ -192,3 +192,31 @@ class LyrionListener:
     def refresh_library(self):
         self._submit(['rescan'])
         return 'requested'
+
+    def save_current_track(self, callback, name='FM4 Favorites'):
+        song = self.store.get()
+        def work():
+            try:
+                if not song.uri:
+                    raise ValueError('No track selected')
+                rows = self._pages('playlists', 'playlists_loop')
+                match = next((row for row in rows if row.get('playlist') == name), None)
+                if match:
+                    playlist_id = match['id']
+                else:
+                    result = self.rpc(['playlists', 'new', 'name:' + name], player='')
+                    playlist_id = result.get('playlist_id', result.get('overwritten_playlist_id'))
+                    if not playlist_id:
+                        raise RuntimeError('Playlist directory is not configured')
+                self.rpc(['playlists', 'edit', 'playlist_id:' + str(playlist_id),
+                          'cmd:add', 'url:' + song.uri], player='')
+                tracks = self._pages('playlisttracks', 'playlisttracks_loop',
+                                     'playlist_id:' + str(playlist_id), 'tags:u')
+                if not any(row.get('url') == song.uri for row in tracks):
+                    raise RuntimeError('Playlist save could not be verified')
+                self.dispatch(lambda: callback(True, name))
+            except Exception as exc:
+                self.log('Save track failed:', exc)
+                message = str(exc)
+                self.dispatch(lambda: callback(False, message))
+        self._commands.submit(work)

@@ -30,3 +30,9 @@ remaining problems, and rollback/rebuild implications. Never include credentials
   without logged errors. Physical confirmation requested from user.
 - Persistent boot remains the recovery panel. Added reproducible staged build
   script and recovery/deployment notes; a complete fresh-SSD installer is pending.
+- User confirmed the original interface looks good and navigation feels snappy.
+- Loaded I2C drivers (boot config already enables I2C), detected MCP23017 at
+  0x20, installed smbus2 0.6.0 and started original Sable buttons/LED controller.
+  Button actions and physical LED positions await user confirmation.
+- Implemented asynchronous Save Track with read-back verification. User chose
+  **FM4 Favorites** as the persistent playlist name.

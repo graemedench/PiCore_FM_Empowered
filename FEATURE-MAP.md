@@ -9,7 +9,7 @@
 | Queue and playlist browsing | Lyrion tracks/playlists queries | Adapter in progress |
 | Track playback/volume/transport | Player-specific commands | Basic panel connected; full port pending |
 | Single/all/repeat/shuffle | Lyrion queue, shuffle/repeat modes | Pending full-port verification |
-| Save Track to Quadify playlist | Persistent Lyrion playlist append | Pending implementation and verification |
+| Save Track to FM4 Favorites | Persistent Lyrion playlist append | Implemented; live save verification pending |
 | Radio presets and favourites | Sable URLs + Lyrion favourites | Pending verification |
 | Buttons and boot LEDs | Original MCP23017 controller + smbus2 | I²C enablement pending |
 | Apple IR | gpio-ir overlay + existing profile | Hardware node absent; pending |

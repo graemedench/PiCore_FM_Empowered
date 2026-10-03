@@ -93,7 +93,11 @@ Implemented an initial independent Lyrion backend and piCorePlayer runner in
 `overlay/sable/pcp/`. See STAGING.md and CHANGELOG.md for the current deployment.
 Read-only live integration checks and original-screen simulation passed. The
 OLED prototype runs at `/home/tc/sable-pcp-stage`; physical confirmation pending.
-The saved boot command still starts the recovery panel.
+The saved boot command still starts the recovery panel. User confirmed the
+Sable appearance and snappy navigation. MCP23017 now initializes at 0x20 after
+loading i2c-dev and i2c-bcm2835; smbus2 0.6.0 installed. Buttons/LEDs are connected
+but physical checks are pending. Save Track targets **FM4 Favorites**, the name
+chosen by the user, with asynchronous read-back verification.
 The full port is not yet installed or feature-complete.
 
 Architecture: input sampling separate from dispatch, independent command,
