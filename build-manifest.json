@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "project": "piCorePlayer Empowered",
+  "updated": "2026-10-03",
+  "architecture": "aarch64",
+  "picoreplayer_version": "11.1.0",
+  "kernel": "6.12.67-pcpCore-v8",
+  "lyrion_version": "9.1.1",
+  "sable": {
+    "repository": "https://github.com/theshepherdmatt/sable.git",
+    "revision": "3670e503db8124de5890a6df1dc1b68b95d392a6"
+  },
+  "empowered": {
+    "repository": "https://github.com/graemedench/quadify_empowered.git",
+    "revision": "ed3d9417b1b18fdd13a83a3dd5b65505c7bef0c7"
+  },
+  "dependencies": {
+    "python": "3.11",
+    "Pillow": "12.3.0",
+    "gpiod": "2.5.0",
+    "cbor2": "6.1.5",
+    "luma.core": "2.6.0",
+    "luma.oled": "3.16.0"
+  },
+  "music_folder": "/mnt/sda2/Music",
+  "playlist_folder": "/mnt/sda2/Playlists",
+  "smb_share": "Music",
+  "phase": "full-interface port in progress"
+}
