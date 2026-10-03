@@ -36,6 +36,12 @@ class PiCoreApp(App):
         self.show_osd('VOLUME', str(max(0, min(100, self.store.get().volume + int(delta)))))
 
     def handle(self, cmd, arg=None):
+        if cmd == 'play_pause' and self.soft_stopped():
+            self.note_activity()
+            self._cancel_soft_stop()
+            self._transport('play')
+            self.render()
+            return
         if cmd == 'play_uri' and str(arg or '').startswith('tidal://'):
             self.show_osd('TIDAL', 'Mix connection pending')
             return

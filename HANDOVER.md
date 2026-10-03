@@ -102,6 +102,8 @@ Button feedback exposed generic defaults and slow scans. The runner now migrates
 the complete Empowered button preset once, and FM4Buttons uses per-key debounce
 with faster scans. Repeat/shuffle and play/pause live checks pass; see the latest
 CHANGELOG entry. TIDAL mix conversion and held Save shortcut remain unfinished.
+User confirmed improved button responsiveness. Held Stop resume now explicitly
+clears its latch/timer and plays the same track; app/Lyrion live checks passed.
 The full port is not yet installed or feature-complete.
 
 Architecture: input sampling separate from dispatch, independent command,

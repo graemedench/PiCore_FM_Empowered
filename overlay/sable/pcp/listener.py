@@ -89,6 +89,15 @@ class LyrionListener:
         return self._commands.submit(work)
 
     def transport(self, command):
+        if command == 'toggle':
+            def toggle():
+                try:
+                    status = self.rpc(['status', '-', '1'])
+                    self.rpc(['pause', '1'] if status.get('mode') == 'play' else ['play'])
+                    self._status_wake.set()
+                except Exception as exc:
+                    self.log('Lyrion toggle failed:', exc)
+            return self._commands.submit(toggle)
         if command in ('random', 'repeat'):
             self.set_playback_mode('random' if command == 'random' else 'playlist')
             return

@@ -56,3 +56,14 @@ remaining problems, and rollback/rebuild implications. Never include credentials
 - Live repeat/shuffle flag checks and play/pause/toggle checks pass. Measured
   transport commands about 21–22ms. Restored pre-test playback and flags.
 - Deployed and restarted prototype. User tactile confirmation requested.
+
+## 2026-10-03 — held Stop resume fix
+
+- User confirmed buttons are much better, then reported that held Stop needed
+  a track skip before restarting playback.
+- Play/pause now clears the soft-stop latch and five-minute delayed stop timer,
+  then explicitly resumes. Ordinary toggle consults live Lyrion state and sends
+  Play when paused or stopped, avoiding ambiguous stop-state pause toggling.
+- Actual app/Lyrion integration test passed: held Stop pauses, tap resumes the
+  same queue index, latch/timer clear, and a hard-stopped player resumes on tap.
+  Restored pre-test playback, deployed and restarted the prototype.
