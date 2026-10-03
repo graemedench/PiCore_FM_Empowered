@@ -36,3 +36,6 @@ remaining problems, and rollback/rebuild implications. Never include credentials
   Button actions and physical LED positions await user confirmation.
 - Implemented asynchronous Save Track with read-back verification. User chose
   **FM4 Favorites** as the persistent playlist name.
+- Verified FM4 Favorites contains Spell through Lyrion's playlist-tracks query
+  and `/mnt/sda2/Playlists/FM4 Favorites.m3u`. Button events 1–5, 7–8 are visible
+  in the runtime log; complete action mapping and LED positions remain pending.

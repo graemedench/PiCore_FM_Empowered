@@ -36,11 +36,13 @@ Live Lyrion checks passed for player metadata and time units, albums, artists,
 genres, empty playlists, queue, album tracks, asynchronous browse stale-response
 protection and status delivery. Simulation renders using the original screens
 and DejaVu fonts. Hardware process started without errors; user visual and
-navigation confirmation is pending.
+navigation was confirmed by the user as snappy. MCP23017 initializes at 0x20;
+button events arrive. A saved track is verified in FM4 Favorites and its persistent
+M3U file. The runtime additionally requires smbus2 0.6.0 in the vendor directory.
 
 Album/artist/genre lists are paginated. Queue currently has a 10,000-item limit.
 Playlist contents, transport changes and mode changes still need live tests.
 Settings that require unfinished adapters are temporarily hidden. Spectrum,
-audio output switching, Wi-Fi setup, button/IR input and playlist saving remain
-unfinished. Single/all selection follows Sable's existing browse behavior;
+audio output switching, Wi-Fi setup and IR input remain unfinished. Physical LED
+positions and the complete button mapping need confirmation. Single/all selection follows Sable's existing browse behavior;
 repeat track/all and shuffle are mapped to Lyrion.
