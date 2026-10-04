@@ -122,6 +122,7 @@ class LyrionListener:
                         stream=True)
                 else:
                     state = state_from_status(self.rpc(['status', '-', '1', 'tags:aldKcu']))
+                    self.cd.metadata.decorate(state)
                 self.dispatch(lambda s=state: self.store.apply_pushstate(s))
                 if not connected and self.on_connect:
                     self.dispatch(self.on_connect)
@@ -206,10 +207,10 @@ class LyrionListener:
     def _items(self, uri):
         if uri == 'pcp:cd':
             try:
-                disc = self.cd.inspect()
+                disc = self.cd.inspect(lookup=True)
             except OSError:
                 disc = None
-            tracks = [dict(title='Track %02d' % t['number'], uri=self.cd.url(t['number']),
+            tracks = [dict(title=t.get('title', 'Track %02d' % t['number']), uri=self.cd.url(t['number']),
                          type='song', service='cd_controller', duration=t['duration'])
                     for t in disc['tracks']] if disc else [dict(title='Insert an audio CD', _notice=True)]
             return tracks + [dict(title='Eject CD', _cd_eject=True)]
@@ -251,7 +252,8 @@ class LyrionListener:
         else:
             raise ValueError('Unsupported browse source: ' + uri)
         return [dict(title=row.get('title', 'Untitled'), uri=row.get('url', ''),
-                     type='song', service='mpd') for row in rows if row.get('url')]
+                     type='song', service='mpd', **({'_queue_index': row.get('playlist index', index)}
+                        if path == 'queue' else {})) for index, row in enumerate(rows) if row.get('url')]
 
     def browse(self, uri=''):
         self._generation += 1
@@ -274,6 +276,9 @@ class LyrionListener:
 
     def play_item(self, item):
         self.active_collection_uri = ''
+        if item.get('_queue_index') is not None:
+            self._submit(['playlist', 'index', str(item['_queue_index'])])
+            return
         if item.get('_tidal_id'):
             self.active_collection_uri = item.get('uri', '')
             self._submit([item.get('_opml_tag', 'tidal'), 'playlist', 'play', 'item_id:' + item['_tidal_id']])
@@ -282,6 +287,9 @@ class LyrionListener:
 
     def play_uri(self, uri, **metadata):
         self.active_collection_uri = uri if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')) else ''
+        if uri.startswith('http://127.0.0.1:9180/cd/'):
+            self.play_cd(uri)
+            return
         if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')):
             item_id = urllib.parse.parse_qs(uri.partition('?')[2])['item'][0]
             self._submit([uri[4:].partition('?')[0], 'playlist', 'play', 'item_id:' + item_id])
@@ -289,8 +297,38 @@ class LyrionListener:
         if uri:
             self._submit(['playlist', 'play', uri, metadata.get('title', '')])
 
-    def play_all(self, items):
+    def play_cd(self, selected_uri):
+        """Queue the complete disc, then start at the selected track."""
+        def work():
+            try:
+                if self._rip_lock.locked():
+                    raise ValueError('Cancel CD rip before playing')
+                disc = self.cd.inspect(lookup=True)
+                if not disc:
+                    raise ValueError('No audio CD')
+                parts = urllib.parse.urlparse(selected_uri).path.split('/')
+                number = int(parts[-1].removesuffix('.wav'))
+                if parts[-2] != disc['id']:
+                    raise ValueError('CD changed - reopen Audio CD')
+                index = next(i for i, track in enumerate(disc['tracks']) if track['number'] == number)
+                self._return_local()
+                self.rpc(['playlist', 'clear'])
+                for track in disc['tracks']:
+                    url = 'http://127.0.0.1:9180/cd/%s/%d.wav' % (disc['id'], track['number'])
+                    self.rpc(['playlist', 'add', url, track.get('title', 'Track %02d' % track['number'])])
+                self.rpc(['playlist', 'index', str(index)])
+                self._status_wake.set()
+            except Exception as exc:
+                self.log('CD queue unavailable:', str(exc))
+        self._commands.submit(work)
+
+    def play_all(self, items, start=0):
         self.active_collection_uri = ''
+        if not items or not 0 <= start < len(items):
+            return
+        if items and items[0].get('service') == 'cd_controller':
+            self.play_cd(items[start]['uri'])
+            return
         if items and items[0].get('_tidal_id'):
             def tidal_work():
                 self._return_local()
@@ -298,6 +336,7 @@ class LyrionListener:
                     if item.get('_tidal_id'):
                         self.rpc([item.get('_opml_tag', 'tidal'), 'playlist', 'play' if index == 0 else 'add',
                                   'item_id:' + item['_tidal_id']])
+                self.rpc(['playlist', 'index', str(start)])
                 self._status_wake.set()
             self._commands.submit(tidal_work)
             return
@@ -310,7 +349,7 @@ class LyrionListener:
                 self.rpc(['playlist', 'clear'])
                 for url in urls:
                     self.rpc(['playlist', 'add', url])
-                self.rpc(['play'])
+                self.rpc(['playlist', 'index', str(start)])
             except Exception as exc:
                 self.log('Queue update failed:', exc)
         self._commands.submit(work)
@@ -338,14 +377,14 @@ class LyrionListener:
     def request_cd_rip_info(self):
         def work():
             try:
-                disc = self.cd.inspect()
+                disc = self.cd.inspect(lookup=True)
                 if not disc:
                     raise ValueError('No audio CD')
                 root = Path('/mnt/sda2/Music')
                 if not Path('/mnt/sda2').is_mount() or not root.is_dir():
                     raise ValueError('Music storage unavailable')
                 info = dict(rippingAvailable=True, cdid=disc['id'], disc=disc,
-                    album='Audio CD', tracks=disc['tracks'], availableDrives=[dict(
+                    album=disc.get('album', 'Audio CD'), tracks=disc['tracks'], availableDrives=[dict(
                         name='Music storage', path=str(root), available=True)])
             except Exception as exc:
                 info = dict(rippingAvailable=False, error=str(exc))

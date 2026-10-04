@@ -14,7 +14,7 @@ from pathlib import Path
 from ..app import App
 from ..settings import Settings
 from ..screens.menu import MenuScreen
-from ..screens.browse import BrowseScreen
+from ..screens.browse import BrowseScreen, _play_all_tracks
 from .listener import LyrionListener
 
 
@@ -114,6 +114,14 @@ class PiCoreBrowse(BrowseScreen):
             else:
                 self.app.show_osd('CD', 'Ejecting disc')
                 self.app.listener.eject_cd()
+            return
+        songs = _play_all_tracks(frame['items'])
+        if item in songs and not item.get('_play_all'):
+            if item.get('_queue_index') is not None:
+                self.app.listener.play_item(item)
+            else:
+                self.app.listener.play_all(songs, start=next(i for i, song in enumerate(songs) if song is item))
+            self.app.go(self.app.nowplaying_screen())
             return
         super().handle_select()
 

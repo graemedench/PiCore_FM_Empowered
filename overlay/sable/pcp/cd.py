@@ -42,7 +42,7 @@ def toc(device):
         if not tracks:
             raise ValueError('No audio tracks')
         identity = hashlib.sha256(repr(entries).encode()).hexdigest()[:20]
-        return dict(device=device, id=identity, tracks=tracks)
+        return dict(device=device, id=identity, tracks=tracks, entries=entries)
     finally:
         os.close(fd)
 
@@ -135,7 +135,9 @@ def rip_flac(disc, destination, cancel, report):
             partial = Path(temporary) / 'audio.flac'
             process = subprocess.Popen(['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error',
                 '-n', '-i', str(wav), '-threads', '1', '-c:a', 'flac', '-metadata',
-                'title=Track %02d' % track['number'], '-metadata', 'album=Audio CD',
+                'title=' + track.get('title', 'Track %02d' % track['number']), '-metadata',
+                'album=' + disc.get('album', 'Audio CD'), '-metadata',
+                'artist=' + track.get('artist', disc.get('artist', '')), 
                 '-metadata', 'track=%d' % track['number'], str(partial)],
                 stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             deadline = time.monotonic()+900
@@ -161,10 +163,14 @@ class CDService:
     def __init__(self):
         self.disc = None
         self.server = None
+        from .cd_metadata import Metadata
+        self.metadata = Metadata()
 
-    def inspect(self):
+    def inspect(self, lookup=False):
         found = devices()
         self.disc = toc(found[0]) if found else None
+        if self.disc:
+            self.metadata.apply(self.disc, lookup)
         return self.disc
 
     def url(self, number):
