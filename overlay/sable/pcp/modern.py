@@ -14,6 +14,7 @@ class FM4Modern(ModernScreen):
         self._last_theme = None
         self._ppm = [0.,0.]
         self._ppm_time = time.monotonic()
+        self._peak_hold_until = [0.,0.]
 
     def interact(self):
         self.cycle.interact(time.monotonic())
@@ -36,7 +37,13 @@ class FM4Modern(ModernScreen):
             if theme == 'panel_ppm':
                 elapsed = min(.25, max(0., now-self._ppm_time))
                 self._ppm_time = now
-                self._ppm = [max(value, old-elapsed/2.8) for value,old in zip(self.app.levels.peaks(),self._ppm)]
+                for channel, value in enumerate(self.app.levels.peaks()):
+                    if value >= self._ppm[channel]:
+                        self._ppm[channel] = value
+                        self._peak_hold_until[channel] = now + 1.0
+                    elif now > self._peak_hold_until[channel]:
+                        fall_time = min(elapsed, now-self._peak_hold_until[channel])
+                        self._ppm[channel] = max(value, self._ppm[channel]-fall_time/2.8)
                 values = self._ppm
             else:
                 values = self.app.levels.read()

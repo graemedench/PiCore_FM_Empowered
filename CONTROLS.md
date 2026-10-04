@@ -35,7 +35,7 @@ Panel shows track details, elapsed / duration and stereo bars. Performance
 omits bars. Panel / Needle VU, Panel / Twin Needle VU and Panel / Spectrum return to Panel
 for five seconds after interaction. Track changes show centred title/artist
 for four seconds on VU/Twin Needle and two seconds on Spectrum. Twin Needle VU has two needles in
-each dial: bright fast level needle and a dimmer peak needle with slow decay, per channel.
+each dial: bright fast level needle and a dimmer peak needle with a one-second hold then slow decay, per channel.
 
 AirPlay 2, Bluetooth, SMB and streaming accounts require native service setup.
 See INSTALL.md. Physical test status is in FEATURE-MAP.md.

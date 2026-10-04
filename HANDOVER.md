@@ -369,3 +369,5 @@ Fresh SSD install and Bluetooth audio acceptance remain pending. Read latest
 FEATURE-MAP/INSTALL for current status; older log entries are historical.
 
 User clarified twin needles mean fast level plus slow peak per channel. Renamed menu to Panel / Twin Needle VU; internal panel_ppm key retained for saved settings. Added meter headroom and consistent level/peak scales. Track popup user likes; kept four seconds centred. Service URLs includes Web player; CONTROLS.md lists short/long controls.
+
+Twin Needle VU peak now holds for one second before slow release, requested by user. Fast RMS needle remains independent.

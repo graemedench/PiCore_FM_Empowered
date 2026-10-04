@@ -47,3 +47,16 @@ for fraction in (0,.25,.5,1):
  pixels.append(sum(v==220 for v in canvas.getdata()))
 assert pixels==sorted(pixels) and len(set(pixels))==4
 print('PASS: whole-disc clock pie fills monotonically')
+
+# Peak needle holds while fast level input drops, then releases.
+app.levels.peaks=lambda:[.8,.6]
+with patch('time.monotonic',return_value=0):screen=FM4Modern(app)
+for now in (0,5):
+ with patch('time.monotonic',return_value=now):screen.render(canvas,ImageDraw.Draw(canvas),256,64)
+assert screen._ppm==[.8,.6]
+app.levels.peaks=lambda:[.1,.1]
+with patch('time.monotonic',return_value=5.9):screen.render(canvas,ImageDraw.Draw(canvas),256,64)
+assert screen._ppm==[.8,.6]
+with patch('time.monotonic',return_value=6.1):screen.render(canvas,ImageDraw.Draw(canvas),256,64)
+assert .1 < screen._ppm[0] < .8
+print('PASS: one-second peak hold then slow release')
