@@ -384,6 +384,8 @@ def main():
             fonts._DIR = font_dir
             break
     app = PiCoreApp(display, Settings(args.settings), dry_run=args.sim)
+    from .source_icons import PiCoreHome
+    app.fsm.screens['home'] = PiCoreHome(app)
     # One-time migration restores the user's complete Empowered layout.
     # Later startup preserves edits instead of resetting button preferences.
     if not app.settings.get('_meta', 'pcp_button_layout', default=0):
