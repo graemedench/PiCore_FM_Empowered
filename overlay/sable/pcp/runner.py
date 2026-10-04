@@ -16,7 +16,7 @@ from .listener import LyrionListener
 
 class PiCoreApp(App):
     def volume_available(self):
-        return True
+        return self.store.get().service not in ('airplay', 'bluetooth')
 
     def nowplaying_screen(self):
         return 'modern'
@@ -33,6 +33,9 @@ class PiCoreApp(App):
             subprocess.Popen(['pcp', 'sd'])
 
     def nudge_volume(self, delta):
+        if not self.volume_available():
+            self.show_osd('RECEIVER', 'Volume on your phone')
+            return
         self.listener.set_volume('%+d' % int(delta))
         self.show_osd('VOLUME', str(max(0, min(100, self.store.get().volume + int(delta)))))
 
@@ -43,8 +46,11 @@ class PiCoreApp(App):
             self._transport('play')
             self.render()
             return
-        if cmd == 'play_uri' and str(arg or '').startswith('tidal://'):
-            self.show_osd('TIDAL', 'Mix connection pending')
+        if cmd == 'play_uri' and str(arg or '').startswith('tidal://mymusic/mixes/'):
+            self.note_activity()
+            self._begin_source_change()
+            self.listener.play_tidal_mix(0 if 'My Mix 1' in str(arg) else 1)
+            self.show_osd('TIDAL', 'Loading mix')
             return
         if cmd in ('random', 'repeat'):
             self._set_playback_mode('random' if cmd == 'random' else 'playlist')
@@ -127,6 +133,7 @@ def main():
     listener.on_browse = app.fsm.screens['browse'].on_browse_data
     listener.on_sources = app.fsm.screens['home'].refresh_sources
     buttons = None
+    power_button = None
     if not args.sim:
         from .buttons import FM4Buttons
         from ..hardware import MCP
@@ -134,6 +141,12 @@ def main():
             events.put(('callback', lambda: app.handle(cmd, arg))), app.store, app=app)
         buttons.start()
         listener.on_connect = buttons.signal_ready
+        from .power import PowerButton
+        power_button = PowerButton(lambda: events.put(('callback',
+                                    lambda: app.handle('shutdown'))), stop)
+        power_button.start()
+        from .bluetooth import BluetoothHandover
+        BluetoothHandover(stop).start()
     app.fsm.go('clock')
     listener.start()
     started = time.monotonic()
@@ -166,6 +179,8 @@ def main():
             encoder.join(timeout=2)
         if buttons:
             buttons.stop()
+        if power_button:
+            power_button.join(timeout=1)
         app.levels.close()
         display.cleanup()
 

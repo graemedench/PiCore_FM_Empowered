@@ -1,6 +1,8 @@
 """Bounded Lyrion JSON-RPC adapter; network work never blocks UI dispatch."""
 import json
 import threading
+import time
+from pathlib import Path
 import urllib.parse
 import urllib.request
 from concurrent.futures import ThreadPoolExecutor
@@ -19,7 +21,8 @@ def state_from_status(data):
                 uri=uri, albumart=art, volume=abs(volume), mute=volume < 0,
                 seek=int(float(data.get('time', 0)) * 1000),
                 duration=int(float(song.get('duration', data.get('duration', 0)))),
-                service='webradio' if song.get('remote') else 'mpd',
+                service='tidal' if uri.startswith('tidal:') else
+                        'webradio' if song.get('remote') else 'mpd',
                 stream=bool(song.get('remote')), samplerate='', bitdepth='')
 
 
@@ -33,7 +36,7 @@ class LyrionListener:
                                for name, root in [('Music Library', 'library'),
                                   ('Albums', 'albums'), ('Artists', 'artists'),
                                   ('Genres', 'genres'), ('Playlists', 'playlists'),
-                                  ('Queue', 'queue')]]
+                                  ('Queue', 'queue'), ('TIDAL', 'tidal')]]
         self._stop = threading.Event()
         self._commands = ThreadPoolExecutor(1, thread_name_prefix='lms-command')
         self._browse = ThreadPoolExecutor(1, thread_name_prefix='lms-browse')
@@ -66,7 +69,16 @@ class LyrionListener:
         connected = False
         while not self._stop.is_set():
             try:
-                state = state_from_status(self.rpc(['status', '-', '1', 'tags:adKcu']))
+                receiver = Path('/tmp/fm4-receiver.json')
+                if receiver.exists():
+                    active = json.loads(receiver.read_text())
+                    source = active['source']
+                    state = dict(status='play', title='AirPlay' if source == 'airplay' else 'Bluetooth', artist='Connected receiver',
+                        album='', albumart='', uri='receiver:' + source, service=source,
+                        seek=int((time.time() - active['started']) * 1000), duration=0,
+                        stream=True)
+                else:
+                    state = state_from_status(self.rpc(['status', '-', '1', 'tags:aldKcu']))
                 self.dispatch(lambda s=state: self.store.apply_pushstate(s))
                 if not connected and self.on_connect:
                     self.dispatch(self.on_connect)
@@ -141,6 +153,15 @@ class LyrionListener:
 
     def _items(self, uri):
         path = uri.removeprefix('pcp:')
+        if path == 'tidal' or path.startswith('tidal?'):
+            query = urllib.parse.parse_qs(path.partition('?')[2])
+            args = ['item_id:' + query['item'][0]] if query.get('item') else []
+            result = self.rpc(['tidal', 'items', '0', '100'] + args)
+            return [dict(title=row.get('name', 'Untitled'),
+                    uri='pcp:tidal' + ('?' + urllib.parse.urlencode({'item': row['id']})),
+                    _folder=bool(row.get('hasitems')), type='folder' if row.get('hasitems') else 'song',
+                    service='tidal', _tidal_id=row['id'])
+                    for row in result.get('loop_loop', []) if row.get('type') != 'search']
         if path in ('', 'library'):
             return [self.folder(x['name'], x['uri']) for x in self.browse_sources
                     if x['uri'] != 'pcp:library']
@@ -186,13 +207,29 @@ class LyrionListener:
         self._browse.submit(work)
 
     def play_item(self, item):
+        if item.get('_tidal_id'):
+            self._submit(['tidal', 'playlist', 'play', 'item_id:' + item['_tidal_id']])
+            return
         self.play_uri(item.get('uri', ''))
 
     def play_uri(self, uri, **metadata):
+        if uri.startswith('pcp:tidal?'):
+            item_id = urllib.parse.parse_qs(uri.partition('?')[2])['item'][0]
+            self._submit(['tidal', 'playlist', 'play', 'item_id:' + item_id])
+            return
         if uri:
             self._submit(['playlist', 'play', uri])
 
     def play_all(self, items):
+        if items and items[0].get('_tidal_id'):
+            def tidal_work():
+                for index, item in enumerate(items):
+                    if item.get('_tidal_id'):
+                        self.rpc(['tidal', 'playlist', 'play' if index == 0 else 'add',
+                                  'item_id:' + item['_tidal_id']])
+                self._status_wake.set()
+            self._commands.submit(tidal_work)
+            return
         urls = [item['uri'] for item in items if item.get('uri')]
         if not urls:
             return
@@ -204,6 +241,20 @@ class LyrionListener:
                 self.rpc(['play'])
             except Exception as exc:
                 self.log('Queue update failed:', exc)
+        self._commands.submit(work)
+
+    def play_tidal_mix(self, position=0):
+        def work():
+            try:
+                root = self.rpc(['tidal', 'items', '0', '100'])
+                mix_root = next(row for row in root.get('loop_loop', [])
+                                if row.get('name') == 'My Mix')
+                mixes = self.rpc(['tidal', 'items', '0', '100', 'item_id:' + mix_root['id']])
+                chosen = mixes.get('loop_loop', [])[position]
+                self.rpc(['tidal', 'playlist', 'play', 'item_id:' + chosen['id']])
+                self._status_wake.set()
+            except Exception as exc:
+                self.log('TIDAL mix unavailable:', type(exc).__name__)
         self._commands.submit(work)
 
     def refresh_library(self):

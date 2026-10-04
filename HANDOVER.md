@@ -138,6 +138,35 @@ User asked to stop for tonight after this milestone and revisit another day.
 
 ## Rebuild and backup principles
 
+## 2026-10-04 — receiver and TIDAL work in progress
+
+Native pcp-shairportsync and pcp-bt packages installed and added to onboot.lst.
+AirPlay 2 uses shairport-sync-ap2 5.0.0 and nqptp, output hw:CARD=AUDIO,
+advertised as FM4-Reborn AirPlay. Avahi needed an explicit start; stage-start.sh
+now starts it when available. Receiver hooks pause Lyrion and release Squeezelite
+before AirPlay uses the DAC, then restore the paused local player afterward.
+AirPlay discovery and a running ALSA receiver session verified, but user reports
+phone playback counter stalls: audio playback is NOT yet confirmed. Temporary
+foreground diagnostics in /tmp/fm4-airplay-debug.log; inspect bounded error lines,
+never export full protocol logs or credentials. Restore native daemon after repair.
+
+TIDAL authenticated browsing returns eight My Mix playlists. My Mix 1 CLI playback
+loaded 40 tracks, mode play and elapsed time advanced. Button 7 now maps old
+Volumio mix shortcuts to Lyrion My Mix 1 (tap) / My Mix 2 (hold), with TIDAL browse
+in source carousel. Native plugin identifiers are used rather than Volumio URLs.
+Dedicated active-low GPIO21 shutdown installed; release-to-arm and two-second
+single-event hold logic passed. Physical shutdown has not been tested.
+
+Bluetooth controller still unavailable in the running device tree (/dev/serial1
+absent); boot config no longer has disable-bt, so reboot is pending. Native
+Bluetooth output is configured to the USB DAC. Phone must be paired and configured
+as type 2 Player using native pcp-bt-config, NOT type 1 Speaker. BluetoothHandover
+watches native bluealsa-aplay to release local playback; requires live testing.
+AirPlay/Bluetooth meters and full metadata are not implemented. Existing RMS meters
+read only Squeezelite PCM. Radio shortcuts still require playback verification.
+CD playback/ripping deferred at user's request. No completed installer claimed.
+
+
 Keep installable source overlays, pinned revisions, exact dependencies, installer,
 hardware settings, feature/test map and this log together. Preserve media files
 separately through the Music share. Export safe user settings separately from
