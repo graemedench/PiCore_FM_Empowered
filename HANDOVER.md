@@ -65,7 +65,7 @@ https://github.com/graemedench/PiCore_FM_Empowered.
 | MCP23017 | I²C1, address 0x20; SDA2/SCL3 |
 | LEDs | MCP GPIOA0–7; reverse ribbon mapping per hardware preset |
 | Buttons | MCP GPIOB0–1 columns, GPIOB2–5 rows |
-| HS0038 IR | GPIO27, physical pin13 |
+| HS0038 IR | GPIO4, physical pin7 (live capture verified 2026-10-04; published diagram says GPIO27) |
 | Shutdown switch | GPIO21, physical pin40; active low, two-second hold |
 
 Earlier chat notes said IR GPIO4 and shutdown GPIO17. The newer published FM4
@@ -348,3 +348,5 @@ Renamed completed19-track ABBA MP3 folder from Audio CD 61a2216962e10b7b8c7a 4ou
 ### 2026-10-04 — Original Apple aluminium IR remote enabled
 Read original Pi Synced/PROJECT-HANDOFF.md and captured Apple Aluminium Remote (this unit)/lircd.conf: HS0038 GPIO27, SPACE_ENC32bits pre0x77E1/post0x5D and captured C0/FA/A0/3A/90/60/30/50 keys. piCorePlayer has no /dev/lirc or gpio_ir_recv module loaded; native lirc.tcz download unavailable (no valid extension installed). Avoided boot overlay/reboot by direct libgpiod2 both-edge request on GPIO27 with256-event buffer and monotonic timestamps. Decoder validates header/pulse/space lengths, address/pair ID, repeats; adapter uses original Sable IrListener context mapping/debounce and event queue. Only scroll/volume hold-repeat; remote selection/navigation and transport use existing app paths and5sec visual timer. PiCoreApp volume command now calls real player volume nudge rather than upstream DAC-only hint.
 GPIO edge request verified; decoder/context unit tests passed; runner restarted only after checking no active rip temporary folders, log confirms Apple receiver listeningGPIO27. IR profile stored as original captured Apple unit. Physical remote feedback pending user test. No native LIRC package/boot changes required for rebuild; existing gpiod vendor dependency retained. Full FLAC R.E.M. Document rip user requested status:17/17 named files and zero temporary, verified against inserted disc TOC.
+### 2026-10-04 — IR live wiring and pairing correction
+User reports no response. GPIO27 reader alive but captured zero edges on Menu presses. Read original historical GPIO4 note; gpiochip0 is correct pinctrl-bcm2711 and GPIO4 was unused input. Temporary45sec GPIO4 capture saw420edges; decoder recovered Apple Menu code0x77E1C015, so THIS UNIT physically usesGPIO4 and remote pair ID0x15, unlike saved Volumio profileGPIO27/post0x5D. Live pulses take precedence over published wiring assumptions. Changed receiver GPIO4 and parameterized Decoder pair_id default0x15; retained old0x5D synthetic fixture tests with explicit pair. Replaying live capture decoded9Menu frames/repeats. Live panel then logged KEY_MENU press and fsm clock->home: actual IR response verified in log. User arrows/playback confirmation pending. Bounded optional /tmp/fm4-ir-capture diagnostics disabled after diagnosis; no IR boot overlays or LIRC daemon needed.

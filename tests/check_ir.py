@@ -9,10 +9,10 @@ def frame(decoder,key,start=1,address=0x77E1):
   result=decoder.edge(False,now)
  return result,now
 for code,key in KEYS.items():
- d=Decoder();result,now=frame(d,code);assert result==(key,False)
+ d=Decoder(pair_id=0x5D);result,now=frame(d,code);assert result==(key,False)
  now+=.04;d.edge(False,now);now+=.009;d.edge(True,now);now+=.002242
  assert d.edge(False,now)==(key,True)
-assert frame(Decoder(),0xC0,address=0x1234)[0] is None
+assert frame(Decoder(pair_id=0x5D),0xC0,address=0x1234)[0] is None
 assert command_for('KEY_ENTER','browse',True)==('select',None)
 assert command_for('KEY_PLAY','browse',True)==('toggle',None)
 assert command_for('KEY_LEFT','home',True)==('scroll',-1)
