@@ -110,8 +110,12 @@ def rip_flac(disc, destination, cancel, report, fmt="flac"):
         raise ValueError('CD changed')
     parent = root / 'CD Rips'
     parent.mkdir(exist_ok=True)
-    folder = Path(tempfile.mkdtemp(prefix='Audio CD ' + disc['id'] + ' ', dir=str(parent)))
-    folder.chmod(0o755)
+    from .rip_names import album_name, track_name, new_folder
+    folder = new_folder(parent, album_name(disc))
+    import pwd, grp
+    owner, group = pwd.getpwnam('tc').pw_uid, grp.getgrnam('staff').gr_gid
+    folder.chmod(0o775)
+    os.chown(folder, owner, group)
     for index, track in enumerate(disc['tracks'], 1):
         if cancel.is_set():
             report('Rip cancelled - saved tracks kept')
@@ -159,8 +163,9 @@ def rip_flac(disc, destination, cancel, report, fmt="flac"):
                     return
             if process.returncode:
                 raise ValueError(fmt.upper() + ' encoding failed')
-            partial.chmod(0o644)
-            partial.rename(folder / ('%02d - Track %02d.%s' % (track['number'], track['number'], fmt)))
+            partial.chmod(0o664)
+            os.chown(partial, owner, group)
+            partial.rename(folder / track_name(track, fmt))
         report('Saved track %d/%d' % (index, len(disc['tracks'])), 1)
     report('Rip complete: %d tracks (%s)' % (len(disc['tracks']), fmt.upper()), 1)
 
