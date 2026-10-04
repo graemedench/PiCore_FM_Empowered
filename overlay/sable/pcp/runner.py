@@ -44,9 +44,9 @@ class PiCoreApp(App):
             station = 'bbc_radio_two' if cmd == 'bbc_radio_2' else 'bbc_radio_fourfm'
             self.note_activity()
             self._begin_source_change()
-            self.show_osd('BBC SOUNDS', 'Loading station')
+            self.show_osd('RADIO', 'Loading station')
             self.listener.play_bbc_station(station, lambda message:
-                self.show_osd('BBC SOUNDS', message))
+                self.show_osd('RADIO', message))
             return
         if cmd == 'play_pause' and self.soft_stopped():
             self.note_activity()

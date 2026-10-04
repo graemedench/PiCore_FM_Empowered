@@ -212,6 +212,22 @@ transport tests passed. The earlier generic songs-query test selected a streamin
 entry; a filesystem MP3 was used for the meaningful local regression check.
 BBC sign-in is still required and credentials should remain in Lyrion's own UI.
 
+## Direct BBC radio restored without sign-in
+
+User preferred the same no-account streams used by Volumio. Installed publisher
+PlayHLS 2.12 from https://bpa-code.github.io/bpaplugins/PlayHLS-v212.ZIP, verified
+SHA1 3da446c52d2eecbc1d70834bfa822b6bf761d616 against repo-playhls-v2.xml. Enabled
+plugin.state:PlayHLS and restarted Lyrion. Actual Radio 2 playback reached 7.06s;
+Radio 4 reached 7.61s, correct queue index and Radio 4 title. Original HTTP URLs
+were mapped by the plugin to hlsplay; shortcuts now use hlsplay:// explicitly and
+pass station title, avoiding initial HTTP scan latency. Buttons 5/6 are deployed
+on the direct route and do NOT require BBC Sounds sign-in. BBC Sounds remains
+optional for its own browsing/catch-up; sign-in page is
+http://192.168.1.18:9000/plugins/BBCSounds/settings/basic.html.
+Rebuild helper tools/install-playhls.py saved. pcp-ffmpeg package was downloaded
+while evaluating fallback, but not loaded or added to boot; native PlayHLS 2 needs
+no additional executable. Live tests restored the original 40-track queue afterward.
+
 
 Keep installable source overlays, pinned revisions, exact dependencies, installer,
 hardware settings, feature/test map and this log together. Preserve media files

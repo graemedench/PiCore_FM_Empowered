@@ -10,7 +10,7 @@
 | Track playback/volume/transport | Player-specific commands | Basic panel connected; full port pending |
 | Single/all/repeat/shuffle | Lyrion queue, shuffle/repeat modes | Live repeat/shuffle flag checks pass; button feedback pending |
 | Save Track to FM4 Favorites | Persistent Lyrion playlist append | Saved track verified in Lyrion and persistent M3U |
-| Radio presets and favourites | BBC Sounds protocol + existing commercial URLs | BBC buttons mapped; BBC sign-in/playback and commercial streams pending |
+| Radio presets and favourites | Direct PlayHLS streams + existing commercial URLs | BBC Radio 2/4 playback verified without sign-in; commercial streams pending |
 | Buttons and boot LEDs | Original MCP23017 controller + smbus2 | Controller initializes; events received; physical LED check pending |
 | Apple IR | gpio-ir overlay + existing profile | Hardware node absent; pending |
 | Shutdown GPIO and Settings confirmation | Original shutdown screen + `pcp sd` | GPIO21 installed; release/hold logic checked; physical poweroff pending |

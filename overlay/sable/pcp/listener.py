@@ -277,14 +277,13 @@ class LyrionListener:
         def work():
             try:
                 self._return_local()
-                menu = self.rpc(['bbcsounds', 'items', '0', '10'])
-                names = ' '.join(row.get('name', '') for row in menu.get('loop_loop', []))
-                if 'sign in' in names.lower():
-                    message = 'Sign in on web player'
-                else:
-                    self.rpc(['playlist', 'play', 'sounds://_LIVE_' + station])
-                    self._status_wake.set()
-                    message = 'Radio 2' if station == 'bbc_radio_two' else 'Radio 4'
+                from ..stations import PRESETS
+                key = 'bbc_radio_2' if station == 'bbc_radio_two' else 'bbc_radio_4'
+                title, uri, artwork = PRESETS[key]
+                uri = 'hlsplay://' + uri.split('://', 1)[1]
+                self.rpc(['playlist', 'play', uri, title])
+                self._status_wake.set()
+                message = title
             except Exception:
                 message = 'Station unavailable'
             self.dispatch(lambda: callback(message))
