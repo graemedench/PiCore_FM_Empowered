@@ -6,6 +6,8 @@ import signal
 import subprocess
 import threading
 import time
+import socket
+import textwrap
 from pathlib import Path
 
 from ..app import App
@@ -75,6 +77,49 @@ class PiCoreApp(App):
 
 
 class PiCoreMenu(MenuScreen):
+    _signin_url = None
+
+    def _show_signin(self, title, path):
+        address = 'FM4-Reborn.local'
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as connection:
+                connection.connect(('192.0.2.1', 80))
+                address = connection.getsockname()[0]
+        except OSError:
+            pass
+        self._signin_url = (title, 'http://' + address + ':9000/' + path)
+        self.app.render()
+
+    def handle_select(self):
+        if self._signin_url:
+            self._signin_url = None
+            self.app.fsm.reset_menu_timer()
+            return
+        super().handle_select()
+
+    def handle_back(self):
+        if self._signin_url:
+            self._signin_url = None
+            self.app.fsm.reset_menu_timer()
+            return
+        super().handle_back()
+
+    def handle_scroll(self, delta):
+        if not self._signin_url:
+            super().handle_scroll(delta)
+
+    def render(self, canvas, draw, w, h):
+        if not self._signin_url:
+            return super().render(canvas, draw, w, h)
+        self.app.fsm.reset_menu_timer()
+        title, url = self._signin_url
+        font = self.app.fonts.get('mono', 9)
+        self.text(canvas, (3, 1), title.upper(), font, fill=230)
+        for index, line in enumerate(textwrap.wrap(url, width=40,
+                                                  break_on_hyphens=False)):
+            self.text(canvas, (3, 15 + index*11), line, font, fill=190)
+        self.text(canvas, (3, 54), 'Open in browser | Press to return', font, fill=105)
+
     def _build_tree(self):
         tree = super()._build_tree()
         # Expose only functioning settings during the staged port.
@@ -87,6 +132,15 @@ class PiCoreMenu(MenuScreen):
             elif row[0] == 'Network':
                 tree[index] = (row[0], [item for item in row[1]
                     if item[0] != 'Wi-Fi Networks'], *row[2:])
+        tree.insert(-1, ('Service sign-in', [
+            ('BBC Sounds', lambda: self._show_signin('BBC Sounds sign-in',
+                'plugins/BBCSounds/settings/basic.html')),
+            ('TIDAL', lambda: self._show_signin('TIDAL sign-in',
+                'plugins/TIDAL/settings.html')),
+            ('Server settings', lambda: self._show_signin('Server settings',
+                'settings/server/basic.html')),
+            ('Back', '__back__'),
+        ]))
         return tree
 
 

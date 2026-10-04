@@ -13,10 +13,16 @@ def state_from_status(data):
     song = tracks[0] if tracks else {}
     volume = int(float(data.get('mixer volume', 0)))
     uri = song.get('url', '')
+    title = song.get('title', '')
+    for filename, label in (('clyde2.mp3', 'Greatest Hits Radio'),
+                            ('absolute80s.mp3', 'Absolute 80s')):
+        if filename in uri.lower() and (filename in title.lower() or
+                title.startswith(('http:', 'https:')) or not title):
+            title = label
     art = song.get('artwork_url', '')
     if not art and song.get('coverid'):
         art = '/music/%s/cover_128x128.jpg' % song['coverid']
-    return dict(status=data.get('mode', 'stop'), title=song.get('title', ''),
+    return dict(status=data.get('mode', 'stop'), title=title,
                 artist=song.get('artist', ''), album=song.get('album', ''),
                 uri=uri, albumart=art, volume=abs(volume), mute=volume < 0,
                 seek=int(float(data.get('time', 0)) * 1000),
@@ -36,7 +42,8 @@ class LyrionListener:
                                for name, root in [('Music Library', 'library'),
                                   ('Albums', 'albums'), ('Artists', 'artists'),
                                   ('Genres', 'genres'), ('Playlists', 'playlists'),
-                                  ('Queue', 'queue'), ('TIDAL', 'tidal')]]
+                                  ('Queue', 'queue'), ('TIDAL', 'tidal'),
+                                  ('BBC Sounds', 'bbcsounds')]]
         self._stop = threading.Event()
         self._commands = ThreadPoolExecutor(1, thread_name_prefix='lms-command')
         self._browse = ThreadPoolExecutor(1, thread_name_prefix='lms-browse')
@@ -99,7 +106,7 @@ class LyrionListener:
             try:
                 if command[0] in ('play', 'pause', 'stop') or (
                         command[0] == 'playlist' and command[1] in ('play', 'index')) or (
-                        command[0] == 'tidal' and command[1] == 'playlist'):
+                        command[0] in ('tidal', 'bbcsounds') and command[1] == 'playlist'):
                     self._return_local()
                 result = self.rpc(command)
                 self._status_wake.set()
@@ -162,14 +169,15 @@ class LyrionListener:
 
     def _items(self, uri):
         path = uri.removeprefix('pcp:')
-        if path == 'tidal' or path.startswith('tidal?'):
+        tag = path.partition('?')[0]
+        if tag in ('tidal', 'bbcsounds'):
             query = urllib.parse.parse_qs(path.partition('?')[2])
             args = ['item_id:' + query['item'][0]] if query.get('item') else []
-            result = self.rpc(['tidal', 'items', '0', '100'] + args)
+            result = self.rpc([tag, 'items', '0', '100'] + args)
             return [dict(title=row.get('name', 'Untitled'),
-                    uri='pcp:tidal' + ('?' + urllib.parse.urlencode({'item': row['id']})),
+                    uri='pcp:' + tag + ('?' + urllib.parse.urlencode({'item': row['id']})),
                     _folder=bool(row.get('hasitems')), type='folder' if row.get('hasitems') else 'song',
-                    service='tidal', _tidal_id=row['id'])
+                    service=tag, _tidal_id=row['id'], _opml_tag=tag)
                     for row in result.get('loop_loop', []) if row.get('type') != 'search']
         if path in ('', 'library'):
             return [self.folder(x['name'], x['uri']) for x in self.browse_sources
@@ -217,17 +225,17 @@ class LyrionListener:
 
     def play_item(self, item):
         if item.get('_tidal_id'):
-            self._submit(['tidal', 'playlist', 'play', 'item_id:' + item['_tidal_id']])
+            self._submit([item.get('_opml_tag', 'tidal'), 'playlist', 'play', 'item_id:' + item['_tidal_id']])
             return
         self.play_uri(item.get('uri', ''))
 
     def play_uri(self, uri, **metadata):
-        if uri.startswith('pcp:tidal?'):
+        if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')):
             item_id = urllib.parse.parse_qs(uri.partition('?')[2])['item'][0]
-            self._submit(['tidal', 'playlist', 'play', 'item_id:' + item_id])
+            self._submit([uri[4:].partition('?')[0], 'playlist', 'play', 'item_id:' + item_id])
             return
         if uri:
-            self._submit(['playlist', 'play', uri])
+            self._submit(['playlist', 'play', uri, metadata.get('title', '')])
 
     def play_all(self, items):
         if items and items[0].get('_tidal_id'):
@@ -235,7 +243,7 @@ class LyrionListener:
                 self._return_local()
                 for index, item in enumerate(items):
                     if item.get('_tidal_id'):
-                        self.rpc(['tidal', 'playlist', 'play' if index == 0 else 'add',
+                        self.rpc([item.get('_opml_tag', 'tidal'), 'playlist', 'play' if index == 0 else 'add',
                                   'item_id:' + item['_tidal_id']])
                 self._status_wake.set()
             self._commands.submit(tidal_work)

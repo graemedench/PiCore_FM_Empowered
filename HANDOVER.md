@@ -228,6 +228,24 @@ Rebuild helper tools/install-playhls.py saved. pcp-ffmpeg package was downloaded
 while evaluating fallback, but not loaded or added to boot; native PlayHLS 2 needs
 no additional executable. Live tests restored the original 40-track queue afterward.
 
+## Long-press radio and service sign-in menu
+
+Button 5 hold still uses the RadioFeeds clyde2-mp3 endpoint for Greatest Hits Radio
+(Glasgow & the West); button 6 hold uses absolute80s-mp3. Both played in live checks,
+elapsed 3.01s / 2.55s. Native playlist play now passes the supplied station title.
+The OLED adapter replaces generic clyde2.mp3/absolute80s.mp3 labels with station names,
+while preserving actual song metadata. No signed stream URLs are saved in source.
+
+Settings menu now has Service sign-in: BBC Sounds, TIDAL and Server settings. Each
+shows its complete browser URL wrapped across the OLED, using the current routed
+IP; hostname fallback FM4-Reborn.local. Page remains visible until encoder press or
+back. Render/return and station-label preservation checks passed on the Pi.
+User signed in to BBC Sounds privately. Authenticated root menu and its 27 Listen
+Live entries verified. BBC Sounds added to source carousel using the native OPML
+plugin browse/play interface, alongside TIDAL. Search entry omitted until text entry
+is implemented; browse results currently limited to 100 per level. Catch-up playback
+has not been tested. Direct BBC button streams remain independent of sign-in.
+
 
 Keep installable source overlays, pinned revisions, exact dependencies, installer,
 hardware settings, feature/test map and this log together. Preserve media files
