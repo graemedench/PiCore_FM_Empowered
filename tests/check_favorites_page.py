@@ -35,6 +35,6 @@ with TemporaryDirectory() as folder:
     for i in range(35):
         source.write_text('#EXTM3U\ntidal://%d.mp4\n' % i)
         assert backup_playlist(source, backups)
-    assert len(list(backups.glob('FM4 Favorites-*-*.m3u'))) == 30
+    assert len(list(backups.glob('FM4 Favorites-backup-*.m3u'))) == 3
     assert (backups / 'FM4 Favorites-latest.m3u').read_bytes() == source.read_bytes()
-print('PASS: missing playlist, change detection, latest copy and 30-version retention')
+print('PASS: missing playlist, change detection, latest copy and three-slot rotation')

@@ -77,4 +77,4 @@ playlist contents.
 
 ## Favorites backup
 
-The panel checks FM4 Favorites at startup and every hour. Changed playlists are saved under `/mnt/sda2/FM4 Backups/Playlists`, keeping `FM4 Favorites-latest.m3u` plus 30 versions. These are outside the library scan. This protects against edits; a separate network/computer copy is required for drive failure protection. Backups run while the panel service is running and survive reboot.
+The panel checks FM4 Favorites at startup and every hour. Changed playlists are saved under `/mnt/sda2/FM4 Backups/Playlists`, keeping `FM4 Favorites-latest.m3u` plus three rotating versions. These are outside the library scan. This protects against edits; a separate network/computer copy is required for drive failure protection. Backups run while the panel service is running and survive reboot.

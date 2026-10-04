@@ -1,5 +1,4 @@
 """Artwork-enabled local Favorites page, refreshed off the UI thread."""
-import hashlib
 import html
 from pathlib import Path
 import re
@@ -70,7 +69,7 @@ def _export(listener, destination=Path('/var/www/fm4-favorites.html')):
 
 def backup_playlist(source=Path('/mnt/sda2/Playlists/FM4 Favorites.m3u'),
                     directory=Path('/mnt/sda2/FM4 Backups/Playlists')):
-    """Keep latest plus 30 changed versions outside the scanned music tree."""
+    """Keep latest plus three rotating versions outside the scanned music tree."""
     if not source.is_file():
         return False
     data = source.read_bytes()
@@ -80,15 +79,15 @@ def backup_playlist(source=Path('/mnt/sda2/Playlists/FM4 Favorites.m3u'),
     latest = directory / 'FM4 Favorites-latest.m3u'
     if latest.exists() and latest.read_bytes() == data:
         return False
-    digest = hashlib.sha256(data).hexdigest()[:12]
-    version = directory / ('FM4 Favorites-' + time.strftime('%Y%m%d-%H%M%S') + '-' + digest + '.m3u')
-    version.write_bytes(data)
-    temporary = directory / 'latest.tmp'
+    state = directory / 'rotation-slot'
+    slot = int(state.read_text()) % 3 + 1 if state.exists() else 1
+    version = directory / ('FM4 Favorites-backup-%d.m3u' % slot)
+    temporary = directory / 'backup.tmp'
+    temporary.write_bytes(data)
+    temporary.replace(version)
     temporary.write_bytes(data)
     temporary.replace(latest)
-    versions = sorted(directory.glob('FM4 Favorites-*-*.m3u'), key=lambda p: p.stat().st_mtime_ns, reverse=True)
-    for old in versions[30:]:
-        old.unlink()
+    state.write_text(str(slot))
     return True
 
 
@@ -99,6 +98,12 @@ def watch(listener):
             export(listener)
             if time.monotonic() >= next_backup:
                 backup_playlist()
+                page = Path('/var/www/fm4-favorites.html')
+                target = Path('/mnt/sda2/FM4 Backups/Playlists/FM4 Favorites.html')
+                if page.exists() and target.parent.exists():
+                    temporary = target.with_suffix('.tmp')
+                    temporary.write_bytes(page.read_bytes())
+                    temporary.replace(target)
                 next_backup = time.monotonic() + 3600
         except Exception as exc:
             listener.log('Favorites page refresh:', str(exc))

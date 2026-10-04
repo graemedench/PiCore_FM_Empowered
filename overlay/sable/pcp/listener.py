@@ -241,7 +241,8 @@ class LyrionListener:
         items, start = [], 0
         while not self._stop.is_set():
             prefix = ['playlists', 'tracks'] if command == 'playlisttracks' else [command]
-            result = self.rpc(prefix + [str(start), '100'] + list(filters), player='')
+            result = self.rpc(prefix + [str(start), '100'] + list(filters),
+                              player=None if command == 'playlisttracks' else '')
             page = result.get(loop, [])
             items.extend(page)
             start += len(page)

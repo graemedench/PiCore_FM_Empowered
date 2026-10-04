@@ -135,5 +135,8 @@ covered by link parser. Existing Favorites data remains on device, outside Git.
 
 ## 2026-10-04 — scheduled Favorites backups
 
-- Favorites watcher now backs up on startup and checks hourly; writes only changed versions, keeps latest plus 30 versions outside the music scan at /mnt/sda2/FM4 Backups/Playlists. Empty/missing source does not overwrite backup. Same-disk protection against accidental edits, not drive failure. Initial backup verified live; regression checks passed.
+- Favorites watcher now backs up on startup and checks hourly; writes only changed versions, keeps latest plus three rotating versions outside the music scan at /mnt/sda2/FM4 Backups/Playlists. Empty/missing source does not overwrite backup. Same-disk protection against accidental edits, not drive failure. Initial backup verified live; regression checks passed.
 - Old Quadify playlist import pending location of network backup; local OneDrive/project searches found no saved playlist. Current Favorites preserved.
+
+- Imported GATEWAY Quadify-latest.playlist: 14 entries reduce to 11 distinct entries (9 TIDAL + BBC Radio 2/4); duplicates were removed by Lyrion. Preserved pre-import playlist separately. Playlisttracks queries now include player context to support HTTP streams; verified indexed URLs and web export. Old BBC direct stream links preserved, playback not tested.
+- User requested three rotating copies and one HTML: changed retention to numbered slots 1–3 plus latest and HTML. Network upload pending private share credentials (guest rejected); local hourly backup active.
