@@ -254,3 +254,31 @@ private credentials. Back up Lyrion playlists and preferences on the source SSD
 before replacing it. A whole-drive image remains a separate useful recovery copy.
 Do not claim OneDrive cloud upload is verified merely because the local copy
 was written; the OneDrive application handles that synchronization.
+
+## Wi-Fi encoder controls — installed, real join pending
+
+Installed native wireless_tools, wpa_supplicant, matching wireless kernel module
+and firmware-rpi-wifi extensions. Initial brcmfmac probe ran before firmware was
+loaded; reloading that Wi-Fi module brought wlan0 up without touching Ethernet.
+Actual scan returned one unique nearby network. setup-native-wifi.py records
+firmware before module/tools in onboot.lst. Stage startup loads brcmfmac if available.
+
+Settings -> Network -> Wi-Fi Networks now scans on a background worker, then uses
+the encoder to enter a password, select DELETE/CANCEL/JOIN. Full printable ASCII
+entry and masked password rendering were tested, along with menu presence and
+short-password rejection before any configuration changes. Wi-Fi status / IP is
+also present. Ethernet remains connected and unchanged.
+
+pcp/wifi.py uses native wlan0 startup, wpa_cli association and DHCP status. New
+profile SSID is supplied as hex (no shell interpolation), PSK derived using PBKDF2;
+credentials stay on the Pi. Existing configuration is privately backed up on the
+Pi once and profiles retained. Only successful association with an IP saves the
+profile, WIFI=on and persistence entry; native pcp backup follows asynchronously.
+Failed new associations remove their pending profile and re-enable prior networks.
+Current entry supports WPA personal passphrases of 8-63 characters; open networks,
+raw 64-character PSKs and enterprise authentication are not implemented.
+
+User asked to enter the real password privately on the FM4 and report its connected
+IP. Real join, saved-profile reboot and operation with Ethernet unplugged have NOT
+yet been verified. Do not advise unplugging Ethernet until an actual Wi-Fi IP is
+confirmed. No Wi-Fi passwords/configuration are exported to GitHub or OneDrive.

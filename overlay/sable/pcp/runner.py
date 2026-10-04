@@ -8,6 +8,7 @@ import threading
 import time
 import socket
 import textwrap
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from ..app import App
@@ -79,6 +80,81 @@ class PiCoreApp(App):
 class PiCoreMenu(MenuScreen):
     _signin_url = None
 
+    def __init__(self, app):
+        super().__init__(app)
+        self._wifi_jobs = ThreadPoolExecutor(1, thread_name_prefix='fm4-wifi')
+        self._wifi_busy = False
+
+    def _scan_wifi(self):
+        if self._wifi_busy:
+            return
+        self._wifi_busy = True
+        self.app.show_osd('WI-FI', 'Scanning networks')
+        def work():
+            from .wifi import scan
+            try:
+                networks = scan()
+            except Exception:
+                networks = []
+            def done():
+                self._wifi_busy = False
+                if networks:
+                    items = [(ssid, lambda ssid=ssid: self._start_wifi_entry(ssid))
+                             for ssid in networks[:30]]
+                    items.append(('Back', '__back__'))
+                    self.stack.append(self._frame('WI-FI NETWORKS', items))
+                    self.app.render()
+                else:
+                    self.app.show_osd('WI-FI', 'No networks / scan failed')
+            self.app.listener.dispatch(done)
+        self._wifi_jobs.submit(work)
+
+    def _wifi_char(self):
+        return ['JOIN', 'CANCEL', 'DELETE'] + list(
+            'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789') + [
+            chr(code) for code in range(32, 127) if not chr(code).isalnum()]
+
+    def _wifi_select(self):
+        entry = self._wifi_entry
+        char = self._wifi_char()[entry['index']]
+        if char == 'DELETE':
+            entry['password'] = entry['password'][:-1]
+        elif char == 'CANCEL':
+            self._wifi_entry = None
+        elif char == 'JOIN':
+            if self._wifi_busy:
+                return
+            self._wifi_busy = True
+            ssid, password = entry['ssid'], entry['password']
+            self._wifi_entry = None
+            self.app.show_osd('WI-FI', 'Joining network')
+            def work():
+                from .wifi import connect
+                try:
+                    ok, message = connect(ssid, password)
+                except Exception:
+                    ok, message = False, 'Connection failed'
+                def done():
+                    self._wifi_busy = False
+                    self.app.show_osd('WI-FI CONNECTED' if ok else 'WI-FI', message, duration=6)
+                self.app.listener.dispatch(done)
+                if ok:
+                    result = subprocess.run(['pcp', 'bu'], capture_output=True, timeout=90)
+                    if result.returncode:
+                        self.app.listener.dispatch(lambda:
+                            self.app.show_osd('WI-FI', 'Connected; backup failed'))
+            self._wifi_jobs.submit(work)
+        elif len(entry['password']) < 63:
+            entry['password'] += char
+
+    def _show_wifi_status(self):
+        def work():
+            from .wifi import status
+            info = status()
+            self.app.listener.dispatch(lambda: self.app.show_osd('WI-FI',
+                info.get('ip_address', 'Not connected'), duration=6))
+        self._wifi_jobs.submit(work)
+
     def _show_signin(self, title, path):
         address = 'FM4-Reborn.local'
         try:
@@ -109,6 +185,15 @@ class PiCoreMenu(MenuScreen):
             super().handle_scroll(delta)
 
     def render(self, canvas, draw, w, h):
+        if self._wifi_entry is not None:
+            self.app.fsm.reset_menu_timer()
+            entry = self._wifi_entry
+            char = self._wifi_char()[entry['index']]
+            rows = [('Password', '*' * min(16, len(entry['password'])) or '-'),
+                    ('Choose', 'SPACE' if char == ' ' else char), ('Press', 'ADD / SELECT')]
+            self.draw_menu_surface(canvas, draw, w, h, ('WI-FI: ' + entry['ssid'])[:25],
+                rows, 1, key_prefix='wifi', top=self.TOP, row_h=self.ROW_H, nrows=self.ROWS)
+            return
         if not self._signin_url:
             return super().render(canvas, draw, w, h)
         self.app.fsm.reset_menu_timer()
@@ -130,8 +215,8 @@ class PiCoreMenu(MenuScreen):
                 tree[index] = (row[0], [item for item in row[1]
                     if item[0].startswith('Modern:') or item[0] == 'Back'], *row[2:])
             elif row[0] == 'Network':
-                tree[index] = (row[0], [item for item in row[1]
-                    if item[0] != 'Wi-Fi Networks'], *row[2:])
+                tree[index] = (row[0], row[1][:-1] + [
+                    ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
         tree.insert(-1, ('Service sign-in', [
             ('BBC Sounds', lambda: self._show_signin('BBC Sounds sign-in',
                 'plugins/BBCSounds/settings/basic.html')),

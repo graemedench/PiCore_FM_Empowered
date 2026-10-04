@@ -3,6 +3,7 @@
 cd /home/tc/sable-pcp-stage || exit 1
 modprobe i2c-dev
 modprobe i2c-bcm2835
+modprobe brcmfmac 2>/dev/null || true
 # Receiver discovery is required alongside the native AirPlay daemon.
 if [ -x /usr/local/etc/init.d/avahi ]; then
   # Native avahi start restarts DBus once, which detaches an already-running
