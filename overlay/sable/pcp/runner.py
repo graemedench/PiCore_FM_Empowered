@@ -72,7 +72,11 @@ class PiCoreApp(App):
                 self.show_osd('SAVED' if ok else 'SAVE FAILED', message))
             return
         if cmd == 'play_playlist':
-            self.show_osd('COMING NEXT', 'Playlist saving')
+            self.note_activity()
+            self._begin_source_change()
+            self.show_osd('PLAYLIST', str(arg or ''))
+            self.listener.play_playlist(str(arg or ''), lambda ok, message:
+                self.show_osd('PLAYLIST' if ok else 'UNAVAILABLE', message))
             return
         return super().handle(cmd, arg)
 
@@ -104,6 +108,24 @@ class PiCoreMenu(MenuScreen):
         super().__init__(app)
         self._wifi_jobs = ThreadPoolExecutor(1, thread_name_prefix='fm4-wifi')
         self._wifi_busy = False
+
+    @staticmethod
+    def _storage_rows():
+        import shutil
+        rows = []
+        path = Path('/mnt/sda2')
+        if path.is_mount():
+            usage = shutil.disk_usage(path)
+            rows.append(('Music storage', usage.free, usage.total))
+        return rows
+
+    def _reset_shortcuts(self):
+        super()._reset_shortcuts()
+        self._wifi_jobs.submit(subprocess.run, ['pcp', 'bu'], capture_output=True, timeout=90)
+
+    def _set_library_refresh(self, minutes):
+        super()._set_library_refresh(minutes)
+        self._wifi_jobs.submit(subprocess.run, ['pcp', 'bu'], capture_output=True, timeout=90)
 
     def _scan_wifi(self):
         if self._wifi_busy:
@@ -246,7 +268,7 @@ class PiCoreMenu(MenuScreen):
         tree = super()._build_tree()
         # Expose only functioning settings during the staged port.
         tree = [row for row in tree if row[0] not in
-                ('Audio Output', 'Storage', 'Screen Rotation', 'Shortcuts')]
+                ('Audio Output', 'Screen Rotation')]
         for index, row in enumerate(tree):
             if row[0] == 'Display Mode':
                 tree[index] = (row[0], [item for item in row[1]
@@ -314,6 +336,7 @@ def main():
     listener = LyrionListener(app.store, lambda cb: events.put(('callback', cb)),
                               host=args.server, player=args.player)
     app.listener = listener
+    listener.refresh_minutes = lambda: app.settings.get('library', 'refresh_minutes', default=0)
     listener.on_browse = app.fsm.screens['browse'].on_browse_data
     listener.on_sources = app.fsm.screens['home'].refresh_sources
     buttons = None

@@ -301,3 +301,8 @@ Tap 8 still adds the current track to FM4 Favorites. Hold 8 opens Save Shortcut;
 
 ### 2026-10-04 — Explicit shortcut Cancel
 The destination picker now shows Short press, Long press and Cancel as three encoder choices. Cancel returns to the playback view without changing assignments or scheduling backup. Regression check covers unchanged settings after Cancel.
+
+### 2026-10-04 — Revision-one gap closure
+Restored Storage using mounted /mnt/sda2 capacity/free space, Shortcuts / Reset 5-7 Defaults with native backup, named playlist recall via Lyrion playlistcontrol and a real timer for Music Library auto-refresh (15 minutes/hour/off). Added check_revision_one.py: schedule/disable, named and missing playlist handling, mounted storage. Checks passed on FM4; shortcut/cancel and shutdown hold regression checks run too. Playlist recall is command-path tested, not live audio verified in this session. Native shutdown route confirmed pcp sd -> exitcheck.sh -> /opt/shutdown.sh (stops LMS) -> poweroff; actual hardware poweroff remains pending. No live optical drive in sysfs; /dev/sr0 and sr1 nodes exist but no drive/device present. cdparanoia and cd-discid absent; pcp ffmpeg package cached but executable not loaded. CD implementation requires a connected drive and native package/kernel support; do not treat stale nodes as detected hardware. User asked for more progress toward revision one, not a completed release.
+
+Device backup attempt after deployment FAILED: tar /mnt/sda2/tce/mydata.tgz Input/output error. Runner remains healthy in RAM. Investigating USB storage; do not reboot or claim latest device persistence. Local source/archive backup remains available.

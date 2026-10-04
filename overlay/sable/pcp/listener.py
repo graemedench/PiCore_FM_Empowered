@@ -49,6 +49,18 @@ class LyrionListener:
         self._browse = ThreadPoolExecutor(1, thread_name_prefix='lms-browse')
         self._generation = 0
         self._status_wake = threading.Event()
+        self.refresh_minutes = lambda: 0
+        self._refresh_due = None
+        self._refresh_interval = 0
+
+    def _check_refresh(self, now):
+        minutes = int(self.refresh_minutes() or 0)
+        if minutes != self._refresh_interval:
+            self._refresh_interval = minutes
+            self._refresh_due = now + minutes * 60 if minutes > 0 else None
+        if self._refresh_due is not None and now >= self._refresh_due:
+            self.refresh_library()
+            self._refresh_due = now + minutes * 60
 
     def rpc(self, command, player=None):
         payload = dict(id=1, method='slim.request',
@@ -76,6 +88,7 @@ class LyrionListener:
         connected = False
         while not self._stop.is_set():
             try:
+                self._check_refresh(time.monotonic())
                 receiver = Path('/tmp/fm4-receiver.json')
                 if receiver.exists():
                     active = json.loads(receiver.read_text())
@@ -285,6 +298,22 @@ class LyrionListener:
     def refresh_library(self):
         self._submit(['rescan'])
         return 'requested'
+
+    def play_playlist(self, name, callback):
+        def work():
+            try:
+                rows = self._pages('playlists', 'playlists_loop')
+                match = next((row for row in rows if row.get('playlist') == name), None)
+                if match is None:
+                    raise ValueError('Playlist not found')
+                self._return_local()
+                self.rpc(['playlistcontrol', 'cmd:load', 'playlist_id:' + str(match['id'])])
+                self.active_collection_uri = ''
+                self._status_wake.set()
+                self.dispatch(lambda: callback(True, name))
+            except Exception:
+                self.dispatch(lambda: callback(False, 'Playlist not found / unavailable'))
+        self._commands.submit(work)
 
     def play_bbc_station(self, station, callback):
         self.active_collection_uri = ''
