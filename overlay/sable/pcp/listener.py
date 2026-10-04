@@ -61,6 +61,7 @@ class LyrionListener:
         self._rip_cancel = threading.Event()
         self._rip_lock = threading.Lock()
         self._rip_message = ''
+        self._rip_fraction = 0.
 
     def get_audio_outputs(self):
         def work():
@@ -421,6 +422,9 @@ class LyrionListener:
         self._browse.submit(work)
         return True
 
+    def get_rip_fraction(self):
+        return self._rip_fraction if self._rip_lock.locked() else None
+
     def get_rip_progress(self):
         return self._rip_message if self._rip_lock.locked() else None
 
@@ -452,10 +456,16 @@ class LyrionListener:
         if fmt not in ('flac', 'mp3') or drive not in info.get('availableDrives', []) or not self._rip_lock.acquire(False):
             return False
         self._rip_cancel.clear()
+        self._rip_fraction = 0.
         def work():
             from .cd import rip_flac
             def report(message, progress=None):
                 self._rip_message = message
+                import re
+                track = re.search(r'track (\d+)/(\d+)', message)
+                if track and progress is not None:
+                    number, total = map(int, track.groups())
+                    self._rip_fraction = min(1., max(0., (number-1+progress)/total))
                 if self.on_rip_status:
                     self.dispatch(lambda: self.on_rip_status(dict(message=message, progress=progress)))
             try:

@@ -51,6 +51,9 @@ class PiCoreApp(App):
         self.show_osd('VOLUME', str(max(0, min(100, self.store.get().volume + int(delta)))))
 
     def handle(self, cmd, arg=None):
+        modern = self.fsm.screens.get('modern')
+        if hasattr(modern, 'interact'):
+            modern.interact()
         if cmd in ('bbc_radio_2', 'bbc_radio_4'):
             station = 'bbc_radio_two' if cmd == 'bbc_radio_2' else 'bbc_radio_fourfm'
             self.note_activity()
@@ -336,8 +339,11 @@ class PiCoreMenu(MenuScreen):
                 ('Screen Rotation',)]
         for index, row in enumerate(tree):
             if row[0] == 'Display Mode':
-                tree[index] = (row[0], [item for item in row[1]
-                    if item[0].startswith('Modern:') or item[0] == 'Back'], *row[2:])
+                choices = [item for item in row[1] if item[0].startswith('Modern:')]
+                choices += [('Panel / Needle VU', lambda: self._set_modern('panel_vu')),
+                            ('Panel / Spectrum', lambda: self._set_modern('panel_spectrum')),
+                            ('Back', row[1][-1][1])]
+                tree[index] = (row[0], choices, *row[2:])
             elif row[0] == 'Network':
                 tree[index] = (row[0], row[1][:-1] + [
                     ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
@@ -386,6 +392,8 @@ def main():
     app = PiCoreApp(display, Settings(args.settings), dry_run=args.sim)
     from .source_icons import PiCoreHome
     app.fsm.screens['home'] = PiCoreHome(app)
+    from .clock import RipClock
+    app.fsm.screens['clock'] = RipClock(app)
     # One-time migration restores the user's complete Empowered layout.
     # Later startup preserves edits instead of resetting button preferences.
     if not app.settings.get('_meta', 'pcp_button_layout', default=0):

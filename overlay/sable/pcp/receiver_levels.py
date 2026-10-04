@@ -24,8 +24,12 @@ def main():
         while sys.stdin.buffer.read(8192):
             pass
         return
+    rate = int(sys.argv[2]) if len(sys.argv) > 2 else 44100
+    from .spectrum import analyse
     output = Path('/tmp/fm4-receiver-levels.json')
     last = 0
+    last_fft = 0
+    bands = [0.] * 24
     while True:
         raw = sys.stdin.buffer.read(1024 * 2 * (bits // 8))
         if not raw:
@@ -35,7 +39,12 @@ def main():
             continue
         last = now
         try:
-            frame = dict(updated=time.time(), levels=levels(raw, bits))
+            samples = struct.unpack('<' + ('h' if bits == 16 else 'i') * (len(raw) // (bits // 8)), raw)
+            mono = [(a+b)/2 for a,b in zip(samples[::2], samples[1::2])]
+            if now-last_fft >= .1:
+                bands = analyse(mono, rate, scale=2**(bits-1))
+                last_fft = now
+            frame = dict(updated=time.time(), levels=levels(raw, bits), spectrum=bands)
             temporary = output.with_suffix('.new')
             temporary.write_text(json.dumps(frame))
             temporary.replace(output)

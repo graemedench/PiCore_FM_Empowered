@@ -15,6 +15,8 @@ for fmt in ('flac','mp3'):
   with patch('sable.pcp.listener.threading.Thread',Immediate),patch('sable.pcp.cd.rip_flac') as rip:
    assert l.rip_cd(info,drive,fmt)
    rip.assert_called_once()
+   rip.call_args.args[3]('Saved track 1/19',1)
+   assert abs(l._rip_fraction-1/19)<1e-8
    assert rip.call_args.kwargs['fmt']==fmt
    assert (['stop'] in [c.args[0] for c in l.rpc.call_args_list])==('/cd/' in uri)
    l._return_local.assert_not_called()

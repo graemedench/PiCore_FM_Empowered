@@ -9,11 +9,13 @@ if 'pcm.fm4_receiver' not in text:
 pcm.fm4_receiver {
     type file
     slave.pcm "hw:CARD=AUDIO"
-    file "|/bin/sh /home/tc/sable-pcp-stage/receiver-levels.sh %b"
+    file "|/bin/sh /home/tc/sable-pcp-stage/receiver-levels.sh %b %r"
     format "raw"
 }
 '''
     path.write_text(text)
+text = text.replace('receiver-levels.sh %b\"', 'receiver-levels.sh %b %r\"')
+path.write_text(text)
 # Root runs the receivers. Include tc's configuration without changing native ALSA.
 root = Path('/root/.asoundrc')
 root_text = root.read_text() if root.exists() else ''
