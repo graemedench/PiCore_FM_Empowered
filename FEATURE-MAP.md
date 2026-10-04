@@ -20,7 +20,8 @@
 | Panel / Twin Needle VU | Deployed; PPM-style peak attack/slow release; user check pending |
 | Track title overlay | Centred; VU/Twin Needle 4 seconds, Spectrum 2 seconds; timing checks pass |
 | Music SMB | User verified; temporary guest access on development unit |
-| Fresh SSD installer | Bundle produced; official-image prerequisites; fresh-drive test pending |
+| Favorites artwork web page | Live HTTP 200; saved local/TIDAL tracks and TIDAL link verified |
+| Fresh SSD installer | Native prepare + captured settings/receiver/sharing/plugin restore; isolated tests pass; clean-drive test pending |
 
 Remaining: complete clean-SSD acceptance, Bluetooth audio test, folder browsing
 parity and final presentation review. CD ripping is not AccurateRip validated.

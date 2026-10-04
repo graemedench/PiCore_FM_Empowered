@@ -1,0 +1,44 @@
+[
+  {
+    "name": "RadioNowPlaying",
+    "version": "0.0.56",
+    "url": "http://radionowplaying.com/slimserver-rep/RadioNowPlaying-0.0.56.zip",
+    "sha1": "4ddb598d69c7a87875c925c8fbc39b65b0a39a76"
+  },
+  {
+    "name": "BBCSounds",
+    "version": "2.54.8",
+    "url": "https://github.com/expectingtofly/LMS_BBC_Sounds_Plugin/releases/download/2.54.8/BBCSoundsPlugin_2_54_8.zip",
+    "sha1": "f05b152747e76718a3d80a11e8f75bc137e39e38"
+  },
+  {
+    "name": "RadioNet",
+    "version": "3.4",
+    "url": "https://bpa-code.github.io/bpaplugins/RadioNet-V3_4.ZIP",
+    "sha1": "ce1b7da2625f9130927d282b2fa58910bf4c22e9"
+  },
+  {
+    "name": "MaterialSkin",
+    "version": "6.4.11",
+    "url": "https://github.com/CDrummond/lms-material/releases/download/6.4.11/lms-material-6.4.11.zip",
+    "sha1": "8e3c5ed352ef43201a97e918828b084d9f9e5a1b"
+  },
+  {
+    "name": "TIDAL",
+    "version": "1.8.1",
+    "url": "https://github.com/michaelherger/lms-plugin-tidal/releases/download/1.8.1/TIDAL.zip",
+    "sha1": "c97617210093d4743db20c3de1438592f3f53980"
+  },
+  {
+    "name": "MusicArtistInfo",
+    "version": "1.30.1",
+    "url": "https://www.herger.net/_data/MusicArtistInfo-1.30.1.zip",
+    "sha1": "abdadaff723495f2d0d3332f24e3f0356352e701"
+  },
+  {
+    "name": "PlayHLS",
+    "version": "2.12",
+    "url": "https://bpa-code.github.io/bpaplugins/PlayHLS-v212.ZIP",
+    "sha1": "3da446c52d2eecbc1d70834bfa822b6bf761d616"
+  }
+]

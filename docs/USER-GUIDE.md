@@ -65,6 +65,12 @@ route. If detection fails the hostname fallback is used. The same submenu links
 to BBC Sounds/TIDAL sign-in and server settings. Graeme's current Wi-Fi address
 is an example, not a required address for a new installation.
 
+Settings → Service URLs → **FM4 Favorites page** shows the artwork-enabled
+saved-track page at `http://<current-IP>/fm4-favorites.html`. TIDAL entries link
+to their public TIDAL track page; local entries show titles and available art.
+It refreshes every minute and after a panel save. Playlist contents stay on your
+FM4 and are not published to GitHub.
+
 The native piCorePlayer configuration page is `http://<current-IP>/`, without
 port 9000. Lyrion's web player and settings use port 9000.
 

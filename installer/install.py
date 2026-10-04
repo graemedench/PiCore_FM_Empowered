@@ -1,6 +1,7 @@
 """Fresh USB-SSD overlay installer. --check is read-only; never formats disks."""
 import argparse
 import hashlib
+import json
 import os
 from pathlib import Path
 import platform
@@ -19,19 +20,26 @@ CFG = Path('/usr/local/etc/pcp/pcp.cfg')
 def run(*args):
     subprocess.run(args, check=True)
 
-def check():
+def check(require_ready=True):
     problems = []
     if platform.machine() != 'aarch64':
         problems.append('Requires the tested aarch64 piCorePlayer image')
-    for path in (CFG, Path('/mnt/sda2/tce/onboot.lst'), Path('/dev/spidev0.0')):
+    paths = [CFG, Path('/mnt/sda2/tce/onboot.lst'), HERE / 'fm4-profile.json', HERE / 'fm4-plugins.json']
+    if require_ready:
+        paths.append(Path('/dev/spidev0.0'))
+    for path in paths:
         if not path.exists():
             problems.append('Missing prerequisite: ' + str(path))
-    try:
-        with urllib.request.urlopen('http://127.0.0.1:9000', timeout=5) as response:
-            if response.status != 200:
-                problems.append('Local Lyrion server is not ready')
-    except Exception:
-        problems.append('Install/start local Lyrion and allow localhost before installing')
+    mounts = Path('/proc/mounts').read_text() if Path('/proc/mounts').exists() else ''
+    if not any(line.split()[:2] == ['/dev/sda2', '/mnt/sda2'] for line in mounts.splitlines()):
+        problems.append('Requires /dev/sda2 mounted at /mnt/sda2; no disk layout will be changed')
+    if require_ready:
+        try:
+            with urllib.request.urlopen('http://127.0.0.1:9000', timeout=5) as response:
+                if response.status != 200:
+                    problems.append('Local Lyrion server is not ready')
+        except Exception:
+            problems.append('Run --prepare and reboot to enable local Lyrion and SPI')
     if STAGE.exists() or RECOVERY.exists():
         problems.append('Existing FM4 installation found: fresh-install mode will not overwrite it')
     archive = HERE / 'sable-pcp-stage.tar.gz'
@@ -42,6 +50,67 @@ def check():
         problems.append('Archive checksum mismatch')
     print('\n'.join(problems) if problems else 'Fresh-install prerequisites passed')
     return problems
+
+def config_values(values):
+    text = CFG.read_text()
+    for key, value in values.items():
+        if not re.fullmatch(r'[A-Z0-9_]+', key) or any(c in str(value) for c in '\n\r"'):
+            raise RuntimeError('Invalid native setting')
+        text, count = re.subn(r'^' + key + '=.*$', key + '="' + str(value) + '"', text, flags=re.M)
+        if count != 1:
+            raise RuntimeError('Native setting missing: ' + key)
+    CFG.write_text(text)
+
+def native_package(name):
+    # Follow the same download/load route used by the native LMS install page.
+    run('sudo', '-u', 'tc', 'pcp-load', '-w', name + '.tcz')
+    run('sudo', '-u', 'tc', 'pcp-load', '-i', name + '.tcz')
+    path = Path('/mnt/sda2/tce/onboot.lst')
+    lines = path.read_text().splitlines()
+    if name + '.tcz' not in lines:
+        path.write_text('\n'.join(lines + [name + '.tcz']) + '\n')
+
+def prepare():
+    if os.geteuid() != 0 or check(require_ready=False):
+        raise SystemExit('Run sudo --prepare on a fresh supported USB-boot installation')
+    backup = Path('/home/tc/fm4-install-backup') / ('prepare-' + time.strftime('%Y%m%d-%H%M%S'))
+    backup.mkdir(parents=True, mode=0o700)
+    for name, source in [('pcp.cfg', CFG), ('onboot.lst', Path('/mnt/sda2/tce/onboot.lst'))]:
+        shutil.copy2(source, backup / name)
+    for name in ('slimserver', 'samba4', 'pcp-shairportsync', 'pcp-bt'):
+        native_package(name)
+    boot = Path('/mnt/sda1')
+    boot.mkdir(exist_ok=True)
+    boot_mounts = [line.split() for line in Path('/proc/mounts').read_text().splitlines() if line.split()[1] == str(boot)]
+    mounted = bool(boot_mounts)
+    if mounted and boot_mounts[0][0] != '/dev/sda1':
+        raise RuntimeError('Boot mount is not /dev/sda1; refusing configuration changes')
+    if not mounted:
+        run('mount', '-t', 'vfat', '/dev/sda1', str(boot))
+    try:
+        config = boot / 'config.txt'
+        if not config.is_file():
+            raise RuntimeError('Boot config.txt missing; preserve drive and inspect manually')
+        shutil.copy2(config, backup / 'config.txt')
+        text = config.read_text()
+        if '# FM4 hardware' not in text:
+            config.write_text(text + '\n[all]\n# FM4 hardware\ndtparam=spi=on\ndtparam=i2c_arm=on\n')
+        run('sync')
+    finally:
+        if not mounted:
+            run('umount', str(boot))
+    config_values({'LMSERVER': 'yes', 'MODE': '30'})
+    run('pcp', 'bu')
+    print('Native server/receiver/sharing packages and SPI/I2C prepared. Reboot, then run --install.')
+
+def rpc(command):
+    data = json.dumps({'id': 1, 'method': 'slim.request', 'params': ['', command]}).encode()
+    request = urllib.request.Request('http://127.0.0.1:9000/jsonrpc.js', data, {'Content-Type': 'application/json'})
+    with urllib.request.urlopen(request, timeout=10) as response:
+        result = json.load(response)
+    if result.get('error'):
+        raise RuntimeError(str(result['error']))
+    return result.get('result', {})
 
 def extract(archive, target):
     with tarfile.open(archive) as source:
@@ -61,6 +130,7 @@ def install():
     for name, source in [('pcp.cfg', CFG), ('onboot.lst', Path('/mnt/sda2/tce/onboot.lst')), ('filetool.lst', Path('/opt/.filetool.lst'))]:
         shutil.copy2(source, backup / name)
     (backup / 'install.log').write_text('Fresh FM4 overlay install started\n')
+    profile = json.loads((HERE / 'fm4-profile.json').read_text())
     packages = ['python3.11', 'dejavu-fonts-ttf', 'pcp-ffmpeg', 'pcp-lame', 'cdrom-' + platform.release()]
     for package in packages:
         run('sudo', '-u', 'tc', 'tce-load', '-wi', package)
@@ -71,6 +141,11 @@ def install():
     run('sudo', '-u', 'tc', 'python3.11', '-m', 'pip', 'install', '--only-binary=:all:', '--target', str(RECOVERY / 'vendor'), '-r', str(HERE / 'requirements-lock.txt'))
     font = next(Path('/usr/local/share/fonts').rglob('DejaVuSans.ttf'))
     shutil.copy2(font, RECOVERY / 'arial.ttf')
+    panel = profile['panel']
+    panel.setdefault('ir', {}).setdefault('pair_id', 0x15)
+    # Preserve the captured assignments instead of applying upstream defaults.
+    panel['_meta'] = {'pcp_button_layout': 1}
+    (STAGE / 'config/pcp-settings.json').write_text(json.dumps(panel, indent=2) + '\n')
     for name in ('Music', 'Playlists'):
         path = Path('/mnt/sda2') / name
         path.mkdir(exist_ok=True)
@@ -82,8 +157,50 @@ def install():
     if count != 1:
         raise RuntimeError('Native VISUALISER setting missing')
     CFG.write_text(text)
+    config_values({'OUTPUT': profile['native']['output'], 'SAMBA': 'yes', 'SERVER_IP': '127.0.0.1', 'NAME': profile['native']['name']})
+    for helper in ('setup-native-receivers.py', 'setup-receiver-levels.py'):
+        run('python3.11', str(STAGE / helper))
+    alsa = Path('/home/tc/.asoundrc')
+    alsa.write_text(alsa.read_text().replace('slave.pcm "hw:CARD=AUDIO"', 'slave.pcm "' + profile['native']['output'] + '"'))
+    guest = profile['native'].get('guest_music_share', False)
+    if not guest:
+        raise RuntimeError('This profile requires a separate authenticated Samba setup')
+    samba = Path('/usr/local/etc/samba/smb.conf')
+    samba.parent.mkdir(parents=True, exist_ok=True)
+    if samba.exists():
+        shutil.copy2(samba, backup / 'smb.conf')
+    if samba.is_symlink():
+        samba.unlink()
+    samba.write_text('''[global]
+workgroup = WORKGROUP
+security = user
+map to guest = Bad User
+guest account = tc
+server min protocol = SMB2
+load printers = no
+disable spoolss = yes
+[Music]
+path = /mnt/sda2/Music
+browseable = yes
+read only = no
+guest ok = yes
+guest only = yes
+force user = tc
+force group = staff
+create mask = 0664
+directory mask = 0775
+''')
+    run('python3.11', str(STAGE / 'install-profile-plugins.py'), str(HERE / 'fm4-plugins.json'))
+    run('chown', '-R', 'tc:staff', '/mnt/sda2/tce/slimserver/Cache/InstalledPlugins')
+    for key, value in [('mediadirs', ['/mnt/sda2/Music']), ('playlistdir', '/mnt/sda2/Playlists'),
+                       ('language', profile['server']['language']), ('skin', profile['server']['skin']), ('wizardDone', 1)]:
+        rpc(['pref', key, value])
+    for plugin in json.loads((HERE / 'fm4-plugins.json').read_text()):
+        rpc(['pref', 'plugin.state:' + plugin['name'], 'enabled'])
+    run('/usr/local/etc/init.d/slimserver', 'stop')
+    run('/usr/local/etc/init.d/slimserver', 'start')
     entries = Path('/opt/.filetool.lst').read_text().splitlines()
-    for entry in ('home/tc', 'usr/local/etc/pcp'):
+    for entry in ('home/tc', 'usr/local/etc/pcp', 'usr/local/etc/samba/smb.conf', 'usr/local/var/lib/samba'):
         if entry not in entries:
             entries.append(entry)
     Path('/opt/.filetool.lst').write_text('\n'.join(entries) + '\n')
@@ -97,9 +214,13 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--check', action='store_true')
     parser.add_argument('--install', action='store_true')
+    parser.add_argument('--prepare', action='store_true')
     args = parser.parse_args()
-    if args.check == args.install:
-        parser.error('Choose --check or --install')
+    if sum((args.check, args.install, args.prepare)) != 1:
+        parser.error('Choose --check, --prepare or --install')
+    if args.prepare:
+        prepare()
+        raise SystemExit(0)
     if args.check:
         raise SystemExit(bool(check()))
     install()

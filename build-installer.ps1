@@ -2,10 +2,11 @@ $ErrorActionPreference = 'Stop'
 $bundle = Join-Path $PSScriptRoot 'installer-bundle'
 if (Test-Path -LiteralPath $bundle) { throw 'Use a fresh bundle directory; existing bundle preserved.' }
 New-Item -ItemType Directory -Path $bundle | Out-Null
-foreach ($name in @('sable-pcp-stage.tar.gz', 'requirements-lock.txt', 'INSTALL.md', 'HARDWARE.md', 'CONTROLS.md', 'FEATURE-MAP.md', 'README.md', 'HANDOVER.md', 'CHANGELOG.md')) {
+foreach ($name in @('sable-pcp-stage.tar.gz', 'requirements-lock.txt', 'fm4-profile.json', 'fm4-plugins.json', 'INSTALL.md', 'HARDWARE.md', 'CONTROLS.md', 'FEATURE-MAP.md', 'README.md', 'HANDOVER.md', 'CHANGELOG.md')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $name) -Destination $bundle
 }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'installer/install.py') -Destination $bundle
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'installer/install.sh') -Destination $bundle
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'recovery-panel') -Destination $bundle -Recurse
 foreach ($folder in @('docs', 'installer', 'FM4 Button Print Pack', 'FM4 Mounting Parts', 'Hardware Design Sources')) {
     Copy-Item -LiteralPath (Join-Path $PSScriptRoot $folder) -Destination $bundle -Recurse

@@ -286,7 +286,7 @@ class PiCoreMenu(MenuScreen):
                 info.get('ip_address', 'Not connected'), duration=6))
         self._wifi_jobs.submit(work)
 
-    def _show_signin(self, title, path):
+    def _show_signin(self, title, path, port=9000):
         address = 'FM4-Reborn.local'
         try:
             with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as connection:
@@ -294,7 +294,7 @@ class PiCoreMenu(MenuScreen):
                 address = connection.getsockname()[0]
         except OSError:
             pass
-        self._signin_url = (title, 'http://' + address + ':9000/' + path)
+        self._signin_url = (title, 'http://' + address + (':' + str(port) if port != 80 else '') + '/' + path)
         self.app.render()
 
     def handle_select(self):
@@ -371,7 +371,8 @@ class PiCoreMenu(MenuScreen):
                     ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
         tree.insert(-1, ('Pair Apple Remote', self._pair_ir))
         tree.insert(-1, ('Service URLs', [
-            ('Web player', lambda: self._show_signin('FM4 web player', '')), 
+            ('Web player', lambda: self._show_signin('FM4 web player', '')),
+            ('FM4 Favorites page', lambda: self._show_signin('FM4 Favorites', 'fm4-favorites.html', 80)), 
             ('BBC Sounds', lambda: self._show_signin('BBC Sounds sign-in',
                 'plugins/BBCSounds/settings/basic.html')),
             ('TIDAL', lambda: self._show_signin('TIDAL sign-in',

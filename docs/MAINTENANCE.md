@@ -27,7 +27,7 @@ build product; build scripts reproduce it from pinned sources over HTTPS.
 
 ## Updates
 
-The supplied installer is **fresh-install-only** and refuses existing FM4
+The supplied installer has separate prepare/restore phases and is **fresh-install-only** and refuses existing FM4
 directories. Do not use it as an update command on the working unit. Build and
 review a new archive, back up the current installation and apply only intended
 changed files. Preserve `config/pcp-settings.json` and native configuration.
@@ -59,3 +59,18 @@ required before calling the installer a stable release.
 Use [INSTALL.md](../INSTALL.md) for fresh-drive acceptance/recovery and
 [HARDWARE.md](../HARDWARE.md) for pin assignments. The original working drive
 should remain intact until its replacement passes the complete checklist.
+
+## Settings profile and Favorites page
+
+`fm4-profile.json` captures allowlisted panel preferences, button assignments,
+remote identity and reusable native/server choices. It excludes Wi-Fi,
+passwords, tokens, music and machine identity. `fm4-plugins.json` pins public
+plugin versions and publisher checksums. Capture changes through the same
+allowlist, never by exporting pcp.cfg or account preference files.
+
+The Favorites HTML is generated on-device at `/var/www/fm4-favorites.html`. It
+refreshes at startup, every minute and after a panel save, with current-IP
+artwork/web-player links and public TIDAL track links. It is regenerated after
+reboot rather than backed up as a separate stale file. Playlist contents are
+not committed to Git. Profile/installer changes do not copy music or existing
+playlist contents.

@@ -41,11 +41,12 @@ interface/install overlay, not a bootable disk image.
   cancellation and background progress.
 - Panel/Performance/Cinema plus Needle VU, Twin Needle VU and Spectrum;
   elapsed/track length, live audio levels and centred track-change popups.
-- Pinned HTTPS source build and fresh-install-only overlay installer.
+- Pinned HTTPS source build, captured preferences and two-phase fresh installer.
+- Artwork-enabled FM4 Favorites web page with public TIDAL links.
 
 See the user guide for behavior and limitations. Music, accounts, passwords and
-private machine backups are not included. The installer does not automatically
-reproduce the development unit's temporary password-free SMB share.
+private machine backups are not included. The captured profile restores the development unit's password-free Music
+share; Wi-Fi, account credentials, music and playlist contents are excluded.
 
 ## Printable parts and editable designs
 

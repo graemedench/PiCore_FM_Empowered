@@ -384,3 +384,17 @@ full controls table, source credits and links to Matt, Quadify Empowered, the
 official piCorePlayer base image and FM4 installer build/source. Installer
 bundle now includes referenced documents and hardware packs. Fresh SSD and
 Bluetooth audio acceptance remain outstanding; no live-device changes here.
+
+## Expanded fresh install and Favorites web page
+
+Captured allowlisted panel preferences/shortcuts, remote identity and reusable
+native/server settings without Wi-Fi, passwords, tokens, music or machine ID.
+Added bootstrap/prepare for Python, native Lyrion/Samba/AirPlay/Bluetooth and
+SPI/I2C; restore configures paths, localhost player, outputs, receivers, guest
+Music sharing and pinned public plugins. Preparation and restore pass isolated
+filesystem tests; a real clean SSD install is still outstanding. Official
+plugin ZIP checksums and flat/enclosing layouts verified; RadioNowPlaying uses
+publisher HTTP. Added native-httpd FM4 Favorites page, real art, public TIDAL
+links, startup/minute/save refresh and OLED URL entry. Live page and remote
+artwork returned HTTP 200; current saved TIDAL URI is tidal://218740662.mp4,
+covered by link parser. Existing Favorites data remains on device, outside Git.

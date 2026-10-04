@@ -22,7 +22,7 @@ includes remote capture/pairing.
 Settings include display modes/brightness, audio output selection, Wi-Fi
 join/status/IP, library scan/refresh, shortcuts, IR pairing and shutdown.
 Service URLs > Web player shows the browser control address on the OLED,
-alongside BBC Sounds/TIDAL sign-in and server settings addresses.
+alongside BBC Sounds/TIDAL sign-in, server settings and the FM4 Favorites page.
 
 Sources include albums/artists/genres, playlists, queue, TIDAL, BBC Sounds and
 radio shortcuts. An optical drive adds CD to the carousel. Selecting a track

@@ -1,0 +1,107 @@
+{
+  "schema": 1,
+  "panel": {
+    "buttons": {
+      "btn_1": {
+        "action": "play_pause",
+        "arg": "",
+        "hold_action": "",
+        "hold_arg": ""
+      },
+      "btn_2": {
+        "action": "cycle_repeat",
+        "arg": "",
+        "hold_action": "",
+        "hold_arg": ""
+      },
+      "btn_3": {
+        "action": "previous",
+        "arg": "",
+        "hold_action": "",
+        "hold_arg": ""
+      },
+      "btn_4": {
+        "action": "next",
+        "arg": "",
+        "hold_action": "",
+        "hold_arg": ""
+      },
+      "btn_5": {
+        "action": "bbc_radio_2",
+        "arg": "",
+        "hold_action": "play_uri",
+        "hold_arg": "http://www.radiofeeds.net/playlists/bauerflash.pls?station=clyde2-mp3 | Greatest Hits Radio (Glasgow & the West)"
+      },
+      "btn_6": {
+        "action": "bbc_radio_4",
+        "arg": "",
+        "hold_action": "play_uri",
+        "hold_arg": "http://www.radiofeeds.net/playlists/bauerflash.pls?station=absolute80s-mp3 | Absolute 80s"
+      },
+      "btn_7": {
+        "action": "play_uri",
+        "arg": "tidal://mymusic/mixes/0026e9b35979c2633352b995fa995f | My Mix 1",
+        "hold_action": "play_uri",
+        "hold_arg": "tidal://mymusic/mixes/016631b3ba9c5d5a39ea1a74b5e303 | TIDAL Mix"
+      },
+      "btn_8": {
+        "action": "save_track",
+        "arg": "",
+        "hold_action": "",
+        "hold_arg": ""
+      }
+    },
+    "clock": {
+      "show_date": false,
+      "show_seconds": false
+    },
+    "controls": {
+      "leds_enabled": true
+    },
+    "display": {
+      "brightness": "high",
+      "rotate": 0,
+      "screen": "modern",
+      "spectrum_style": "bars",
+      "theme": "panel",
+      "transitions": true
+    },
+    "ir": {
+      "enabled": true,
+      "profile": "Apple Aluminium Remote (this unit)",
+      "pair_id": 21
+    },
+    "playback": {
+      "mode": "random"
+    },
+    "screensaver": {
+      "clock_after_s": 300,
+      "dim_s": 120,
+      "idle_s": 3600
+    },
+    "library": {
+      "refresh_minutes": 0
+    },
+    "audio": {
+      "menu_mode": "general"
+    }
+  },
+  "native": {
+    "output": "hw:CARD=Headphones",
+    "airplay_name": "FM4-Reborn AirPlay",
+    "guest_music_share": true,
+    "name": "FM4-Reborn"
+  },
+  "server": {
+    "playlist_name": "FM4 Favorites",
+    "skin": "material",
+    "language": "EN_GB"
+  },
+  "excluded": [
+    "wifi",
+    "passwords",
+    "account_tokens",
+    "music",
+    "machine_identity"
+  ]
+}

@@ -30,7 +30,7 @@
   "saved_playlist": "FM4 Favorites",
   "startup": "/bin/sh /home/tc/sable-pcp-stage/stage-start.sh",
   "visualizer": "native Squeezelite -v, Linux aarch64 shared memory",
-  "phase": "Rev 1 release candidate; PPM deployed; fresh SSD installer acceptance pending",
+  "phase": "Two-phase native preparation + captured settings restore candidate; clean SSD acceptance pending",
   "ir_gpio": 4,
   "visual_layouts": [
     "panel_vu",
@@ -41,5 +41,8 @@
     "panel_vu": 4,
     "panel_ppm": 4,
     "panel_spectrum": 2
-  }
+  },
+  "profile": "fm4-profile.json",
+  "plugins": "fm4-plugins.json",
+  "favorites_page": "native HTTP /fm4-favorites.html"
 }

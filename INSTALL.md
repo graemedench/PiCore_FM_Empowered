@@ -1,104 +1,127 @@
-# Fresh SSD installation — release candidate
+# Fresh SSD installation - release candidate
 
-This bundle installs the FM4 interface over an official piCorePlayer image. It
-does not flash or partition a disk. The running FM4 is tested; installation on a
-blank replacement SSD has not yet been tested. Keep the working boot drive as
-the recovery route until a complete fresh-drive test passes.
+This installs the FM4 interface over an official piCorePlayer image. It never
+flashes or partitions a disk. The working FM4 is tested; the expanded installer
+has passed isolated prepare/restore tests, but still needs a complete clean-SSD
+hardware acceptance test. Keep the original boot drive until that passes.
 
-## Prepare the new drive
+## Downloads and sources
 
-1. Write the official [64-bit piCorePlayer 11.1.0 image](https://docs.picoreplayer.org/downloads/) to the new SSD using
-   an image writer. Check the selected drive before writing. Boot the Pi from
-   that SSD, with the original boot drive disconnected.
-2. Resize the installation using piCorePlayer's web controls. This installer
-   currently requires the boot SSD's TCE at `/mnt/sda2/tce`; SD-card or other
-   mount layouts are not supported yet. Connect Ethernet for initial setup.
-3. Enable SSH, SPI and I2C using native configuration and reboot. Verify the
-   OLED wiring against HARDWARE.md. Select the intended audio device and test
-   normal playback at a comfortable volume.
-4. Install and start local Lyrion from the native LMS page. Set music to
-   `/mnt/sda2/Music` and playlists to `/mnt/sda2/Playlists` once created. If
-   Lyrion's address restrictions are enabled, allow `127.0.0.1` for the panel.
-5. Install native `python3.11` using `tce-load -wi python3.11` as user `tc`.
-
-Official references: [Getting started](https://docs.picoreplayer.org/getting-started/),
-[Standalone pCP](https://docs.picoreplayer.org/projects/standalone-pcp/),
-[Samba setup](https://docs.picoreplayer.org/how-to/add_usb_hdd/).
-
-## Project and installer links
-
-- [PiCore FM Empowered source](https://github.com/graemedench/PiCore_FM_Empowered)
-- [Installer source](installer/install.py) and [bundle builder](build-installer.ps1)
-- [Matt's original Sable project](https://github.com/theshepherdmatt/sable)
-- [Quadify Empowered — earlier Volumio enhancement](https://github.com/graemedench/quadify_empowered)
-- [Official piCorePlayer image downloads](https://docs.picoreplayer.org/downloads/)
+- [Official piCorePlayer image downloads](https://docs.picoreplayer.org/downloads/): use 11.1.0 **64-bit/aarch64** for this tested Pi 4 build.
 - [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+- [PiCore FM Empowered](https://github.com/graemedench/PiCore_FM_Empowered)
+- [Matt's original Sable](https://github.com/theshepherdmatt/sable)
+- [Quadify Empowered, the earlier Volumio enhancement](https://github.com/graemedench/quadify_empowered)
+- [FM4 installer source](installer/install.py), [bootstrap](installer/install.sh) and [bundle builder](build-installer.ps1)
 
-The bare-metal base is the official image; the FM4 installer is the overlay
-built below. This repository is not a bootable disk image. Generated installer
-archives are not stored in Git; build one from the source checkout. Graeme's
-local backup includes `fm4-installer.tar.gz`. Never run the earlier Volumio
-installer on piCorePlayer.
+The base image provides the operating system; this project's installer adds
+FM4 functionality. Generated archives are build products, excluded from Git.
+Graeme's local backup includes `fm4-installer.tar.gz`. Do not run the old
+Volumio installer on piCorePlayer.
 
-## Build and install
+## Prepare the SSD and build the bundle
 
-On Windows, with Git, PowerShell and tar available, clone over HTTPS:
+1. Write the official 64-bit image to the replacement SSD. Check the selected
+   disk before writing; leave the working drive disconnected and intact.
+2. Boot the Pi from the new SSD over **Ethernet**. Set a fresh system password,
+   enable SSH and resize the installation using the native guided setup. The
+   supported layout is `/dev/sda2` mounted at `/mnt/sda2`, with its TCE directory
+   at `/mnt/sda2/tce`. Other disk layouts are refused. No Wi-Fi setup is imported.
+3. Check the wiring against [HARDWARE.md](HARDWARE.md). The installer will enable
+   SPI/I2C and reboot preparation; IR uses GPIO4 on this unit.
+4. On Windows, with Git, PowerShell and tar available, use a fresh checkout:
 
 ```powershell
 git clone https://github.com/graemedench/PiCore_FM_Empowered.git
 cd PiCore_FM_Empowered
 ./build-stage.ps1
 ./build-installer.ps1
+scp fm4-installer.tar.gz tc@YOUR-NEW-PI-IP:/tmp/
 ```
 
-From a fresh project checkout, run `./build-stage.ps1`, then
-`./build-installer.ps1`. Both preserve existing build directories rather than
-overwriting them. Source repositories use HTTPS and pinned revisions.
+Sources are pinned and fetched over HTTPS. Existing build/bundle directories
+are preserved; use a fresh checkout for a new build.
 
-Copy `fm4-installer.tar.gz` to `/tmp` on the new Pi using SCP. As `tc`:
+## Install in two phases
+
+SSH to the new Pi. Extract to the persistent SSD because `/tmp` disappears on
+reboot:
 
 ```sh
-mkdir -p /tmp/fm4-install
-tar -xzf /tmp/fm4-installer.tar.gz -C /tmp/fm4-install
-cd /tmp/fm4-install
-python3.11 install.py --check
-sudo python3.11 install.py --install
+sudo mkdir -p /mnt/sda2/fm4-installer
+sudo tar -xzf /tmp/fm4-installer.tar.gz -C /mnt/sda2/fm4-installer
+cd /mnt/sda2/fm4-installer
+sudo sh install.sh --prepare
 ```
 
-The installer checks its archive hash, requires local Lyrion and SPI, refuses
-an existing FM4 installation, installs pinned Python dependencies and native
-CD/encoding/font packages, creates music/playlists directories, derives the
-player identity from native configuration, enables the visualizer and saves
-startup through native backup. It does not copy passwords, music, accounts or
-the old drive's private settings. Reboot manually after successful completion.
+Preparation installs Python if needed, installs native Lyrion/Samba/AirPlay/
+Bluetooth packages through piCorePlayer's package loader, saves the local-server
+setting, backs up boot configuration and enables SPI/I2C. It does not change
+Wi-Fi or format storage. **Reboot using the native piCorePlayer web page**, then
+return to the persistent bundle:
 
-## Complete services
+```sh
+cd /mnt/sda2/fm4-installer
+sh install.sh --check
+sudo sh install.sh --install
+```
 
-AirPlay 2/Bluetooth and Samba remain native setup steps in this first installer.
-Install/enable receivers using piCorePlayer first. With playback stopped, run
-the staged `setup-native-receivers.py`, then `setup-receiver-levels.py` as root.
-The initial receiver helper targets `hw:CARD=AUDIO`; choose your actual output
-in the FM4 Audio Output menu afterwards before testing receiver audio. Save
-with `pcp bu`. Configure Samba using piCorePlayer's native page; the development
-unit's temporary guest access is not automatically reproduced.
+Restore validates the archive and prerequisites, installs runtime/fonts/CD
+encoders, imports [the reusable profile](fm4-profile.json), creates empty Music
+and Playlists directories, sets Lyrion paths and plugin preferences, configures
+receivers/real meter routing and the Music share, enables startup and performs
+native backup. It refuses existing FM4 directories. Reboot once more using the
+native web page, then run the acceptance checklist.
 
-Install the TIDAL/BBC Sounds plugins through Lyrion, then sign into your own
-accounts. Wi-Fi credentials and remote pairing are configured afresh on the
-panel. CD metadata comes from MusicBrainz/Cover Art Archive when available;
-unidentified discs retain usable generic track names.
+## What comes back automatically
+
+- Captured front-panel buttons, short/long shortcuts, clock/idle/brightness and
+  display preferences, playback mode, refresh interval and Apple remote identity.
+- Local Lyrion and a stable player identity derived from the new Pi, with
+  Squeezelite directed to localhost rather than another network server.
+- Headphones output matching the captured build, AirPlay 2/Bluetooth configuration,
+  real audio-meter routing and native startup/persistence.
+- Music and Playlists paths; an empty FM4 Favorites playlist is created by the
+  first Save action. The Favorites web page is regenerated at startup.
+- Pinned TIDAL, BBC Sounds, Material Skin, PlayHLS and the supplementary radio/
+  artwork plugins listed in [fm4-plugins.json](fm4-plugins.json).
+- The captured **password-free Music share**. Anyone on the reachable local
+  network can read/write it, matching the current development unit. Change
+  `guest_music_share`/the share setup before installation if you need another
+  policy; authenticated sharing is not automated in this candidate.
+
+Wi-Fi, system/account passwords, streaming tokens, music, existing playlist
+contents, Bluetooth pairings and old machine MAC/IP addresses are excluded.
+Sign into TIDAL and BBC Sounds yourself. Captured TIDAL mix shortcuts belong to
+Graeme's account; another account should reassign button 7. Music and existing
+playlists can be restored separately; this installer does not copy them.
+
+The MusicArtistInfo/Material versions follow the pinned manifest, which can be
+slightly newer than the live development unit. Plugins are downloaded from their
+publishers and checked against the official repository checksums. RadioNowPlaying
+uses its publisher's HTTP download; all Git/source transfers remain HTTPS.
 
 ## Acceptance and recovery
 
-Check boot persistence, OLED/encoder/buttons, play-pause/stop-resume, full queue
-skipping, each audio output, Wi-Fi reconnection, IR pairing, radio shortcuts,
-AirPlay, Bluetooth, CD playback and named FLAC/MP3 ripping. Confirm a rip leaves
-non-CD audio playing. Test Panel/VU/Twin Needle/Spectrum, five-second interaction return,
-four-second VU/Twin Needle title and two-second spectrum title. Confirm shutdown/wake.
+Check reboot persistence, OLED/encoder/buttons, play/pause/stop/resume and queue
+skipping; audio outputs; radio/TIDAL/BBC after sign-in; AirPlay; Bluetooth pairing
+and sound; IR; shutdown/wake; CD playback and named FLAC/MP3 ripping. Confirm
+non-CD audio can keep playing during ripping. Test the display modes and the
+Favorites page from another browser. Wi-Fi can be configured later if required.
 
-Installer backups of native settings are at `/home/tc/fm4-install-backup/`.
-If installation fails, do not retry over partially installed files blindly.
-Read its error, restore the saved pcp.cfg/onboot.lst/filetool.lst to their
-original paths if needed, and run `pcp bu`. For a startup-only failure, clear
-USER_COMMAND_1 in native settings and save. The working original drive remains
-the simplest complete recovery. No secure-rip/AccurateRip verification or
-calibrated broadcast-meter certification is claimed.
+The native pCP page is `http://NEW-IP/`; Lyrion is `http://NEW-IP:9000/`;
+Favorites is `http://NEW-IP/fm4-favorites.html`. Panel Service URLs displays the
+current address when opened.
+
+Backups are under `/home/tc/fm4-install-backup/`. On failure, preserve the error
+and inspect the saved settings before retrying. The installer intentionally
+refuses a partially installed FM4 tree; use a fresh image or an inspected manual
+recovery rather than deleting directories blindly. Restore saved native config,
+onboot/filetool lists and boot config to their original locations if needed,
+then save with `pcp bu`. For a startup-only failure, clear USER_COMMAND_1 in
+native settings and save. The original working drive is the complete fallback.
+
+Official references: [Getting started](https://docs.picoreplayer.org/getting-started/),
+[Standalone pCP](https://docs.picoreplayer.org/projects/standalone-pcp/),
+[Samba setup](https://docs.picoreplayer.org/how-to/add_usb_hdd/).
+No secure-rip/AccurateRip or calibrated meter certification is claimed.

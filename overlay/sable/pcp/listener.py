@@ -136,6 +136,9 @@ class LyrionListener:
     def start(self):
         self._thread = threading.Thread(target=self._poll, daemon=True, name='lms-status')
         self._thread.start()
+        from .favorites_page import watch
+        self._favorites_thread = threading.Thread(target=watch, args=(self,), daemon=True, name='favorites-page')
+        self._favorites_thread.start()
 
     def stop(self):
         self._rip_cancel.set()
@@ -507,6 +510,11 @@ class LyrionListener:
                 self.rpc(['playlistcontrol', 'cmd:load', 'playlist_id:' + str(match['id'])])
                 self.active_collection_uri = ''
                 self._status_wake.set()
+                try:
+                    from .favorites_page import export
+                    export(self)
+                except Exception as exc:
+                    self.log('Favorites page refresh:', str(exc))
                 self.dispatch(lambda: callback(True, name))
             except Exception:
                 self.dispatch(lambda: callback(False, 'Playlist not found / unavailable'))
