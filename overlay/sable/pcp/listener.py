@@ -224,12 +224,15 @@ class LyrionListener:
         self._browse.submit(work)
 
     def play_item(self, item):
+        self.active_collection_uri = ''
         if item.get('_tidal_id'):
+            self.active_collection_uri = item.get('uri', '')
             self._submit([item.get('_opml_tag', 'tidal'), 'playlist', 'play', 'item_id:' + item['_tidal_id']])
             return
         self.play_uri(item.get('uri', ''))
 
     def play_uri(self, uri, **metadata):
+        self.active_collection_uri = uri if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')) else ''
         if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')):
             item_id = urllib.parse.parse_qs(uri.partition('?')[2])['item'][0]
             self._submit([uri[4:].partition('?')[0], 'playlist', 'play', 'item_id:' + item_id])
@@ -238,6 +241,7 @@ class LyrionListener:
             self._submit(['playlist', 'play', uri, metadata.get('title', '')])
 
     def play_all(self, items):
+        self.active_collection_uri = ''
         if items and items[0].get('_tidal_id'):
             def tidal_work():
                 self._return_local()
@@ -272,6 +276,7 @@ class LyrionListener:
                 mixes = self.rpc(['tidal', 'items', '0', '100', 'item_id:' + mix_root['id']])
                 chosen = mixes.get('loop_loop', [])[position]
                 self.rpc(['tidal', 'playlist', 'play', 'item_id:' + chosen['id']])
+                self.active_collection_uri = 'pcp:tidal?' + urllib.parse.urlencode({'item': chosen['id']})
                 self._status_wake.set()
             except Exception as exc:
                 self.log('TIDAL mix unavailable:', type(exc).__name__)
@@ -282,6 +287,7 @@ class LyrionListener:
         return 'requested'
 
     def play_bbc_station(self, station, callback):
+        self.active_collection_uri = ''
         def work():
             try:
                 self._return_local()

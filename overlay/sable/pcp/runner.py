@@ -71,10 +71,30 @@ class PiCoreApp(App):
             self.listener.save_current_track(lambda ok, message:
                 self.show_osd('SAVED' if ok else 'SAVE FAILED', message))
             return
-        if cmd in ('save_shortcut', 'play_playlist'):
+        if cmd == 'play_playlist':
             self.show_osd('COMING NEXT', 'Playlist saving')
             return
         return super().handle(cmd, arg)
+
+    def current_shortcut_source(self):
+        st = self.store.get()
+        if st.service in ('airplay', 'bluetooth'):
+            return None
+        if st.title in ('BBC Radio 2', 'BBC Radio 4'):
+            return ('bbc_radio_2' if st.title.endswith('2') else 'bbc_radio_4', '', st.title)
+        if st.title in ('Greatest Hits Radio', 'Greatest Hits Radio (Glasgow & the West)', 'Absolute 80s'):
+            station = 'absolute80s-mp3' if st.title == 'Absolute 80s' else 'clyde2-mp3'
+            return ('play_uri', 'http://www.radiofeeds.net/playlists/bauerflash.pls?station=' + station + ' | ' + st.title, st.title)
+        return super().current_shortcut_source()
+
+    def save_shortcut(self, button, long_press, action, arg):
+        super().save_shortcut(button, long_press, action, arg)
+        # Tiny Core keeps settings in RAM until its native backup completes.
+        def backup():
+            result = subprocess.run(['pcp', 'bu'], capture_output=True, timeout=90)
+            if result.returncode:
+                self.listener.dispatch(lambda: self.show_osd('BACKUP FAILED', 'Shortcut saved in RAM'))
+        self.listener._commands.submit(backup)
 
 
 class PiCoreMenu(MenuScreen):

@@ -26,3 +26,5 @@
 | Repeatable SSD build | Pinned sources, installer, safe export | Build manifest/log started |
 
 Do not mark software initialization as physical hardware verification.
+
+- Hold button 8: restored Save Shortcut picker for short/long assignments on 5–7; persistence check passed, physical confirmation pending. Tap 8 remains FM4 Favorites.
