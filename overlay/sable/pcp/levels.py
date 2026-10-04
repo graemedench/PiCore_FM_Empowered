@@ -5,6 +5,7 @@ Format reference: ralph-irving/squeezelite output_vis.c. Linux 64-bit time_t,
 level calculations run after releasing it so audio output is never held up.
 """
 import ctypes
+import json
 import math
 import mmap
 import struct
@@ -42,6 +43,15 @@ class AudioLevels:
 
     def read(self):
         target = [0.0, 0.0]
+        if Path('/tmp/fm4-receiver.json').exists():
+            try:
+                frame = json.loads(Path('/tmp/fm4-receiver-levels.json').read_text())
+                if time.time() - frame['updated'] < .3:
+                    target = frame['levels']
+            except (OSError, ValueError, KeyError):
+                pass
+            self.levels = [max(value, old - .12) for value, old in zip(target, self.levels)]
+            return self.levels
         if self.available and self.lib.pthread_rwlock_tryrdlock(self.address) == 0:
             try:
                 size, index, running, rate, updated = struct.unpack_from(

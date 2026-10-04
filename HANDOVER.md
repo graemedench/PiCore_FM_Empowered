@@ -162,8 +162,16 @@ absent); boot config no longer has disable-bt, so reboot is pending. Native
 Bluetooth output is configured to the USB DAC. Phone must be paired and configured
 as type 2 Player using native pcp-bt-config, NOT type 1 Speaker. BluetoothHandover
 watches native bluealsa-aplay to release local playback; requires live testing.
-AirPlay/Bluetooth meters and full metadata are not implemented. Existing RMS meters
-read only Squeezelite PCM. Radio shortcuts still require playback verification.
+The phone counter started advancing after receiver restart. Sound confirmation
+remains pending. AirPlay/Bluetooth meters now have a real ALSA PCM-copy feed,
+receiver-levels.sh and setup-receiver-levels.py. Receiver PCM is drained to RAM-only
+stereo RMS snapshots, with no audio files recorded. 16/32-bit silence and stereo
+level checks passed; live receiver bars still await confirmation. Run native setup
+first, meter setup second (the latter sets SHAIRPORT_OUT/BT_OUT_DEVICE=fm4_receiver).
+Root ALSA includes tc's .asoundrc; persistence includes root/.asoundrc explicitly.
+Native AirPlay daemon restored after diagnostics. Full receiver metadata remains
+pending. Radio shortcut URLs returned HTTP 200 HLS playlists but actual playback
+still requires verification; no HLS plugin was found in the inspected directories.
 CD playback/ripping deferred at user's request. No completed installer claimed.
 
 
