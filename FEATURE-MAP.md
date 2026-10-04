@@ -15,7 +15,7 @@
 | Apple IR | gpio-ir overlay + existing profile | Hardware node absent; pending |
 | Shutdown GPIO and Settings confirmation | Original shutdown screen + `pcp sd` | GPIO21 installed; release/hold logic checked; physical poweroff pending |
 | USB fixed/variable, headphones variable | pCP Squeezelite output settings | Pending; preserve safe volume |
-| Network status and Wi-Fi picker | Native piCorePlayer wpa_supplicant and DHCP | User join confirmed at 192.168.1.19; default communications address; reboot pending |
+| Network status and Wi-Fi picker | Native piCorePlayer wpa_supplicant and DHCP | User join confirmed at 192.168.1.19; default communications address; reboot reconnection verified |
 | TIDAL browsing/mixes/saving | Lyrion TIDAL plugin interface | Authenticated browse and My Mix 1 playback verified; eight mixes available |
 | AirPlay 2 receiver | Native Shairport Sync 5 + nqptp and DAC handover | Discovery/playback counter/real stereo meter feed verified; user says looking good |
 | Bluetooth receiver | Native BlueALSA Player mode + DAC handover | Controller powered after reboot; phone pairing/audio verification pending |
@@ -33,3 +33,4 @@ Do not mark software initialization as physical hardware verification.
 - CD playback/ripping: deferred hardware integration; no live optical drive detected, extraction tools absent.
 - Named playlist recall: command-path check passes; live audio check pending.
 - Shortcuts reset: restored with native backup.
+

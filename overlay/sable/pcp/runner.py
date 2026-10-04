@@ -104,6 +104,18 @@ class PiCoreApp(App):
 class PiCoreMenu(MenuScreen):
     _signin_url = None
 
+    def _network_status(self):
+        address = self._ip_address()
+        if not address or address.startswith('127.'):
+            return 'NOT CONNECTED', None
+        for interface, label in (('eth0', 'WIRED'), ('wlan0', 'WI-FI')):
+            try:
+                if Path('/sys/class/net/' + interface + '/operstate').read_text().strip() == 'up':
+                    return label, address
+            except OSError:
+                pass
+        return 'NETWORK', address
+
     def __init__(self, app):
         super().__init__(app)
         self._wifi_jobs = ThreadPoolExecutor(1, thread_name_prefix='fm4-wifi')
