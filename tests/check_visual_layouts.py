@@ -51,6 +51,7 @@ print('PASS: whole-disc clock pie fills monotonically')
 # Peak needle holds while fast level input drops, then releases.
 app.levels.peaks=lambda:[.8,.6]
 with patch('time.monotonic',return_value=0):screen=FM4Modern(app)
+screen._render_panel=Mock()
 for now in (0,5):
  with patch('time.monotonic',return_value=now):screen.render(canvas,ImageDraw.Draw(canvas),256,64)
 assert screen._ppm==[.8,.6]
