@@ -10,3 +10,7 @@
 *.ipt -text
 *.png -text
 *.jpg -text
+
+"FM4 Button Print Pack/**" -text
+"FM4 Mounting Parts/**" -text
+"Hardware Design Sources/**" -text
