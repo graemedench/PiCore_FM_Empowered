@@ -90,9 +90,17 @@ class LyrionListener:
             self._status_wake.wait(.5 if connected else 2)
             self._status_wake.clear()
 
+    def _return_local(self):
+        from .receiver_hook import return_local
+        return_local()
+
     def _submit(self, command):
         def work():
             try:
+                if command[0] in ('play', 'pause', 'stop') or (
+                        command[0] == 'playlist' and command[1] in ('play', 'index')) or (
+                        command[0] == 'tidal' and command[1] == 'playlist'):
+                    self._return_local()
                 result = self.rpc(command)
                 self._status_wake.set()
                 return result
@@ -104,6 +112,7 @@ class LyrionListener:
         if command == 'toggle':
             def toggle():
                 try:
+                    self._return_local()
                     status = self.rpc(['status', '-', '1'])
                     self.rpc(['pause', '1'] if status.get('mode') == 'play' else ['play'])
                     self._status_wake.set()
@@ -223,6 +232,7 @@ class LyrionListener:
     def play_all(self, items):
         if items and items[0].get('_tidal_id'):
             def tidal_work():
+                self._return_local()
                 for index, item in enumerate(items):
                     if item.get('_tidal_id'):
                         self.rpc(['tidal', 'playlist', 'play' if index == 0 else 'add',
@@ -235,6 +245,7 @@ class LyrionListener:
             return
         def work():
             try:
+                self._return_local()
                 self.rpc(['playlist', 'clear'])
                 for url in urls:
                     self.rpc(['playlist', 'add', url])
@@ -246,6 +257,7 @@ class LyrionListener:
     def play_tidal_mix(self, position=0):
         def work():
             try:
+                self._return_local()
                 root = self.rpc(['tidal', 'items', '0', '100'])
                 mix_root = next(row for row in root.get('loop_loop', [])
                                 if row.get('name') == 'My Mix')
@@ -264,6 +276,7 @@ class LyrionListener:
     def play_bbc_station(self, station, callback):
         def work():
             try:
+                self._return_local()
                 menu = self.rpc(['bbcsounds', 'items', '0', '10'])
                 names = ' '.join(row.get('name', '') for row in menu.get('loop_loop', []))
                 if 'sign in' in names.lower():

@@ -1,7 +1,7 @@
 """Give native Bluetooth receiver playback exclusive use of the USB DAC."""
 import json
-import subprocess
 import threading
+from pathlib import Path
 from .receiver_hook import begin, end, state
 
 
@@ -13,8 +13,15 @@ class BluetoothHandover(threading.Thread):
     def run(self):
         while not self.stop.wait(.5):
             try:
-                connected = subprocess.run(['pidof', 'bluealsa-aplay'],
-                    stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).returncode == 0
+                connected = False
+                for entry in Path('/proc').glob('[0-9]*/cmdline'):
+                    try:
+                        executable = entry.read_bytes().split(b'\0', 1)[0]
+                        if executable.rsplit(b'/', 1)[-1] == b'bluealsa-aplay':
+                            connected = True
+                            break
+                    except OSError:
+                        pass
                 source = json.loads(state.read_text()).get('source') if state.exists() else None
                 if connected and source is None:
                     begin('bluetooth')

@@ -1,5 +1,7 @@
 """Hand USB audio to AirPlay, then return to the paused local player."""
 import json
+import os
+import signal
 import subprocess
 import sys
 import time
@@ -25,6 +27,40 @@ def end(source='airplay'):
         return
     state.unlink(missing_ok=True)
     subprocess.run(['/usr/local/etc/init.d/squeezelite', 'start'], check=False)
+
+
+def return_local():
+    """Explicit local playback ends receiver ownership even if a phone stays connected."""
+    if not state.exists():
+        return
+    # Disconnect only native Bluetooth audio players, not unrelated peripherals.
+    for entry in Path('/proc').glob('[0-9]*/cmdline'):
+        try:
+            args = entry.read_bytes().decode().strip('\0').split('\0')
+            if args and Path(args[0]).name == 'bluealsa-aplay':
+                address = args[-1]
+                if len(address) == 17 and address.count(':') == 5:
+                    try:
+                        subprocess.run(['bluetoothctl', 'disconnect', address],
+                                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+                    except subprocess.TimeoutExpired:
+                        pass
+                    # Native BlueALSA can leave its audio helper running after disconnect.
+                    # A stale helper must not reclaim ownership from local playback.
+                    os.kill(int(entry.parent.name), signal.SIGTERM)
+        except (OSError, UnicodeError, subprocess.TimeoutExpired):
+            pass
+    subprocess.run(['/usr/local/etc/init.d/shairport-sync', 'stop'],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    for _ in range(50):
+        if subprocess.run(['pidof', 'shairport-sync-ap2'],
+                          stdout=subprocess.DEVNULL).returncode != 0:
+            break
+        time.sleep(.1)
+    state.unlink(missing_ok=True)
+    subprocess.run(['/usr/local/etc/init.d/squeezelite', 'start'], check=False)
+    subprocess.run(['/usr/local/etc/init.d/shairport-sync', 'start'],
+                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':

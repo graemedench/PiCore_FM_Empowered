@@ -193,6 +193,25 @@ sounds://_LIVE_bbc_radio_two and sounds://_LIVE_bbc_radio_fourfm, with an asynch
 Installer helper saved as tools/install-bbc-sounds.py. Commercial hold shortcuts
 still retain their previous RadioFeeds URLs and have not been playback-tested.
 
+## Receiver ownership correction after user reported stuck AirPlay
+
+Local transport and source commands now explicitly release receiver ownership on
+the command worker, leaving UI dispatch responsive. return_local disconnects native
+Bluetooth audio helpers, terminates stale helpers, ends AirPlay, clears its state,
+restores Squeezelite and reopens AirPlay discovery. Bluetooth monitoring now checks
+live executable command lines rather than pidof, which also matched zombie helpers.
+Late Avahi startup now preserves an existing DBus daemon; native Avahi init's first
+start restarts DBus and detached the already-running Bluetooth services. Native
+Bluetooth service restart was attempted for recovery; phone reconnection remains
+to be checked. Receiver marker absent and Squeezelite connected verified afterward.
+
+An actual local MP3 played with elapsed 4.8 seconds; toggle paused, second toggle
+resumed. Queue restored afterward. Transport checks against the current TIDAL queue
+did not pass toggle because streamed playback stopped; do not claim all streaming
+transport tests passed. The earlier generic songs-query test selected a streaming
+entry; a filesystem MP3 was used for the meaningful local regression check.
+BBC sign-in is still required and credentials should remain in Lyrion's own UI.
+
 
 Keep installable source overlays, pinned revisions, exact dependencies, installer,
 hardware settings, feature/test map and this log together. Preserve media files
