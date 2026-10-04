@@ -40,6 +40,14 @@ class PiCoreApp(App):
         self.show_osd('VOLUME', str(max(0, min(100, self.store.get().volume + int(delta)))))
 
     def handle(self, cmd, arg=None):
+        if cmd in ('bbc_radio_2', 'bbc_radio_4'):
+            station = 'bbc_radio_two' if cmd == 'bbc_radio_2' else 'bbc_radio_fourfm'
+            self.note_activity()
+            self._begin_source_change()
+            self.show_osd('BBC SOUNDS', 'Loading station')
+            self.listener.play_bbc_station(station, lambda message:
+                self.show_osd('BBC SOUNDS', message))
+            return
         if cmd == 'play_pause' and self.soft_stopped():
             self.note_activity()
             self._cancel_soft_stop()

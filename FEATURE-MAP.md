@@ -10,13 +10,15 @@
 | Track playback/volume/transport | Player-specific commands | Basic panel connected; full port pending |
 | Single/all/repeat/shuffle | Lyrion queue, shuffle/repeat modes | Live repeat/shuffle flag checks pass; button feedback pending |
 | Save Track to FM4 Favorites | Persistent Lyrion playlist append | Saved track verified in Lyrion and persistent M3U |
-| Radio presets and favourites | Sable URLs + Lyrion favourites | Pending verification |
+| Radio presets and favourites | BBC Sounds protocol + existing commercial URLs | BBC buttons mapped; BBC sign-in/playback and commercial streams pending |
 | Buttons and boot LEDs | Original MCP23017 controller + smbus2 | Controller initializes; events received; physical LED check pending |
 | Apple IR | gpio-ir overlay + existing profile | Hardware node absent; pending |
-| Shutdown GPIO and Settings confirmation | Original shutdown screen + `pcp sd` | Pending; use latest GPIO21 map |
+| Shutdown GPIO and Settings confirmation | Original shutdown screen + `pcp sd` | GPIO21 installed; release/hold logic checked; physical poweroff pending |
 | USB fixed/variable, headphones variable | pCP Squeezelite output settings | Pending; preserve safe volume |
 | Network status and Wi-Fi picker | Native piCorePlayer configuration | Wired status available; Wi-Fi port pending |
-| TIDAL browsing/mixes/saving | Lyrion TIDAL plugin interface | Plugin state/API not yet verified |
+| TIDAL browsing/mixes/saving | Lyrion TIDAL plugin interface | Authenticated browse and My Mix 1 playback verified; eight mixes available |
+| AirPlay 2 receiver | Native Shairport Sync 5 + nqptp and DAC handover | Discovery/playback counter/real stereo meter feed verified; user says looking good |
+| Bluetooth receiver | Native BlueALSA Player mode + DAC handover | Controller powered after reboot; phone pairing/audio verification pending |
 | Small Panel VU bars | Native Squeezelite shared-memory PCM | Real stereo levels verified; absent in Performance |
 | Full-screen spectrum/VU modes | Squeezelite visualizer shared memory | Pending implementation |
 | Storage display/library refresh | Persistent /mnt/sda2 and Lyrion rescan | Paths verified; UI pending |

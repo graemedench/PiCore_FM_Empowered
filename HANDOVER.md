@@ -177,6 +177,22 @@ pending. Radio shortcut URLs returned HTTP 200 HLS playlists but actual playback
 still requires verification; no HLS plugin was found in the inspected directories.
 CD playback/ripping deferred at user's request. No completed installer claimed.
 
+Later checkpoint: reboot completed successfully. Sable runner, native AirPlay 2,
+nqptp and BlueALSA returned automatically. Bluetooth controller is powered and
+pairable; discoverable enabled for the native 180-second window. No phone was
+paired at this checkpoint, so native type 2 configuration/audio test remains.
+User said AirPlay was "looking good" after the real receiver meter feed was added.
+
+Raw BBC HLS shortcut playback failed to advance and Lyrion logged missing protocol
+handler. Installed BBC Sounds 2.54.8 from the official Lyrion plugin repository's
+HTTPS release, verified SHA1 f05b152747e76718a3d80a11e8f75bc137e39e38, enabled via
+pref plugin.state:BBCSounds and native Lyrion stop/start. Plugin requires BBC account
+sign-in; user asked to do that privately through Settings. Buttons 5/6 now use
+sounds://_LIVE_bbc_radio_two and sounds://_LIVE_bbc_radio_fourfm, with an asynchronous
+"Sign in on web player" message while unsigned. Actual BBC playback remains untested.
+Installer helper saved as tools/install-bbc-sounds.py. Commercial hold shortcuts
+still retain their previous RadioFeeds URLs and have not been playback-tested.
+
 
 Keep installable source overlays, pinned revisions, exact dependencies, installer,
 hardware settings, feature/test map and this log together. Preserve media files

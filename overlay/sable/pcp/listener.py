@@ -261,6 +261,22 @@ class LyrionListener:
         self._submit(['rescan'])
         return 'requested'
 
+    def play_bbc_station(self, station, callback):
+        def work():
+            try:
+                menu = self.rpc(['bbcsounds', 'items', '0', '10'])
+                names = ' '.join(row.get('name', '') for row in menu.get('loop_loop', []))
+                if 'sign in' in names.lower():
+                    message = 'Sign in on web player'
+                else:
+                    self.rpc(['playlist', 'play', 'sounds://_LIVE_' + station])
+                    self._status_wake.set()
+                    message = 'Radio 2' if station == 'bbc_radio_two' else 'Radio 4'
+            except Exception:
+                message = 'Station unavailable'
+            self.dispatch(lambda: callback(message))
+        self._commands.submit(work)
+
     def save_current_track(self, callback, name='FM4 Favorites'):
         song = self.store.get()
         def work():
