@@ -7,7 +7,7 @@ the recovery route until a complete fresh-drive test passes.
 
 ## Prepare the new drive
 
-1. Write the official **aarch64 piCorePlayer 11.1.0** image to the new SSD using
+1. Write the official [64-bit piCorePlayer 11.1.0 image](https://docs.picoreplayer.org/downloads/) to the new SSD using
    an image writer. Check the selected drive before writing. Boot the Pi from
    that SSD, with the original boot drive disconnected.
 2. Resize the installation using piCorePlayer's web controls. This installer
@@ -25,9 +25,33 @@ Official references: [Getting started](https://docs.picoreplayer.org/getting-sta
 [Standalone pCP](https://docs.picoreplayer.org/projects/standalone-pcp/),
 [Samba setup](https://docs.picoreplayer.org/how-to/add_usb_hdd/).
 
+## Project and installer links
+
+- [PiCore FM Empowered source](https://github.com/graemedench/PiCore_FM_Empowered)
+- [Installer source](installer/install.py) and [bundle builder](build-installer.ps1)
+- [Matt's original Sable project](https://github.com/theshepherdmatt/sable)
+- [Quadify Empowered — earlier Volumio enhancement](https://github.com/graemedench/quadify_empowered)
+- [Official piCorePlayer image downloads](https://docs.picoreplayer.org/downloads/)
+- [Raspberry Pi Imager](https://www.raspberrypi.com/software/)
+
+The bare-metal base is the official image; the FM4 installer is the overlay
+built below. This repository is not a bootable disk image. Generated installer
+archives are not stored in Git; build one from the source checkout. Graeme's
+local backup includes `fm4-installer.tar.gz`. Never run the earlier Volumio
+installer on piCorePlayer.
+
 ## Build and install
 
-On Windows, from a fresh project checkout, run `./build-stage.ps1`, then
+On Windows, with Git, PowerShell and tar available, clone over HTTPS:
+
+```powershell
+git clone https://github.com/graemedench/PiCore_FM_Empowered.git
+cd PiCore_FM_Empowered
+./build-stage.ps1
+./build-installer.ps1
+```
+
+From a fresh project checkout, run `./build-stage.ps1`, then
 `./build-installer.ps1`. Both preserve existing build directories rather than
 overwriting them. Source repositories use HTTPS and pinned revisions.
 

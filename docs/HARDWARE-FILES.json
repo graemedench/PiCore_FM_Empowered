@@ -1,0 +1,435 @@
+{
+  "source": "Quadify Empowered pinned baseline plus Graeme local current CAD, 2026-10-04",
+  "files": [
+    {
+      "path": "FM4 Button Print Pack/All_Button_Variants_Preview.png",
+      "bytes": 30441,
+      "sha256": "c5f49f3834e8d1e3c842de4ee675e5f037438c81c16e89da552b96da11cb2930"
+    },
+    {
+      "path": "FM4 Button Print Pack/Blank Cap/blank button.ipt",
+      "bytes": 394752,
+      "sha256": "0ba5e4181d48081c50927c06b6b9a563fc847b92ed60b41895641f8dc638124c"
+    },
+    {
+      "path": "FM4 Button Print Pack/Blank Cap/blank button.stl",
+      "bytes": 13484,
+      "sha256": "3e248fc5b001a62c8e54462a17c764101278031bf18673a8713a7e47f138e3c3"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_2_-_Flush_Body.stl",
+      "bytes": 24484,
+      "sha256": "06ba485fd4ec950f5adeaf3bc9420bfe798c0b514f04e48082699010274635fe"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_2_-_Flush_White.stl",
+      "bytes": 11084,
+      "sha256": "ee64c2ee1e286a86f7203c36a9a0d6e8ddf7bfaa2575a362aff8f0acac50be38"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_2_-_Raised_0.2mm_Body.stl",
+      "bytes": 24484,
+      "sha256": "06ba485fd4ec950f5adeaf3bc9420bfe798c0b514f04e48082699010274635fe"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_2_-_Raised_0.2mm_White.stl",
+      "bytes": 11284,
+      "sha256": "25419f8ed457bbb5d74f2fc0c33c20dea1ef0c33ef848e62d78abe6e36afd2b8"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_4_-_Flush_Body.stl",
+      "bytes": 24784,
+      "sha256": "273c889e0899c284e7719ae7af22f4de28ffd749379e80f5e3dc649bd9b72287"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_4_-_Flush_White.stl",
+      "bytes": 11384,
+      "sha256": "39eae5cd0cc095c4724b404dd76a348da31d4612799ef1c64446e78504a6a26e"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_4_-_Raised_0.2mm_Body.stl",
+      "bytes": 24784,
+      "sha256": "273c889e0899c284e7719ae7af22f4de28ffd749379e80f5e3dc649bd9b72287"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/BBC_4_-_Raised_0.2mm_White.stl",
+      "bytes": 11484,
+      "sha256": "a333d7ceabf3090210b849949df355223af835f52abaa227a88235f203062e18"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Pause_-_Flush_Body.stl",
+      "bytes": 15084,
+      "sha256": "fb210e3a2fa2512f059304cca07050c7d18a0919e2d5a692ca5e64cd66d32f3d"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Pause_-_Flush_White.stl",
+      "bytes": 1284,
+      "sha256": "eec272d196373aab398ee37bb924d711fa326961b83c3986bbfea044ae56a449"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Pause_-_Raised_0.2mm_Body.stl",
+      "bytes": 15084,
+      "sha256": "fb210e3a2fa2512f059304cca07050c7d18a0919e2d5a692ca5e64cd66d32f3d"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Pause_-_Raised_0.2mm_White.stl",
+      "bytes": 1284,
+      "sha256": "0d3f325e2b09d711827bb55b49860b78dfd6e5ecc1ea3d10409ec82f13e818ee"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_-_Flush_Body.stl",
+      "bytes": 14084,
+      "sha256": "8ad0f2389ee017d4b3f70c4839eeeee5094f6e73af2d12424bb39b384b46fc6a"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_-_Flush_White.stl",
+      "bytes": 484,
+      "sha256": "587b2cfa4af1ed391adbd1afbed42ff7bfd12832f319c4e39e0b12367c1301c7"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_-_Raised_0.2mm_Body.stl",
+      "bytes": 14084,
+      "sha256": "8ad0f2389ee017d4b3f70c4839eeeee5094f6e73af2d12424bb39b384b46fc6a"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_-_Raised_0.2mm_White.stl",
+      "bytes": 484,
+      "sha256": "9378110751ea83188104ab382e6514851ffe8bc5a021a2e6d318e9405c18d480"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Mode_-_Flush_Body.stl",
+      "bytes": 1501534,
+      "sha256": "15316b9dad2f1cdf3c8a34049ea6026636dcbe9255a8a1bfb67706e84b56d7d1"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Mode_-_Flush_White.stl",
+      "bytes": 410284,
+      "sha256": "42c83a99555cd85bdd15e6c76aa8cb4d3440d2cf234130d540f59bb87d10a3e6"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Mode_-_Raised_0.2mm_Body.stl",
+      "bytes": 1501534,
+      "sha256": "15316b9dad2f1cdf3c8a34049ea6026636dcbe9255a8a1bfb67706e84b56d7d1"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Mode_-_Raised_0.2mm_White.stl",
+      "bytes": 410284,
+      "sha256": "8ad9f103cfec640cfccbae1d3a5f9f6bdbf711d84c2585e7fdd7ad2539635bee"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Mode_-_Raised_0.2mm_White_Overlay.stl",
+      "bytes": 410284,
+      "sha256": "192cfde03877b75214dfaf943948578c4b2c4e21741a7212958f1eaa05e7e094"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Pause_-_Flush_Body.stl",
+      "bytes": 1492534,
+      "sha256": "b54da03146fb20026ae8fd8d4ff4bbbbd6c0bcbea82e286f93a349f26e01a43e"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Pause_-_Flush_White.stl",
+      "bytes": 392484,
+      "sha256": "50846884dd729e9e28828ee5d235584d78cca833f47ad130ca4eb926b493dc7c"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Pause_-_Raised_0.2mm_Body.stl",
+      "bytes": 1492534,
+      "sha256": "b54da03146fb20026ae8fd8d4ff4bbbbd6c0bcbea82e286f93a349f26e01a43e"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Pause_-_Raised_0.2mm_White.stl",
+      "bytes": 392484,
+      "sha256": "6462d64205b9b80db30ddd61ab72c1b54a77bfd1b5a867e42edf6b30bf6cd454"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Play_Pause_-_Raised_0.2mm_White_Overlay.stl",
+      "bytes": 392484,
+      "sha256": "fef6bdc0c3b35e3963a700c061bdc05e1b050e07676ee264eee5eef82d64a70b"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Save_-_Flush_Body.stl",
+      "bytes": 16084,
+      "sha256": "7cb2eb2bd0b2e197e7e611541c13257afb00b5caffac1c7569e32554b448af15"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Save_-_Flush_White.stl",
+      "bytes": 2984,
+      "sha256": "b553c6b22192d100ecb3045da8e8d04aaab8dc85a106c09f0d8b63389df4de58"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Save_-_Raised_0.2mm_Body.stl",
+      "bytes": 16084,
+      "sha256": "7cb2eb2bd0b2e197e7e611541c13257afb00b5caffac1c7569e32554b448af15"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Save_-_Raised_0.2mm_White.stl",
+      "bytes": 2884,
+      "sha256": "34baff65b3143c0257dccaede6172683060bd02d8d8849c99d0f7eb489cd0f5f"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_back_-_Flush_Body.stl",
+      "bytes": 15484,
+      "sha256": "6e42b5f66506b5290ba8fdb4a92949057ce92b3422b74ca3d74cb8ccd4833d66"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_back_-_Flush_White.stl",
+      "bytes": 1484,
+      "sha256": "f5ea1ae652d43dd728383f7d2c5784584cfba743bb8082901298f7a17e800546"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_back_-_Raised_0.2mm_Body.stl",
+      "bytes": 15484,
+      "sha256": "6e42b5f66506b5290ba8fdb4a92949057ce92b3422b74ca3d74cb8ccd4833d66"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_back_-_Raised_0.2mm_White.stl",
+      "bytes": 1484,
+      "sha256": "fb54c84f79865b43c105c13f79a5faeca4fee04ebdad31a5d8b29fa9003116e0"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_forward_-_Flush_Body.stl",
+      "bytes": 15484,
+      "sha256": "8a83666c86183319ed88f561638d66fa81a468fdc7595bb4d9b8540765d2cb6d"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_forward_-_Flush_White.stl",
+      "bytes": 1484,
+      "sha256": "045a679a2a49a862e98e31776086f1ccb65fbd2eaaf7e9bd9b50bccfc27d9875"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_forward_-_Raised_0.2mm_Body.stl",
+      "bytes": 15484,
+      "sha256": "8a83666c86183319ed88f561638d66fa81a468fdc7595bb4d9b8540765d2cb6d"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/Skip_forward_-_Raised_0.2mm_White.stl",
+      "bytes": 1484,
+      "sha256": "d976649978b750119173f226b98d3b89044fd7f0e175cd192eed4ebb85fc631c"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/TIDAL_-_Flush_Body.stl",
+      "bytes": 16784,
+      "sha256": "db7f0a4e2e0333f4585a76b45b0dd6a4b39b5bb1ee322423a1b742588c03aad2"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/TIDAL_-_Flush_White.stl",
+      "bytes": 2484,
+      "sha256": "f1faaaf8597a535efbce1482d7028a4e2d74fcb9dd4e8aa4f44df28cb9035806"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/TIDAL_-_Raised_0.2mm_Body.stl",
+      "bytes": 16784,
+      "sha256": "db7f0a4e2e0333f4585a76b45b0dd6a4b39b5bb1ee322423a1b742588c03aad2"
+    },
+    {
+      "path": "FM4 Button Print Pack/Individual STL Files/TIDAL_-_Raised_0.2mm_White.stl",
+      "bytes": 2484,
+      "sha256": "7ac253a3701f923bf47b9c1cefb7f5bd25f3409ec39ebf6c9f582ad145e69f64"
+    },
+    {
+      "path": "FM4 Button Print Pack/Quadify_All_Button_Variants_Face_Up.3mf",
+      "bytes": 1772423,
+      "sha256": "b880e90924025c7496e6f6293b4e166897ddc0f6c7de69b0ab4410f207c4cc06"
+    },
+    {
+      "path": "FM4 Button Print Pack/Quadify_Blank_Current_Cap.3mf",
+      "bytes": 14431,
+      "sha256": "d47765790e6b038c14193b3512325f898967791cd518acb1156e9a30be58784b"
+    },
+    {
+      "path": "FM4 Button Print Pack/READ ME.txt",
+      "bytes": 1578,
+      "sha256": "776aa24e7b663cbf226e4cb8d4e175d8f184d2d2abf67e459e9bd67bd710fb3e"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/BBC_2_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 29884,
+      "sha256": "b6c94cda8ed31a32f38f8c8fd43ec5ded4bf2fcdc8ae4f20140aa3f6fc699283"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/BBC_4_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 30384,
+      "sha256": "4ac4ccfe4b9181c81b04b93c8f1c600a0995366d918b952884c62aaae4050a2a"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Blank_-_Resin_Single_Colour.stl",
+      "bytes": 14384,
+      "sha256": "9d90cf04d1d1cd59218092304ab4d267318c132fe453623c61123bb8713c1f38"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Pause_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 15884,
+      "sha256": "4337cedd78eb4d086acd2c44d624026a9c1d92340f21b762945417e32f6a1a9c"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Play_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 14384,
+      "sha256": "fcf649279a26b4238655b62e38d86ef10db79a61ffbd8c7679a6267377f458e6"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Play_Mode_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 1552134,
+      "sha256": "6420940ec961cb946a123aa9fed60fa4ab6a7c4e227e32fad82decbbae880225"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Play_Pause_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 1534134,
+      "sha256": "7489d56e31de2e4844535ddaa021ed39efdbbc45c4cbe008340b6b6665e46f56"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/READ ME.txt",
+      "bytes": 403,
+      "sha256": "e37f3b305c21552454600439ea93698fba466a294621b657c57d8961b0296616"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Save_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 17484,
+      "sha256": "5bb9ee251777d247fe68eb0de0c55a234c940e2fef98ea37a87fc056e68984f4"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Skip_back_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 16484,
+      "sha256": "b22635747b07e3838501244fdbeee122620525dc9e01966e94de5cf4d564b9d8"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/Skip_forward_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 16484,
+      "sha256": "8a504f7b5fba2e325981e5720b5757112011be4dbc4cfeba5e5606b5b5b7de0d"
+    },
+    {
+      "path": "FM4 Button Print Pack/Resin - Single Colour Raised 1mm/TIDAL_-_Resin_Single_Colour_Raised_1mm.stl",
+      "bytes": 18384,
+      "sha256": "1303a602c420f7a0711c595433df028a6a1da17448dc8bc8ac23419c09c920f0"
+    },
+    {
+      "path": "FM4 Mounting Parts/Knob Extender/FM4 Knob Extender Long V6.stl",
+      "bytes": 56784,
+      "sha256": "262dff7925c8330726fc7913f590db23ddb1587057fc20d93450445c0b922ed1"
+    },
+    {
+      "path": "FM4 Mounting Parts/README.md",
+      "bytes": 689,
+      "sha256": "c48e7c39ddcb08864caeb6adc5b61a0f9f01da9156f3d0e554217ffb9629a6b1"
+    },
+    {
+      "path": "FM4 Mounting Parts/Rear Network Jack/FM4 Rear Network Jack Panel.stl",
+      "bytes": 16884,
+      "sha256": "b1eb779dd2e810c73be298c75e8f89990d6af645373b5b3bfd24961c4d89fdbb"
+    },
+    {
+      "path": "FM4 Mounting Parts/Rear Network Jack/Photo - fitted Ethernet panel.jpg",
+      "bytes": 3955918,
+      "sha256": "d1a5785bebcecd757f017a3721f19e74e9bb76820e55f9ed9e71c4f008543deb"
+    },
+    {
+      "path": "FM4 Mounting Parts/Rear Network Jack/Photo - original IEC outlet.jpg",
+      "bytes": 1686782,
+      "sha256": "180e2bb84a829ef99e0ad2eb7dd342f157dcacccbf154e419fffe2cfd79363d2"
+    },
+    {
+      "path": "FM4 Mounting Parts/Rear Network Jack/README.md",
+      "bytes": 2037,
+      "sha256": "97ce91eb99743e27fe7165c3acc143b8ea941428b6324528d5f8c7f4c7f850c2"
+    },
+    {
+      "path": "FM4 Mounting Parts/Rotary Bracket/FM4 Rotary Knob Bracket V4.stl",
+      "bytes": 41784,
+      "sha256": "2b96d606ef8b1901772be405a6b9675712f8d3c2548f5cadf2c25992a15cd660"
+    },
+    {
+      "path": "FM4 Mounting Parts/Screen Holder/FM4 Screen Holder V1.stl",
+      "bytes": 43284,
+      "sha256": "9e5b3a04f3545b3a6dff7ccad9bcf7e6ff5923d2d200b7cb34d293812553de7d"
+    },
+    {
+      "path": "Hardware Design Sources/Back Panel/d-Mound basic.ipt",
+      "bytes": 194048,
+      "sha256": "218ef4845f6b0038d502875fef9045cddb3d3781731ed30f57332037238d0a3f"
+    },
+    {
+      "path": "Hardware Design Sources/Back Panel/inner clamp plate.ipt",
+      "bytes": 470016,
+      "sha256": "a38e959098214925e643015615acd447eafb2864ecb1521dcccc23da553e6df8"
+    },
+    {
+      "path": "Hardware Design Sources/Back Panel/inner clamp plate.stl",
+      "bytes": 41884,
+      "sha256": "90b31f2cb80ca63f6ccf20e329bd08b14d6bd9624551e9954df777434788cd52"
+    },
+    {
+      "path": "Hardware Design Sources/Back Panel/USB Panel/USB inner clamp plate.ipt",
+      "bytes": 471552,
+      "sha256": "50c729b48d2c5a3d262bf3752c047fc6cc5a2d069d4d03cd278bcd6ae1bcebec"
+    },
+    {
+      "path": "Hardware Design Sources/Back Panel/USB Panel/USB inner clamp plate.stl",
+      "bytes": 30284,
+      "sha256": "670852732ae87a19468f846999f8bd12f471c277314e5b3496f8ba9147ceb790"
+    },
+    {
+      "path": "Hardware Design Sources/Back Panel/USB Panel/USB outer clamp plate.ipt",
+      "bytes": 508416,
+      "sha256": "6a083fec321dd661f7b36ab27230ba2c460f8768101224d94eff1e78d182c81f"
+    },
+    {
+      "path": "Hardware Design Sources/Back Panel/USB Panel/USB outer clamp plate.stl",
+      "bytes": 30484,
+      "sha256": "328939d287bdd57de5c9952e6f477d2a663744f0581ae0f91e1ed49a395ba189"
+    },
+    {
+      "path": "Hardware Design Sources/Knob Adaptor/v6 Knob extender long.ipt",
+      "bytes": 430080,
+      "sha256": "59ea872a6e23dbcbb8f3a577687214cf6ae12f55e76e0fb5d43a35747a29f627"
+    },
+    {
+      "path": "Hardware Design Sources/Knob Adaptor/v6 Knob extender long.stl",
+      "bytes": 56784,
+      "sha256": "262dff7925c8330726fc7913f590db23ddb1587057fc20d93450445c0b922ed1"
+    },
+    {
+      "path": "Hardware Design Sources/Knob Bracket/Knob Bracket v4.ipt",
+      "bytes": 523776,
+      "sha256": "9e1f4a7be0632fed4e5f88287088b4b0c2e80896475ea9234e8d57d360840f3d"
+    },
+    {
+      "path": "Hardware Design Sources/Knob Bracket/Knob Bracket v4.stl",
+      "bytes": 41784,
+      "sha256": "2b96d606ef8b1901772be405a6b9675712f8d3c2548f5cadf2c25992a15cd660"
+    },
+    {
+      "path": "Hardware Design Sources/Network Port/network panel.ipt",
+      "bytes": 429568,
+      "sha256": "d139bbfc976b97ce68923d517643e81acffa163539cd782e1a950fb5b1498a4f"
+    },
+    {
+      "path": "Hardware Design Sources/Network Port/network panel.stl",
+      "bytes": 16884,
+      "sha256": "b1eb779dd2e810c73be298c75e8f89990d6af645373b5b3bfd24961c4d89fdbb"
+    },
+    {
+      "path": "Hardware Design Sources/PCB Template Working/FM4 PCB Replacement Panel - Rev A - A4 1to1 Test.pdf",
+      "bytes": 7326,
+      "sha256": "66d800faedeba03824f95d223d6c623ecffd523a5a7714efdd6a5a668bb6a018"
+    },
+    {
+      "path": "Hardware Design Sources/README.md",
+      "bytes": 1346,
+      "sha256": "a0a1a6702070358574dfe553ed41bd5469d84c5deb909c190d7916df432473d5"
+    },
+    {
+      "path": "Hardware Design Sources/Screen Holder/image.png",
+      "bytes": 304971,
+      "sha256": "ecc5cbc41c3e5f2eb976ef7c05e78751af89d713847349c91f1a33756aaec899"
+    },
+    {
+      "path": "Hardware Design Sources/Screen Holder/V1 screen holder.ipt",
+      "bytes": 488960,
+      "sha256": "d1a37c06cae552c8993f97c436ec92ebda376dbe318f8a31b07d4109fb46a0b4"
+    },
+    {
+      "path": "Hardware Design Sources/Screen Holder/V1 screen holder.stl",
+      "bytes": 43284,
+      "sha256": "9e5b3a04f3545b3a6dff7ccad9bcf7e6ff5923d2d200b7cb34d293812553de7d"
+    }
+  ]
+}

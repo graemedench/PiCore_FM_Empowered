@@ -373,3 +373,14 @@ User clarified twin needles mean fast level plus slow peak per channel. Renamed 
 Twin Needle VU peak now holds for one second before slow release, requested by user. Fast RMS needle remains independent.
 
 User requested much slower peak fall: changed full-scale release from 2.8 to 8 seconds, keeping one-second hold and fast needle unchanged.
+
+## Complete project documentation and hardware pack
+
+Copied the released Quadify Empowered button/mounting packs and current local
+CAD/USB-panel/PCB-template files. Included 86 hardware-pack files with a SHA-256
+inventory; working parts explicitly labelled. Updated the copied wiring diagram
+and build notes to verified GPIO4 IR. Added detailed user/maintenance guides,
+full controls table, source credits and links to Matt, Quadify Empowered, the
+official piCorePlayer base image and FM4 installer build/source. Installer
+bundle now includes referenced documents and hardware packs. Fresh SSD and
+Bluetooth audio acceptance remain outstanding; no live-device changes here.

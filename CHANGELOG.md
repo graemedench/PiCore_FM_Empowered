@@ -100,3 +100,14 @@ for replacement drives. Added fresh-install-only checksum-checked installer,
 bundle builder, INSTALL.md and HARDWARE.md; existing FM4 installs are refused.
 Fresh SSD install and Bluetooth audio acceptance remain pending. Read latest
 FEATURE-MAP/INSTALL for current status; older log entries are historical.
+
+## Complete project documentation and hardware pack
+
+Copied the released Quadify Empowered button/mounting packs and current local
+CAD/USB-panel/PCB-template files. Included 86 hardware-pack files with a SHA-256
+inventory; working parts explicitly labelled. Updated the copied wiring diagram
+and build notes to verified GPIO4 IR. Added detailed user/maintenance guides,
+full controls table, source credits and links to Matt, Quadify Empowered, the
+official piCorePlayer base image and FM4 installer build/source. Installer
+bundle now includes referenced documents and hardware packs. Fresh SSD and
+Bluetooth audio acceptance remain outstanding; no live-device changes here.

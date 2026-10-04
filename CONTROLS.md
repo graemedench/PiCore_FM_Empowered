@@ -5,7 +5,7 @@ Default Empowered controls (hold about 1.2 seconds):
 | Button | Short press | Long press |
 | --- | --- | --- |
 | 1 | Play / pause, including restart after soft stop | Soft stop |
-| 2 | Cycle stop-at-end / repeat one / repeat all / shuffle | No separate default |
+| 2 | Cycle Play Single / Play All / Repeat Single / Repeat All / Shuffle | No separate default |
 | 3 | Previous track in queue | No separate default |
 | 4 | Next track in queue | No separate default |
 | 5 | BBC Radio 2 | Greatest Hits Radio |
