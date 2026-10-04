@@ -32,11 +32,23 @@ def state_from_status(data):
                 stream=bool(song.get('remote')), samplerate='', bitdepth='')
 
 
+def native_player_id():
+    import re
+    try:
+        text=Path('/usr/local/etc/pcp/pcp.cfg').read_text()
+        match=re.search(r'^MAC_ADDRESS="([0-9a-f:]{17})"$',text,re.M)
+        if match:
+            return match[1]
+        return Path('/sys/class/net/eth0/address').read_text().strip()
+    except OSError:
+        return 'd8:3a:dd:30:37:15'  # Desktop fixture fallback only.
+
+
 class LyrionListener:
     def __init__(self, store, dispatch, host='http://127.0.0.1:9000',
-                 player='d8:3a:dd:30:37:15', log=print):
+                 player=None, log=print):
         self.store, self.dispatch = store, dispatch
-        self.host, self.player, self.log = host.rstrip('/'), player, log
+        self.host, self.player, self.log = host.rstrip('/'), player or native_player_id(), log
         self.on_browse = self.on_sources = self.on_outputs = self.on_connect = None
         self.browse_sources = [dict(name=name, uri='pcp:' + root)
                                for name, root in [('Music Library', 'library'),

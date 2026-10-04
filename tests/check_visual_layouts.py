@@ -21,9 +21,9 @@ assert analyse([0]*N,44100)==[0.]*24
 low=analyse([16000*math.sin(2*math.pi*200*i/44100) for i in range(N)],44100)
 high=analyse([16000*math.sin(2*math.pi*5000*i/44100) for i in range(N)],44100)
 assert low.index(max(low)) < high.index(max(high))
-for theme in ('panel_vu','panel_spectrum'):
+for theme in ('panel_vu','panel_spectrum','panel_ppm'):
  st=SimpleNamespace(uri='a',title='Dancing Queen',artist='ABBA',status='play')
- app=SimpleNamespace(settings=SimpleNamespace(get=lambda *a,**k:theme),store=SimpleNamespace(get=lambda:st),soft_stopped=lambda:False,fonts=SimpleNamespace(get=lambda *a:ImageFont.load_default()),levels=SimpleNamespace(read=lambda:[.6,.8],spectrum=lambda:high))
+ app=SimpleNamespace(settings=SimpleNamespace(get=lambda *a,**k:theme),store=SimpleNamespace(get=lambda:st),soft_stopped=lambda:False,fonts=SimpleNamespace(get=lambda *a:ImageFont.load_default()),levels=SimpleNamespace(peaks=lambda:[.6,.8],read=lambda:[.6,.8],spectrum=lambda:high))
  with patch('time.monotonic',return_value=0):screen=FM4Modern(app)
  screen._render_panel=Mock()
  for now in (0,5,6,8):
@@ -33,7 +33,12 @@ for theme in ('panel_vu','panel_spectrum'):
   if now:assert canvas.getbbox()
   if now==5:canvas.save('outputs/'+theme+'-preview.png')
  assert screen._render_panel.call_count==1
-print('PASS: 5s interaction / 2s title, pause/resume, frequency response and both 256x64 layouts')
+c=Cycle(0)
+c.update(0,True,'a',4)
+assert c.update(10,True,'b',4)==(True,True)
+assert c.update(13.99,True,'b',4)==(True,True)
+assert c.update(14,True,'b',4)==(True,False)
+print('PASS: 5s interaction, 4s VU/PPM and 2s spectrum titles; all three layouts render')
 
 from sable.pcp.clock import progress_pie
 pixels=[]

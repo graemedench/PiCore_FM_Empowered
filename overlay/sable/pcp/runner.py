@@ -15,7 +15,7 @@ from ..app import App
 from ..settings import Settings
 from ..screens.menu import MenuScreen
 from ..screens.browse import BrowseScreen, _play_all_tracks
-from .listener import LyrionListener
+from .listener import LyrionListener, native_player_id
 
 
 class PiCoreApp(App):
@@ -363,13 +363,15 @@ class PiCoreMenu(MenuScreen):
                 choices = [item for item in row[1] if item[0].startswith('Modern:')]
                 choices += [('Panel / Needle VU', lambda: self._set_modern('panel_vu')),
                             ('Panel / Spectrum', lambda: self._set_modern('panel_spectrum')),
+                            ('Panel / Twin Needle VU', lambda: self._set_modern('panel_ppm')),
                             ('Back', row[1][-1][1])]
                 tree[index] = (row[0], choices, *row[2:])
             elif row[0] == 'Network':
                 tree[index] = (row[0], row[1][:-1] + [
                     ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
         tree.insert(-1, ('Pair Apple Remote', self._pair_ir))
-        tree.insert(-1, ('Service sign-in', [
+        tree.insert(-1, ('Service URLs', [
+            ('Web player', lambda: self._show_signin('FM4 web player', '')), 
             ('BBC Sounds', lambda: self._show_signin('BBC Sounds sign-in',
                 'plugins/BBCSounds/settings/basic.html')),
             ('TIDAL', lambda: self._show_signin('TIDAL sign-in',
@@ -384,11 +386,12 @@ class PiCoreMenu(MenuScreen):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', default='http://127.0.0.1:9000')
-    parser.add_argument('--player', default='d8:3a:dd:30:37:15')
+    parser.add_argument('--player', default=None)
     parser.add_argument('--settings', default='config/pcp-settings.json')
     parser.add_argument('--sim', action='store_true')
     parser.add_argument('--seconds', type=float, default=0)
     args = parser.parse_args()
+    args.player = args.player or native_player_id()
     events, stop = queue.Queue(), threading.Event()
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
     signal.signal(signal.SIGINT, lambda *_: stop.set())

@@ -71,6 +71,28 @@ class AudioLevels:
         self.levels = [max(value, old - .12) for value, old in zip(target, self.levels)]
         return self.levels
 
+    def peaks(self):
+        def scaled(values):
+            return [max(0., min(1., (20*math.log10(max(v,1e-6))+36)/42)) for v in values]
+        if Path('/tmp/fm4-receiver.json').exists():
+            try:
+                frame=json.loads(Path('/tmp/fm4-receiver-levels.json').read_text())
+                if time.time()-frame['updated'] < .3:
+                    return scaled(frame.get('peaks',[0.,0.]))
+            except (OSError,ValueError,KeyError):
+                pass
+            return [0.,0.]
+        if self.available and self.lib.pthread_rwlock_tryrdlock(self.address)==0:
+            try:
+                size,index,running,rate,updated=struct.unpack_from('<IIB3xIq',self.mapping,self.offset)
+                raw=self.mapping[self.offset+24:]
+            finally:
+                self.lib.pthread_rwlock_unlock(self.address)
+            if running and time.time()-updated<2 and index<size and index%2==0:
+                samples=struct.unpack('<16384h',raw)
+                return scaled([max(abs(samples[(index-2*n+c)%size]) for n in range(1,1025))/32768 for c in range(2)])
+        return [0.,0.]
+
     def spectrum(self):
         from .spectrum import analyse
         if Path('/tmp/fm4-receiver.json').exists():

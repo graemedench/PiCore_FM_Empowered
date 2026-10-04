@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "project": "piCorePlayer Empowered",
-  "updated": "2026-10-03",
+  "updated": "2026-10-04",
   "architecture": "aarch64",
   "picoreplayer_version": "11.1.0",
   "kernel": "6.12.67-pcpCore-v8",
@@ -30,5 +30,16 @@
   "saved_playlist": "FM4 Favorites",
   "startup": "/bin/sh /home/tc/sable-pcp-stage/stage-start.sh",
   "visualizer": "native Squeezelite -v, Linux aarch64 shared memory",
-  "phase": "tested Panel prototype saved; remaining full-port features pending"
+  "phase": "Rev 1 release candidate; PPM deployed; fresh SSD installer acceptance pending",
+  "ir_gpio": 4,
+  "visual_layouts": [
+    "panel_vu",
+    "panel_ppm",
+    "panel_spectrum"
+  ],
+  "track_notice_seconds": {
+    "panel_vu": 4,
+    "panel_ppm": 4,
+    "panel_spectrum": 2
+  }
 }

@@ -8,3 +8,5 @@ private-backups/
 *.before
 build/
 *.tar.gz
+
+installer-bundle/

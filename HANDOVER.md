@@ -354,3 +354,18 @@ User reports no response. GPIO27 reader alive but captured zero edges on Menu pr
 User confirms corrected remote now works. Added Settings / Pair Apple Remote:30sec capture window, consumes first valid Apple frame, updates current decoder pairing ID immediately, saves ir.pair_id and schedules native backup. Startup reads saved pair ID; timeout retains existing ID and shows timeout. Restricted to known Apple address/buttons, not arbitrary remote protocol learning. Menu action feedback and persisted-ID/backup/timeout tests passed. Audio Output entry now Headphones instead of bcm2835 Headphones; native ALSA identifier unchanged. Uploaded changes, verified native output list Headphones/SMSL USB AUDIO, restarted with no active rip detected. Physical pairing capture test pending.
 ### 2026-10-04 â€” Faster spectrum response
 User requests quicker spectrum. Reduced FFT refresh interval100ms->50ms for local shared-memory and receiver PCM; increased display bar release step0.08->0.12 per refresh, so peaks clear faster between beats. Same1024-point transform/log bands, instantaneous attack, existing render loop bound. Layout/timing/frequency/pie tests passed; deployed and panel restarted after confirming no active rip. Receiver helper adopts new cadence when next audio stream starts. Physical responsiveness confirmation pending.
+
+## 4 October — PPM and fresh SSD packaging
+
+Added Panel / PPM with real PCM peak measurement and slow needle release.
+VU/PPM track title and artist are centred across the meters for four seconds;
+spectrum remains two seconds. Any interaction restores Panel for five seconds.
+Deployed safely after checking no rip active; panel startup and native backup
+passed. Local rendering and on-device four-second timing passed. User PPM
+physical feedback pending. Native player identity now derives from pCP config
+for replacement drives. Added fresh-install-only checksum-checked installer,
+bundle builder, INSTALL.md and HARDWARE.md; existing FM4 installs are refused.
+Fresh SSD install and Bluetooth audio acceptance remain pending. Read latest
+FEATURE-MAP/INSTALL for current status; older log entries are historical.
+
+User clarified twin needles mean fast level plus slow peak per channel. Renamed menu to Panel / Twin Needle VU; internal panel_ppm key retained for saved settings. Added meter headroom and consistent level/peak scales. Track popup user likes; kept four seconds centred. Service URLs includes Web player; CONTROLS.md lists short/long controls.

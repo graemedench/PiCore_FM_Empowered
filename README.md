@@ -3,18 +3,21 @@
 Port of the modified Quadify/Sable FM4 interface to piCorePlayer, preserving its
 look while improving input and playback responsiveness.
 
-**Status:** standalone Lyrion, music sharing, OLED and encoder work on the test
-unit. The complete Sable interface and repeatable installer are in development.
+**Status:** the FM4 prototype now includes standalone Lyrion, responsive OLED and
+controls, TIDAL/BBC Sounds/radio, Wi-Fi, AirPlay 2, audio output selection, IR
+pairing, shutdown, CD playback and named FLAC/MP3 ripping. Panel/VU, Panel/Twin Needle VU
+and Panel/Spectrum provide alternate live audio views. Bluetooth audio and a
+complete fresh-SSD install still need physical acceptance tests.
 
-Start with [HANDOVER.md](HANDOVER.md), [FEATURE-MAP.md](FEATURE-MAP.md) and
-[CHANGELOG.md](CHANGELOG.md). `build-manifest.json` records the pinned baseline.
-`recovery-panel/` contains the initial tested panel and its startup instructions.
+Start with [INSTALL.md](INSTALL.md) for the new SSD release candidate,
+[HARDWARE.md](HARDWARE.md) for wiring, [FEATURE-MAP.md](FEATURE-MAP.md) for test
+status and [HANDOVER.md](HANDOVER.md) for the development log.
+[STAGING.md](STAGING.md) retains the original prototype deployment history.
+Build the source archive with `build-stage.ps1`, then package it with
+`build-installer.ps1`. Sources are pinned and fetched over HTTPS.
 
-Repository: https://github.com/graemedench/PiCore_FM_Empowered
-
-The recovery panel is a saved working foundation, not yet a complete SSD rebuild
-installer. Music, passwords, machine backups and private server settings are
-excluded. Upstream Sable assets and licensing remain with their original project.
+Music, passwords, machine backups and private server settings are excluded.
+Upstream Sable assets and notices remain with their original project.
 
 ## Credits
 
@@ -28,3 +31,5 @@ and the original Quadify/Sable work. Matt's design and development made this por
 possible; upstream authorship and notices are retained. Graeme reports that Matt
 has granted permission for this port. Thanks also to the piCorePlayer and Lyrion
 contributors, and the MusicBrainz/Cover Art Archive communities.
+
+See [CONTROLS.md](CONTROLS.md) for features and short/long press controls.

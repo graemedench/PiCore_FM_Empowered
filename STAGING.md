@@ -65,3 +65,9 @@ Panel has small stereo bars and elapsed / total mm:ss; Performance has only the
 counter. Streams without known length show elapsed time alone.
 Paused time freezes. Live PCM/layout checks and saved previews verify this.
 This final native startup setting is saved but has not been reboot-tested.
+
+## Current release candidate
+
+For fresh SSD setup use INSTALL.md. Earlier sections document the original
+prototype. The current stage includes CD, IR, receivers and VU/PPM/Spectrum;
+see FEATURE-MAP.md for acceptance status.

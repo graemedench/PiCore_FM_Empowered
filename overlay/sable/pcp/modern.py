@@ -1,6 +1,7 @@
 """Original Sable Panel with an elapsed clock and compact stereo level bars."""
 from ..screens.modern import ModernScreen
 import time
+import math
 from .visual_layouts import Cycle, needles, spectrum
 
 
@@ -11,13 +12,15 @@ class FM4Modern(ModernScreen):
         self._bands = [0.] * 24
         self._next_fft = 0
         self._last_theme = None
+        self._ppm = [0.,0.]
+        self._ppm_time = time.monotonic()
 
     def interact(self):
         self.cycle.interact(time.monotonic())
 
     def render(self, canvas, draw, w, h):
         theme = self.app.settings.get('display', 'theme', default='panel')
-        if theme not in ('panel_vu', 'panel_spectrum'):
+        if theme not in ('panel_vu', 'panel_spectrum', 'panel_ppm'):
             self._last_theme = theme
             return super().render(canvas, draw, w, h)
         now = time.monotonic()
@@ -26,12 +29,26 @@ class FM4Modern(ModernScreen):
             self._last_theme = theme
         st = self.app.store.get()
         playing = st.status == 'play' and not self.app.soft_stopped()
-        visual, overlay = self.cycle.update(now, playing, (st.uri, st.title, st.artist))
+        visual, overlay = self.cycle.update(now, playing, (st.uri, st.title, st.artist), notice_seconds=4 if theme in ('panel_vu','panel_ppm') else 2)
         if not visual:
             return self._render_panel(canvas, draw, w, h, st, not playing)
-        if theme == 'panel_vu':
-            needles(draw, w, h, self.app.levels.read())
-            for x, label in ((w//4-3,'L'), (3*w//4-3,'R')):
+        if theme in ('panel_vu', 'panel_ppm'):
+            if theme == 'panel_ppm':
+                elapsed = min(.25, max(0., now-self._ppm_time))
+                self._ppm_time = now
+                self._ppm = [max(value, old-elapsed/2.8) for value,old in zip(self.app.levels.peaks(),self._ppm)]
+                values = self._ppm
+            else:
+                values = self.app.levels.read()
+            needles(draw, w, h, [max(0., min(1., (v*50-14)/42)) for v in self.app.levels.read()] if theme == 'panel_ppm' else values, peaks=values if theme == 'panel_ppm' else None)
+            if theme == 'panel_ppm':
+                for channel in range(2):
+                    cx,cy,radius=w*(channel+.5)/2,h+3,h-28
+                    for tick in range(7):
+                        angle=math.radians(150-20*tick)
+                        self.text(canvas,(int(cx+radius*math.cos(angle))-2,int(cy-radius*math.sin(angle))-4),str(tick+1),self.app.fonts.get('mono',8),fill=120)
+                self.text(canvas,(2,2),'PEAK',self.app.fonts.get('mono',8),fill=100)
+            for x, label in ((w//4-9,'L'), (3*w//4-9,'R')):
                 self.text(canvas, (x, 4), label, self.app.fonts.get('mono', 10), fill=160)
         else:
             if now >= self._next_fft:
@@ -43,8 +60,8 @@ class FM4Modern(ModernScreen):
                 self.text(canvas, (x, h-9), label, self.app.fonts.get('mono', 8), fill=100)
         if overlay:
             draw.rectangle((0, 0, w-1, 25), fill=0)
-            self.text(canvas, (3, 0), st.title[:40], self.app.fonts.get('regular', 11), fill=255)
-            self.text(canvas, (3, 14), st.artist[:45], self.app.fonts.get('regular', 9), fill=150)
+            self.text(canvas, (w//2, 7), st.title[:36], self.app.fonts.get('sans', 11), fill=255, anchor='mm')
+            self.text(canvas, (w//2, 20), st.artist[:42], self.app.fonts.get('sans', 9), fill=150, anchor='mm')
 
     def _drain_floor(self):
         pass  # Shared-memory producer never waits for a consumer.

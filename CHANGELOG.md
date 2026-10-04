@@ -87,3 +87,16 @@ remaining problems, and rollback/rebuild implications. Never include credentials
 - Saved offline staged archive, dependency pins, build helpers, notes and previews.
   Remaining work includes IR/shutdown input, TIDAL mix mapping, shortcut saving,
   audio output/Wi-Fi settings, fullscreen meters and a complete fresh-SSD installer.
+
+## 4 October — PPM and fresh SSD packaging
+
+Added Panel / PPM with real PCM peak measurement and slow needle release.
+VU/PPM track title and artist are centred across the meters for four seconds;
+spectrum remains two seconds. Any interaction restores Panel for five seconds.
+Deployed safely after checking no rip active; panel startup and native backup
+passed. Local rendering and on-device four-second timing passed. User PPM
+physical feedback pending. Native player identity now derives from pCP config
+for replacement drives. Added fresh-install-only checksum-checked installer,
+bundle builder, INSTALL.md and HARDWARE.md; existing FM4 installs are refused.
+Fresh SSD install and Bluetooth audio acceptance remain pending. Read latest
+FEATURE-MAP/INSTALL for current status; older log entries are historical.

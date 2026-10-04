@@ -44,7 +44,8 @@ def main():
             if now-last_fft >= .05:
                 bands = analyse(mono, rate, scale=2**(bits-1))
                 last_fft = now
-            frame = dict(updated=time.time(), levels=levels(raw, bits), spectrum=bands)
+            frame = dict(updated=time.time(), levels=levels(raw, bits), spectrum=bands,
+                         peaks=[max((abs(v) for v in samples[c::2]), default=0)/2**(bits-1) for c in range(2)])
             temporary = output.with_suffix('.new')
             temporary.write_text(json.dumps(frame))
             temporary.replace(output)
