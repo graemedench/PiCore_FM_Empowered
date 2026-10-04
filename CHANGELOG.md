@@ -132,3 +132,8 @@ covered by link parser. Existing Favorites data remains on device, outside Git.
 - Scoped panel Albums, Artists, Genres and their track lists to native localTracksOnly library. Mixed playlists and queue remain intact; live FM4 Favorites verified with a local track and TIDAL track.
 - Enabled native local-only virtual library and saved default library preference; restored by installer. Browser may retain its own All Music selection; documented local-only selector.
 - Deployed and restarted panel with no active rip, saved piCore backup. Regression checks cover local scope, mixed playlists/queue and missing virtual library. Clean SSD hardware installation remains untested.
+
+## 2026-10-04 — scheduled Favorites backups
+
+- Favorites watcher now backs up on startup and checks hourly; writes only changed versions, keeps latest plus 30 versions outside the music scan at /mnt/sda2/FM4 Backups/Playlists. Empty/missing source does not overwrite backup. Same-disk protection against accidental edits, not drive failure. Initial backup verified live; regression checks passed.
+- Old Quadify playlist import pending location of network backup; local OneDrive/project searches found no saved playlist. Current Favorites preserved.

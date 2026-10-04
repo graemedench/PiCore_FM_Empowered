@@ -24,3 +24,17 @@ with TemporaryDirectory() as folder, patch('sable.pcp.favorites_page.local_addre
     assert target.exists() and not target.with_suffix('.tmp').exists()
     assert 'FM4 Favorites' in target.read_text(encoding='utf-8')
 print('PASS: safe artwork page, public TIDAL links, empty state and atomic export')
+
+from sable.pcp.favorites_page import backup_playlist
+with TemporaryDirectory() as folder:
+    root = Path(folder); source = root / 'favorites.m3u'; backups = root / 'backups'
+    assert not backup_playlist(source, backups)
+    source.write_text('#EXTM3U\ntidal://123.mp4\n')
+    assert backup_playlist(source, backups)
+    assert not backup_playlist(source, backups)
+    for i in range(35):
+        source.write_text('#EXTM3U\ntidal://%d.mp4\n' % i)
+        assert backup_playlist(source, backups)
+    assert len(list(backups.glob('FM4 Favorites-*-*.m3u'))) == 30
+    assert (backups / 'FM4 Favorites-latest.m3u').read_bytes() == source.read_bytes()
+print('PASS: missing playlist, change detection, latest copy and 30-version retention')

@@ -1,4 +1,5 @@
 """Artwork-enabled local Favorites page, refreshed off the UI thread."""
+import hashlib
 import html
 from pathlib import Path
 import re
@@ -67,10 +68,38 @@ def _export(listener, destination=Path('/var/www/fm4-favorites.html')):
     temporary.replace(destination)
 
 
+def backup_playlist(source=Path('/mnt/sda2/Playlists/FM4 Favorites.m3u'),
+                    directory=Path('/mnt/sda2/FM4 Backups/Playlists')):
+    """Keep latest plus 30 changed versions outside the scanned music tree."""
+    if not source.is_file():
+        return False
+    data = source.read_bytes()
+    if not data.strip():
+        return False
+    directory.mkdir(parents=True, exist_ok=True)
+    latest = directory / 'FM4 Favorites-latest.m3u'
+    if latest.exists() and latest.read_bytes() == data:
+        return False
+    digest = hashlib.sha256(data).hexdigest()[:12]
+    version = directory / ('FM4 Favorites-' + time.strftime('%Y%m%d-%H%M%S') + '-' + digest + '.m3u')
+    version.write_bytes(data)
+    temporary = directory / 'latest.tmp'
+    temporary.write_bytes(data)
+    temporary.replace(latest)
+    versions = sorted(directory.glob('FM4 Favorites-*-*.m3u'), key=lambda p: p.stat().st_mtime_ns, reverse=True)
+    for old in versions[30:]:
+        old.unlink()
+    return True
+
+
 def watch(listener):
+    next_backup = 0
     while not listener._stop.is_set():
         try:
             export(listener)
+            if time.monotonic() >= next_backup:
+                backup_playlist()
+                next_backup = time.monotonic() + 3600
         except Exception as exc:
             listener.log('Favorites page refresh:', str(exc))
         listener._stop.wait(60)
