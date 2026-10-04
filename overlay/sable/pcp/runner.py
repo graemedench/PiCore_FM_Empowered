@@ -333,7 +333,7 @@ class PiCoreMenu(MenuScreen):
         tree = super()._build_tree()
         # Expose only functioning settings during the staged port.
         tree = [row for row in tree if row[0] not in
-                ('Audio Output', 'Screen Rotation')]
+                ('Screen Rotation',)]
         for index, row in enumerate(tree):
             if row[0] == 'Display Mode':
                 tree[index] = (row[0], [item for item in row[1]

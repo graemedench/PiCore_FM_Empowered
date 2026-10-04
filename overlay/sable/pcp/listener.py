@@ -459,8 +459,12 @@ class LyrionListener:
                 if self.on_rip_status:
                     self.dispatch(lambda: self.on_rip_status(dict(message=message, progress=progress)))
             try:
-                self._return_local()
-                self.rpc(['stop'])
+                # Only physical CD playback competes with extraction for the drive.
+                status = self.rpc(['status', '-', '1', 'tags:u'])
+                song = (status.get('playlist_loop') or [{}])[0]
+                uri = song.get('url', '')
+                if uri.startswith('http://127.0.0.1:9180/cd/'):
+                    self.rpc(['stop'])
                 rip_flac(info['disc'], drive['path'], self._rip_cancel, report, fmt=fmt)
                 self.refresh_library()
             except Exception as exc:
