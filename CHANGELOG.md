@@ -145,3 +145,5 @@ covered by link parser. Existing Favorites data remains on device, outside Git.
 
 - Imported GATEWAY Quadify-latest.playlist: 14 entries reduce to 11 distinct entries (9 TIDAL + BBC Radio 2/4); duplicates were removed by Lyrion. Preserved pre-import playlist separately. Playlisttracks queries now include player context to support HTTP streams; verified indexed URLs and web export. Old BBC direct stream links preserved, playback not tested.
 - User requested three rotating copies and one HTML: changed retention to numbered slots 1–3 plus latest and HTML. Network upload pending private share credentials (guest rejected); local hourly backup active.
+
+- Network backup enabled and tested successfully to GATEWAY / Gateway Share (192.168.1.200). Verified latest M3U, rotating slot 1 and HTML on share; remaining slots fill on subsequent playlist changes. Private device credentials/config saved with native backup, excluded from project and installer. Hourly/startup watcher reads config dynamically.
