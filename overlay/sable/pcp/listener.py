@@ -44,6 +44,8 @@ class LyrionListener:
                                   ('Genres', 'genres'), ('Playlists', 'playlists'),
                                   ('Queue', 'queue'), ('TIDAL', 'tidal'),
                                   ('BBC Sounds', 'bbcsounds')]]
+        self.audio_outputs = []
+        self.audio_output = ''
         self._stop = threading.Event()
         self._commands = ThreadPoolExecutor(1, thread_name_prefix='lms-command')
         self._browse = ThreadPoolExecutor(1, thread_name_prefix='lms-browse')
@@ -59,6 +61,32 @@ class LyrionListener:
         self._rip_cancel = threading.Event()
         self._rip_lock = threading.Lock()
         self._rip_message = ''
+
+    def get_audio_outputs(self):
+        def work():
+            try:
+                from .outputs import devices, current
+                self.audio_outputs, self.audio_output = devices(), current()
+                if self.on_outputs:
+                    self.dispatch(lambda: self.on_outputs(self.audio_outputs))
+            except Exception as exc:
+                self.log('Audio output discovery failed:', exc)
+        self._browse.submit(work)
+
+    def set_audio_output(self, output, callback):
+        def work():
+            error = None
+            try:
+                from .outputs import change, current
+                self._return_local()
+                change(output)
+                self.audio_output = current()
+            except Exception as exc:
+                error = str(exc)
+                self.log('Output change:', exc)
+            self.dispatch(lambda e=error: callback(e))
+            self.get_audio_outputs()
+        self._commands.submit(work)
 
     def _check_cd(self):
         from .cd import devices
@@ -421,7 +449,7 @@ class LyrionListener:
         self._commands.submit(work)
 
     def rip_cd(self, info, drive, fmt='flac'):
-        if fmt != 'flac' or drive not in info.get('availableDrives', []) or not self._rip_lock.acquire(False):
+        if fmt not in ('flac', 'mp3') or drive not in info.get('availableDrives', []) or not self._rip_lock.acquire(False):
             return False
         self._rip_cancel.clear()
         def work():
@@ -433,7 +461,7 @@ class LyrionListener:
             try:
                 self._return_local()
                 self.rpc(['stop'])
-                rip_flac(info['disc'], drive['path'], self._rip_cancel, report)
+                rip_flac(info['disc'], drive['path'], self._rip_cancel, report, fmt=fmt)
                 self.refresh_library()
             except Exception as exc:
                 report('Rip failed: ' + str(exc))

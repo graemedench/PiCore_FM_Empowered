@@ -19,6 +19,13 @@ from .listener import LyrionListener
 
 
 class PiCoreApp(App):
+    def set_audio_output(self, output):
+        self.show_osd('AUDIO OUTPUT', 'Switching...')
+        def done(error):
+            self.show_osd('AUDIO OUTPUT', str(error) if error else 'Output saved')
+            self.fsm.screens['menu'].refresh_audio_outputs()
+        self.listener.set_audio_output(output, done)
+
     def volume_available(self):
         return self.store.get().service not in ('airplay', 'bluetooth')
 
@@ -128,11 +135,26 @@ class PiCoreBrowse(BrowseScreen):
     def on_browse_data(self, data):
         super().on_browse_data(data)
         for frame in self.stack:
-            frame['items'] = [item for item in frame['items'] if item.get('_rip_format') != 'mp3']
+            for item in frame['items']:
+                if item.get('_rip_format') == 'mp3':
+                    item['title'] = 'Rip MP3 (320 kbps)'
         self.app.render()
 
 
 class PiCoreMenu(MenuScreen):
+    def _audio_output_items(self):
+        items = [(d['name'], lambda value=d['id']: self._set_audio_output(value))
+                 for d in getattr(self.app.listener, 'audio_outputs', [])]
+        # Reuse Sable's navigation marker without platform-specific device assumptions.
+        from ..screens.menu import _BACK
+        return items + [('Back', _BACK)]
+
+    def _audio_output_label(self):
+        from .outputs import selected
+        listener = self.app.listener
+        device = selected(getattr(listener, 'audio_outputs', []), getattr(listener, 'audio_output', ''))
+        return device['name'] if device else 'Select Output'
+
     _signin_url = None
 
     def _network_status(self):
@@ -386,6 +408,8 @@ def main():
     listener.on_rip_info = app.fsm.screens['browse'].on_rip_info
     listener.on_rip_status = app.fsm.screens['browse'].on_rip_status
     listener.on_sources = app.fsm.screens['home'].refresh_sources
+    listener.on_outputs = app.fsm.screens['menu'].refresh_audio_outputs
+    listener.get_audio_outputs()
     buttons = None
     power_button = None
     if not args.sim:

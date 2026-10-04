@@ -94,7 +94,9 @@ def chunks(disc, track, offset=0, length=None):
         os.close(fd)
 
 
-def rip_flac(disc, destination, cancel, report):
+def rip_flac(disc, destination, cancel, report, fmt="flac"):
+    if fmt not in ("flac", "mp3"):
+        raise ValueError("Unsupported rip format")
     import shutil
     import subprocess
     import tempfile
@@ -132,14 +134,18 @@ def rip_flac(disc, destination, cancel, report):
             if count != frames*SECTOR or toc(disc['device'])['id'] != disc['id']:
                 raise ValueError('Incomplete read / CD changed')
             report('Encoding track %d/%d' % (index, len(disc['tracks'])), .5)
-            partial = Path(temporary) / 'audio.flac'
-            process = subprocess.Popen(['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error',
+            partial = Path(temporary) / ('audio.' + fmt)
+            title = track.get('title', 'Track %02d' % track['number'])
+            album = disc.get('album', 'Audio CD')
+            artist = track.get('artist', disc.get('artist', ''))
+            command = (['lame', '--silent', '-b', '320', '--id3v2-only',
+                '--tt', title, '--ta', artist, '--tl', album, '--tn',
+                str(track['number']), str(wav), str(partial)] if fmt == 'mp3' else
+                ['ffmpeg', '-nostdin', '-hide_banner', '-loglevel', 'error',
                 '-n', '-i', str(wav), '-threads', '1', '-c:a', 'flac', '-metadata',
-                'title=' + track.get('title', 'Track %02d' % track['number']), '-metadata',
-                'album=' + disc.get('album', 'Audio CD'), '-metadata',
-                'artist=' + track.get('artist', disc.get('artist', '')), 
-                '-metadata', 'track=%d' % track['number'], str(partial)],
-                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                'title=' + title, '-metadata', 'album=' + album, '-metadata',
+                'artist=' + artist, '-metadata', 'track=%d' % track['number'], str(partial)])
+            process = subprocess.Popen(command, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             deadline = time.monotonic()+900
             while process.poll() is None:
                 if cancel.wait(.2) or time.monotonic() > deadline:
@@ -152,11 +158,11 @@ def rip_flac(disc, destination, cancel, report):
                     report('Rip cancelled - saved tracks kept')
                     return
             if process.returncode:
-                raise ValueError('FLAC encoding failed')
+                raise ValueError(fmt.upper() + ' encoding failed')
             partial.chmod(0o644)
-            partial.rename(folder / ('%02d - Track %02d.flac' % (track['number'], track['number'])))
+            partial.rename(folder / ('%02d - Track %02d.%s' % (track['number'], track['number'], fmt)))
         report('Saved track %d/%d' % (index, len(disc['tracks'])), 1)
-    report('Rip complete: %d tracks (FLAC)' % len(disc['tracks']), 1)
+    report('Rip complete: %d tracks (%s)' % (len(disc['tracks']), fmt.upper()), 1)
 
 
 class CDService:

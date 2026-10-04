@@ -3,7 +3,7 @@ import platform
 from pathlib import Path
 
 base = Path('/mnt/sda2/tce')
-packages = ['cdrom-' + platform.release() + '.tcz', 'pcp-ffmpeg.tcz']
+packages = ['cdrom-' + platform.release() + '.tcz', 'pcp-ffmpeg.tcz', 'pcp-lame.tcz']
 for name in packages:
     if not (base / 'optional' / name).exists():
         raise SystemExit('Install native extension first: ' + name)
@@ -13,4 +13,4 @@ for name in packages:
     if name not in entries:
         entries.append(name)
 path.write_text('\n'.join(entries) + '\n')
-print('Native CD driver and FLAC encoding dependencies saved')
+print('Native CD driver and FLAC/MP3 encoding dependencies saved')

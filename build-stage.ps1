@@ -25,9 +25,10 @@ Copy-Item -Path (Join-Path $projectRoot 'tools/*.py') -Destination $sableRoot
 Copy-Item -LiteralPath (Join-Path $projectRoot 'stage-start.sh') -Destination $sableRoot
 Copy-Item -LiteralPath (Join-Path $projectRoot 'receiver-hook.sh') -Destination $sableRoot
 Copy-Item -LiteralPath (Join-Path $projectRoot 'receiver-levels.sh') -Destination $sableRoot
-tar --exclude=__pycache__ -czf (Join-Path $projectRoot 'sable-pcp-stage.tar.gz') -C $sableRoot src assets config check_live.py check_transport.py check_buttons.py check_shortcut_save.py check_revision_one.py check_cd.py check_cd_queue.py check_cd_metadata.py check_stop_resume.py check_levels_screen.py check_power.py check_receiver_levels.py enable-visualizer.py save-prototype-startup.py setup-native-receivers.py setup-receiver-levels.py setup-native-wifi.py setup-native-cd.py ensure-player-id.py install-bbc-sounds.py install-playhls.py receiver-hook.sh receiver-levels.sh stage-start.sh
+tar --exclude=__pycache__ -czf (Join-Path $projectRoot 'sable-pcp-stage.tar.gz') -C $sableRoot src assets config check_live.py check_transport.py check_buttons.py check_shortcut_save.py check_revision_one.py check_cd.py check_cd_queue.py check_cd_metadata.py check_outputs.py check_stop_resume.py check_levels_screen.py check_power.py check_receiver_levels.py enable-visualizer.py save-prototype-startup.py setup-native-receivers.py setup-receiver-levels.py setup-native-wifi.py setup-native-cd.py ensure-player-id.py install-bbc-sounds.py install-playhls.py receiver-hook.sh receiver-levels.sh stage-start.sh
 if ($LASTEXITCODE) { throw 'Archive creation failed' }
 Write-Host 'Staged archive created. See STAGING.md before deployment.'
+
 
 
 
