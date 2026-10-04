@@ -193,7 +193,9 @@ directory mask = 0775
     run('python3.11', str(STAGE / 'install-profile-plugins.py'), str(HERE / 'fm4-plugins.json'))
     run('chown', '-R', 'tc:staff', '/mnt/sda2/tce/slimserver/Cache/InstalledPlugins')
     for key, value in [('mediadirs', ['/mnt/sda2/Music']), ('playlistdir', '/mnt/sda2/Playlists'),
-                       ('language', profile['server']['language']), ('skin', profile['server']['skin']), ('wizardDone', 1)]:
+                       ('language', profile['server']['language']), ('skin', profile['server']['skin']), ('wizardDone', 1),
+                       ('plugin.onlinelibrary:enableLocalTracksOnly', 1),
+                       ('libraryId', hashlib.md5(b'localTracksOnly').hexdigest()[:8])]:
         rpc(['pref', key, value])
     for plugin in json.loads((HERE / 'fm4-plugins.json').read_text()):
         rpc(['pref', 'plugin.state:' + plugin['name'], 'enabled'])

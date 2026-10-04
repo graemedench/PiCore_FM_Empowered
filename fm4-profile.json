@@ -95,7 +95,8 @@
   "server": {
     "playlist_name": "FM4 Favorites",
     "skin": "material",
-    "language": "EN_GB"
+    "language": "EN_GB",
+    "local_library_only": true
   },
   "excluded": [
     "wifi",

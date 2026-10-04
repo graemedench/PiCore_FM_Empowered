@@ -62,6 +62,7 @@ class LyrionListener:
         self._commands = ThreadPoolExecutor(1, thread_name_prefix='lms-command')
         self._browse = ThreadPoolExecutor(1, thread_name_prefix='lms-browse')
         self._generation = 0
+        self._local_library_ready = False
         self._status_wake = threading.Event()
         self.refresh_minutes = lambda: 0
         self._refresh_due = None
@@ -248,6 +249,19 @@ class LyrionListener:
                 break
         return items
 
+    def _local_library_filter(self):
+        if not self._local_library_ready:
+            import hashlib
+            key = 'plugin.onlinelibrary:enableLocalTracksOnly'
+            if str(self.rpc(['pref', key, '?'], player='').get('_p2')) != '1':
+                self.rpc(['pref', key, 1], player='')
+            expected = hashlib.md5(b'localTracksOnly').hexdigest()[:8]
+            libraries = self.rpc(['libraries'], player='').get('folder_loop', [])
+            if not any(row.get('id') == expected for row in libraries):
+                raise RuntimeError('Local-only library is not ready')
+            self._local_library_ready = True
+        return 'library_id:localTracksOnly'
+
     def _items(self, uri):
         if uri == 'pcp:cd':
             try:
@@ -281,7 +295,7 @@ class LyrionListener:
             }[path]
             return [self.folder(row.get(label, 'Untitled'),
                     'pcp:tracks?' + urllib.parse.urlencode({filter_key: row['id']}))
-                    for row in self._pages(command, loop)]
+                    for row in self._pages(command, loop, *([self._local_library_filter()] if path != 'playlists' else []))]
         if path == 'queue':
             result = self.rpc(['status', '0', '10000', 'tags:adcu'])
             rows = result.get('playlist_loop', [])
@@ -292,7 +306,7 @@ class LyrionListener:
                 rows = self._pages('playlisttracks', 'playlisttracks_loop',
                                    *filters, 'tags:adcu')
             else:
-                rows = self._pages('titles', 'titles_loop', *filters, 'tags:adcu')
+                rows = self._pages('titles', 'titles_loop', *filters, self._local_library_filter(), 'tags:adcu')
         else:
             raise ValueError('Unsupported browse source: ' + uri)
         return [dict(title=row.get('title', 'Untitled'), uri=row.get('url', ''),

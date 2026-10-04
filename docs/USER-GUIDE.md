@@ -52,6 +52,8 @@ available in Settings; saved options are persisted through native backup.
 
 ## Local music, queues and the web player
 
+Albums, Artists and Genres show files stored locally, using Lyrion's local-only library. TIDAL remains available through its own source; playlists and the queue can contain both. In the web player, select **Local tracks only (no music service)** if its saved library selection still shows All Music.
+
 Store music in `/mnt/sda2/Music` and saved playlists in `/mnt/sda2/Playlists` on
 the supported USB-boot layout. Copy files through the native Samba Music share,
 then run Settings → Music Library → Refresh now. Automatic refresh can be Off,

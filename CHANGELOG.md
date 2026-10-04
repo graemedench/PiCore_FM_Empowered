@@ -125,3 +125,10 @@ publisher HTTP. Added native-httpd FM4 Favorites page, real art, public TIDAL
 links, startup/minute/save refresh and OLED URL entry. Live page and remote
 artwork returned HTTP 200; current saved TIDAL URI is tidal://218740662.mp4,
 covered by link parser. Existing Favorites data remains on device, outside Git.
+
+## 2026-10-04 — local library excludes cloud albums
+
+- Diagnosed 37 combined albums: 32 were TIDAL cloud entries. Local-only view contains five albums and 68 tracks; every local indexed file exists. No files or cloud library entries deleted.
+- Scoped panel Albums, Artists, Genres and their track lists to native localTracksOnly library. Mixed playlists and queue remain intact; live FM4 Favorites verified with a local track and TIDAL track.
+- Enabled native local-only virtual library and saved default library preference; restored by installer. Browser may retain its own All Music selection; documented local-only selector.
+- Deployed and restarted panel with no active rip, saved piCore backup. Regression checks cover local scope, mixed playlists/queue and missing virtual library. Clean SSD hardware installation remains untested.
