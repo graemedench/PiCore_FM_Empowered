@@ -1,4 +1,6 @@
 """Artwork-enabled local Favorites page, refreshed off the UI thread."""
+import json
+import subprocess
 import html
 from pathlib import Path
 import re
@@ -91,6 +93,27 @@ def backup_playlist(source=Path('/mnt/sda2/Playlists/FM4 Favorites.m3u'),
     return True
 
 
+def upload_backups(directory=Path('/mnt/sda2/FM4 Backups/Playlists'),
+                   config=Path('/home/tc/.fm4-backup.json'),
+                   credentials=Path('/home/tc/.fm4-backup.credentials')):
+    if not config.exists() or not credentials.exists():
+        return False
+    settings = json.loads(config.read_text())
+    files = [directory / 'FM4 Favorites-latest.m3u', directory / 'FM4 Favorites.html']
+    files += sorted(directory.glob('FM4 Favorites-backup-*.m3u'))
+    files = [p for p in files if p.exists()]
+    if not files:
+        return False
+    # Only generated filenames are used; no shell or credentials in command text.
+    commands = ''.join('put "%s" "%s"\n' % (p, p.name) for p in files)
+    result = subprocess.run(['smbclient', '//'+settings['server']+'/'+settings['share'],
+        '-A', str(credentials)], input=commands+'quit\n', text=True,
+        capture_output=True, timeout=45)
+    if result.returncode or 'NT_STATUS_' in result.stdout + result.stderr:
+        raise RuntimeError('Network playlist backup failed; local copies retained')
+    return True
+
+
 def watch(listener):
     next_backup = 0
     while not listener._stop.is_set():
@@ -104,6 +127,7 @@ def watch(listener):
                     temporary = target.with_suffix('.tmp')
                     temporary.write_bytes(page.read_bytes())
                     temporary.replace(target)
+                upload_backups()
                 next_backup = time.monotonic() + 3600
         except Exception as exc:
             listener.log('Favorites page refresh:', str(exc))

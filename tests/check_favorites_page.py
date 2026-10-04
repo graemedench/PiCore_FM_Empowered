@@ -38,3 +38,19 @@ with TemporaryDirectory() as folder:
     assert len(list(backups.glob('FM4 Favorites-backup-*.m3u'))) == 3
     assert (backups / 'FM4 Favorites-latest.m3u').read_bytes() == source.read_bytes()
 print('PASS: missing playlist, change detection, latest copy and three-slot rotation')
+
+from sable.pcp.favorites_page import upload_backups
+with TemporaryDirectory() as folder:
+    root = Path(folder); cfg = root / 'config.json'; creds = root / 'credentials'
+    assert not upload_backups(root, cfg, creds)
+    cfg.write_text('{"server":"backup","share":"Share Name"}'); creds.write_text('private')
+    (root / 'FM4 Favorites-latest.m3u').write_text('#EXTM3U')
+    with patch('sable.pcp.favorites_page.subprocess.run', return_value=SimpleNamespace(returncode=0, stdout='', stderr='')) as run:
+        assert upload_backups(root, cfg, creds)
+        assert run.call_args.args[0][1] == '//backup/Share Name'
+        assert 'private' not in str(run.call_args)
+    with patch('sable.pcp.favorites_page.subprocess.run', return_value=SimpleNamespace(returncode=0, stdout='NT_STATUS_ACCESS_DENIED', stderr='')):
+        try: upload_backups(root, cfg, creds)
+        except RuntimeError: pass
+        else: raise AssertionError('Rejected SMB upload must fail')
+print('PASS: optional network upload, share spaces, credentials separation and rejected upload')

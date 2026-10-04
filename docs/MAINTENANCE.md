@@ -78,3 +78,5 @@ playlist contents.
 ## Favorites backup
 
 The panel checks FM4 Favorites at startup and every hour. Changed playlists are saved under `/mnt/sda2/FM4 Backups/Playlists`, keeping `FM4 Favorites-latest.m3u` plus three rotating versions. These are outside the library scan. This protects against edits; a separate network/computer copy is required for drive failure protection. Backups run while the panel service is running and survive reboot.
+
+Optional network backups use private `/home/tc/.fm4-backup.json` (server/share) and mode-600 `/home/tc/.fm4-backup.credentials` (smbclient authentication). Do not commit either file. Install `libarchive.tcz` if the native smbclient reports that dependency missing. The panel uploads latest, available rotating slots and one HTML page at startup/hourly. Failed uploads retain local copies. Fresh installs require their own backup share configuration; credentials are never bundled.
