@@ -15,6 +15,7 @@ class Decoder:
         self.last = None
         self.last_time = 0
         self.last_code = None
+        self.frames = 0
 
     def edge(self, high, now):
         if high:
@@ -55,6 +56,7 @@ class Decoder:
                 for bit in self.bits:
                     code = (code << 1) | bit
                 self.last_code = code
+                self.frames += 1
                 # Preserve the captured remote's address and pairing ID.
                 if code >> 16 == 0x77E1 and code & 255 == self.pair_id:
                     key = KEYS.get((code >> 8) & 255)
@@ -65,7 +67,7 @@ class Decoder:
 
 
 class Remote(threading.Thread):
-    def __init__(self, callback, stop):
+    def __init__(self, callback, stop, pair_id=0x15):
         super().__init__(daemon=True, name='fm4-ir')
         import gpiod
         from gpiod.line import Direction, Edge, Bias
@@ -73,11 +75,19 @@ class Remote(threading.Thread):
             config={4:gpiod.LineSettings(direction=Direction.INPUT,
                     edge_detection=Edge.BOTH, bias=Bias.PULL_UP)}, event_buffer_size=256)
         self.callback, self.stop = callback, stop
+        self.pair_id = pair_id
+        self.pair_until = 0
+        self.on_pair = None
+
+    def begin_pair(self, callback):
+        import time
+        self.on_pair = callback
+        self.pair_until = time.monotonic()+30
 
     def run(self):
         import gpiod
         from datetime import timedelta
-        decoder = Decoder()
+        decoder = Decoder(self.pair_id)
         from pathlib import Path
         import json, time
         recent = []
@@ -86,6 +96,9 @@ class Remote(threading.Thread):
         print('IR: Apple aluminium receiver listening on GPIO4')
         try:
             while not self.stop.is_set():
+                if self.pair_until and time.monotonic() >= self.pair_until:
+                    self.pair_until = 0
+                    self.on_pair(None)
                 if not self.request.wait_edge_events(timedelta(seconds=.2)):
                     continue
                 for event in self.request.read_edge_events():
@@ -93,8 +106,16 @@ class Remote(threading.Thread):
                     if Path('/tmp/fm4-ir-capture').exists():
                         recent.append((event.event_type.name, event.timestamp_ns))
                         recent = recent[-160:]
+                    before = decoder.frames
                     result = decoder.edge(event.event_type == gpiod.EdgeEvent.Type.RISING_EDGE,
                                           event.timestamp_ns / 1e9)
+                    if self.pair_until and decoder.frames != before:
+                        code = decoder.last_code
+                        if code >> 16 == 0x77E1 and ((code >> 8) & 255) in KEYS:
+                            decoder.pair_id = self.pair_id = code & 255
+                            self.pair_until = 0
+                            self.on_pair(self.pair_id)
+                            continue
                     if result:
                         print('IR key:', result[0], 'repeat' if result[1] else 'press')
                         self.callback(*result)

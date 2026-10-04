@@ -162,6 +162,23 @@ class PiCoreMenu(MenuScreen):
         device = selected(getattr(listener, 'audio_outputs', []), getattr(listener, 'audio_output', ''))
         return device['name'] if device else 'Select Output'
 
+    def _pair_ir(self):
+        remote = getattr(self.app, 'ir_remote', None)
+        if not remote or not remote.is_alive():
+            self.app.show_osd('IR REMOTE', 'Receiver unavailable')
+            return
+        self.app.show_osd('PAIR APPLE REMOTE', 'Press Menu within 30 seconds')
+        def finish(identity):
+            def apply():
+                if identity is None:
+                    self.app.show_osd('IR REMOTE', 'Pairing timed out')
+                else:
+                    self.app.settings.set('ir', 'pair_id', identity)
+                    self.app.show_osd('IR REMOTE', 'Paired successfully')
+                    self._wifi_jobs.submit(subprocess.run, ['pcp', 'bu'], capture_output=True, timeout=90)
+            self.app.listener.dispatch(apply)
+        remote.begin_pair(finish)
+
     _signin_url = None
 
     def _network_status(self):
@@ -351,6 +368,7 @@ class PiCoreMenu(MenuScreen):
             elif row[0] == 'Network':
                 tree[index] = (row[0], row[1][:-1] + [
                     ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
+        tree.insert(-1, ('Pair Apple Remote', self._pair_ir))
         tree.insert(-1, ('Service sign-in', [
             ('BBC Sounds', lambda: self._show_signin('BBC Sounds sign-in',
                 'plugins/BBCSounds/settings/basic.html')),
@@ -446,7 +464,9 @@ def main():
                 lambda: app.handle(cmd, arg))), app=app)
             try:
                 remote = Remote(lambda key, repeat: bridge._on_line(
-                    '0 %02x %s Apple_Aluminium_Sable' % (int(repeat), key)), stop)
+                    '0 %02x %s Apple_Aluminium_Sable' % (int(repeat), key)), stop,
+                    pair_id=app.settings.get('ir', 'pair_id', default=0x15))
+                app.ir_remote = remote
                 remote.start()
             except Exception as exc:
                 print('IR unavailable:', exc)

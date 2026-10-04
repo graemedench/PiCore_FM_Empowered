@@ -8,7 +8,7 @@ CONFIG = Path('/usr/local/etc/pcp/pcp.cfg')
 
 def devices():
     result = subprocess.run(['aplay', '-l'], capture_output=True, text=True, timeout=5, check=True)
-    return [dict(id='hw:CARD=%s,DEV=%s' % (card, device), name=name.strip())
+    return [dict(id='hw:CARD=%s,DEV=%s' % (card, device), name='Headphones' if card == 'Headphones' else name.strip())
             for card, name, device in re.findall(r'^card \d+: ([A-Za-z0-9_]+) \[([^\]]+)\], device (\d+):', result.stdout, re.M)]
 
 
