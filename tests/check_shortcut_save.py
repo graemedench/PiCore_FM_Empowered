@@ -34,5 +34,14 @@ with tempfile.TemporaryDirectory() as directory:
         assert saved[prefix + 'arg'].startswith('file:///mnt/sda2/Music/test.mp3')
         assert menu._shortcut_entry is None
     assert app.listener._commands.submit.call_count == 2
+    before = Path(path).read_bytes()
+    app.handle('save_shortcut')
+    assert app.capture_shortcut_button(7)
+    menu.handle_scroll(2)
+    assert menu._shortcut_entry['index'] == 2
+    menu.handle_select()
+    assert menu._shortcut_entry is None
+    assert Path(path).read_bytes() == before
+    assert app.listener._commands.submit.call_count == 2
     menu._wifi_jobs.shutdown()
-print('PASS: hold-8 picker, button capture, short/long settings reload, backup requested')
+print('PASS: short/long save and reload; Cancel leaves assignments unchanged')

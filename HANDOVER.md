@@ -298,3 +298,6 @@ identity; do not disable strict host-key verification or blindly delete old keys
 
 ### 2026-10-04 — Hold 8 shortcut learning restored
 Tap 8 still adds the current track to FM4 Favorites. Hold 8 opens Save Shortcut; press 5, 6 or 7, choose Short/Long with the encoder and click to save. Assignments use atomic settings writes followed by native pcp backup. Receiver inputs are not learnable. TIDAL/BBC collection identifiers and known radio preset entry URLs are preserved for recall. Deployed over Wi-Fi .19; runner healthy, native backup succeeded. check_shortcut_save.py passed picker capture, short/long settings reload and backup scheduling without changing real button assignments. Physical user confirmation pending. Legacy named playlist action remains unfinished.
+
+### 2026-10-04 — Explicit shortcut Cancel
+The destination picker now shows Short press, Long press and Cancel as three encoder choices. Cancel returns to the playback view without changing assignments or scheduling backup. Regression check covers unchanged settings after Cancel.

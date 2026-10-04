@@ -187,6 +187,11 @@ class PiCoreMenu(MenuScreen):
         self.app.render()
 
     def handle_select(self):
+        entry = self._shortcut_entry
+        if entry and entry['stage'] == 'press' and entry['index'] == 2:
+            self._shortcut_entry = None
+            self.app.go(self.app.base_screen())
+            return
         if self._signin_url:
             self._signin_url = None
             self.app.fsm.reset_menu_timer()
@@ -201,10 +206,22 @@ class PiCoreMenu(MenuScreen):
         super().handle_back()
 
     def handle_scroll(self, delta):
+        entry = self._shortcut_entry
+        if entry and entry['stage'] == 'press':
+            entry['index'] = (entry['index'] + delta) % 3
+            self.app.fsm.reset_menu_timer()
+            return
         if not self._signin_url:
             super().handle_scroll(delta)
 
     def render(self, canvas, draw, w, h):
+        entry = self._shortcut_entry
+        if entry and entry['stage'] == 'press':
+            rows = [('Short press', ''), ('Long press', ''), ('Cancel', '')]
+            self.draw_menu_surface(canvas, draw, w, h,
+                'SAVE BUTTON %d' % entry['button'], rows, entry['index'],
+                key_prefix='shortcut', top=self.TOP, row_h=self.ROW_H, nrows=self.ROWS)
+            return
         if self._wifi_entry is not None:
             self.app.fsm.reset_menu_timer()
             entry = self._wifi_entry
