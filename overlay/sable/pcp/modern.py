@@ -36,8 +36,8 @@ class FM4Modern(ModernScreen):
         else:
             if now >= self._next_fft:
                 values = self.app.levels.spectrum()
-                self._bands = [max(value, old-.08) for value, old in zip(values, self._bands)]
-                self._next_fft = now+.1
+                self._bands = [max(value, old-.12) for value, old in zip(values, self._bands)]
+                self._next_fft = now+.05
             spectrum(draw, w, h, self._bands)
             for x, label in ((2,'60'), (w//2-12,'1k'), (w-24,'18k')):
                 self.text(canvas, (x, h-9), label, self.app.fonts.get('mono', 8), fill=100)

@@ -41,7 +41,7 @@ def main():
         try:
             samples = struct.unpack('<' + ('h' if bits == 16 else 'i') * (len(raw) // (bits // 8)), raw)
             mono = [(a+b)/2 for a,b in zip(samples[::2], samples[1::2])]
-            if now-last_fft >= .1:
+            if now-last_fft >= .05:
                 bands = analyse(mono, rate, scale=2**(bits-1))
                 last_fft = now
             frame = dict(updated=time.time(), levels=levels(raw, bits), spectrum=bands)
