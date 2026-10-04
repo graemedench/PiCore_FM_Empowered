@@ -35,3 +35,6 @@ Do not mark software initialization as physical hardware verification.
 - Shortcuts reset: restored with native backup.
 
 
+
+- Audio CD prototype: dynamic carousel, numbered tracks/Play all, Eject, FLAC progress/Cancel implemented. Live CD WAV/range and first-track elapsed verified; sound/full-disc rip confirmation pending. MP3, metadata lookup and secure-rip verification remain.
+- Stable player identity fixed across Ethernet/Wi-Fi; built-in headphones currently selected for user CD test.

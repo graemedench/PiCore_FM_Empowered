@@ -14,6 +14,7 @@ from pathlib import Path
 from ..app import App
 from ..settings import Settings
 from ..screens.menu import MenuScreen
+from ..screens.browse import BrowseScreen
 from .listener import LyrionListener
 
 
@@ -82,6 +83,8 @@ class PiCoreApp(App):
 
     def current_shortcut_source(self):
         st = self.store.get()
+        if st.uri.startswith('http://127.0.0.1:9180/cd/'):
+            return None  # Disc URLs are temporary, not reusable shortcuts.
         if st.service in ('airplay', 'bluetooth'):
             return None
         if st.title in ('BBC Radio 2', 'BBC Radio 4'):
@@ -99,6 +102,26 @@ class PiCoreApp(App):
             if result.returncode:
                 self.listener.dispatch(lambda: self.show_osd('BACKUP FAILED', 'Shortcut saved in RAM'))
         self.listener._commands.submit(backup)
+
+
+class PiCoreBrowse(BrowseScreen):
+    def handle_select(self):
+        frame = self._cur
+        item = frame['items'][frame['index']] if frame['items'] else {}
+        if item.get('_cd_eject'):
+            if self.app.listener.get_rip_progress():
+                self.app.show_osd('CD RIPPING', 'Cancel rip before eject')
+            else:
+                self.app.show_osd('CD', 'Ejecting disc')
+                self.app.listener.eject_cd()
+            return
+        super().handle_select()
+
+    def on_browse_data(self, data):
+        super().on_browse_data(data)
+        for frame in self.stack:
+            frame['items'] = [item for item in frame['items'] if item.get('_rip_format') != 'mp3']
+        self.app.render()
 
 
 class PiCoreMenu(MenuScreen):
@@ -339,6 +362,7 @@ def main():
             app.settings.set('buttons', button, cfg)
         app.settings.set('_meta', 'pcp_button_layout', 1)
     app.fsm.screens['menu'] = PiCoreMenu(app)
+    app.fsm.screens['browse'] = PiCoreBrowse(app)
     from .levels import AudioLevels
     from .modern import FM4Modern
     app.levels = AudioLevels(args.player)
@@ -348,8 +372,11 @@ def main():
     listener = LyrionListener(app.store, lambda cb: events.put(('callback', cb)),
                               host=args.server, player=args.player)
     app.listener = listener
+    listener.cd.start()
     listener.refresh_minutes = lambda: app.settings.get('library', 'refresh_minutes', default=0)
     listener.on_browse = app.fsm.screens['browse'].on_browse_data
+    listener.on_rip_info = app.fsm.screens['browse'].on_rip_info
+    listener.on_rip_status = app.fsm.screens['browse'].on_rip_status
     listener.on_sources = app.fsm.screens['home'].refresh_sources
     buttons = None
     power_button = None

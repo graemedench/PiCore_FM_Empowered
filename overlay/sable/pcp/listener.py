@@ -52,6 +52,25 @@ class LyrionListener:
         self.refresh_minutes = lambda: 0
         self._refresh_due = None
         self._refresh_interval = 0
+        from .cd import CDService
+        self.cd = CDService()
+        self._cd_present = False
+        self.on_rip_info = self.on_rip_status = None
+        self._rip_cancel = threading.Event()
+        self._rip_lock = threading.Lock()
+        self._rip_message = ''
+
+    def _check_cd(self):
+        from .cd import devices
+        present = bool(devices())
+        if present != self._cd_present:
+            self._cd_present = present
+            self.browse_sources = [s for s in self.browse_sources if s['uri'] != 'pcp:cd']
+            if present:
+                self.browse_sources.append(dict(name='Audio CD', uri='pcp:cd'))
+            if self.on_sources:
+                sources = list(self.browse_sources)
+                self.dispatch(lambda: self.on_sources(sources))
 
     def _check_refresh(self, now):
         minutes = int(self.refresh_minutes() or 0)
@@ -78,6 +97,9 @@ class LyrionListener:
         self._thread.start()
 
     def stop(self):
+        self._rip_cancel.set()
+        if self.cd:
+            self.cd.close()
         self._stop.set()
         self._status_wake.set()
         self._thread.join(timeout=4)
@@ -89,6 +111,7 @@ class LyrionListener:
         while not self._stop.is_set():
             try:
                 self._check_refresh(time.monotonic())
+                self._check_cd()
                 receiver = Path('/tmp/fm4-receiver.json')
                 if receiver.exists():
                     active = json.loads(receiver.read_text())
@@ -181,6 +204,15 @@ class LyrionListener:
         return items
 
     def _items(self, uri):
+        if uri == 'pcp:cd':
+            try:
+                disc = self.cd.inspect()
+            except OSError:
+                disc = None
+            tracks = [dict(title='Track %02d' % t['number'], uri=self.cd.url(t['number']),
+                         type='song', service='cd_controller', duration=t['duration'])
+                    for t in disc['tracks']] if disc else [dict(title='Insert an audio CD', _notice=True)]
+            return tracks + [dict(title='Eject CD', _cd_eject=True)]
         path = uri.removeprefix('pcp:')
         tag = path.partition('?')[0]
         if tag in ('tidal', 'bbcsounds'):
@@ -232,7 +264,11 @@ class LyrionListener:
                 items = [dict(title='Server unavailable — try again', _notice=True)]
             def deliver():
                 if generation == self._generation and self.on_browse:
-                    self.on_browse({'navigation': {'lists': [{'items': items}]}})
+                    navigation = {'lists': [{'items': items}]}
+                    if uri == 'pcp:cd' and items and not items[0].get('_notice'):
+                        navigation['rip'] = dict(enabled=True, data=dict(
+                            endpoint='music_service/cd_controller', method='getRipInfo'))
+                    self.on_browse({'navigation': navigation})
             self.dispatch(deliver)
         self._browse.submit(work)
 
@@ -242,7 +278,7 @@ class LyrionListener:
             self.active_collection_uri = item.get('uri', '')
             self._submit([item.get('_opml_tag', 'tidal'), 'playlist', 'play', 'item_id:' + item['_tidal_id']])
             return
-        self.play_uri(item.get('uri', ''))
+        self.play_uri(item.get('uri', ''), title=item.get('title', ''))
 
     def play_uri(self, uri, **metadata):
         self.active_collection_uri = uri if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')) else ''
@@ -299,6 +335,74 @@ class LyrionListener:
         self._submit(['rescan'])
         return 'requested'
 
+    def request_cd_rip_info(self):
+        def work():
+            try:
+                disc = self.cd.inspect()
+                if not disc:
+                    raise ValueError('No audio CD')
+                root = Path('/mnt/sda2/Music')
+                if not Path('/mnt/sda2').is_mount() or not root.is_dir():
+                    raise ValueError('Music storage unavailable')
+                info = dict(rippingAvailable=True, cdid=disc['id'], disc=disc,
+                    album='Audio CD', tracks=disc['tracks'], availableDrives=[dict(
+                        name='Music storage', path=str(root), available=True)])
+            except Exception as exc:
+                info = dict(rippingAvailable=False, error=str(exc))
+            if self.on_rip_info:
+                self.dispatch(lambda: self.on_rip_info(info))
+        self._browse.submit(work)
+        return True
+
+    def get_rip_progress(self):
+        return self._rip_message if self._rip_lock.locked() else None
+
+    def cancel_cd_rip(self):
+        self._rip_cancel.set()
+        return self._rip_lock.locked()
+
+    def eject_cd(self):
+        def work():
+            if self._rip_lock.locked():
+                return
+            import os, fcntl
+            from .cd import devices
+            try:
+                self.rpc(['stop'])
+                found = devices()
+                if found:
+                    fd = os.open(found[0], os.O_RDONLY | os.O_NONBLOCK)
+                    try:
+                        fcntl.ioctl(fd, 0x5309)
+                    finally:
+                        os.close(fd)
+                self.browse('pcp:cd')
+            except Exception as exc:
+                self.log('CD eject failed:', type(exc).__name__)
+        self._commands.submit(work)
+
+    def rip_cd(self, info, drive, fmt='flac'):
+        if fmt != 'flac' or drive not in info.get('availableDrives', []) or not self._rip_lock.acquire(False):
+            return False
+        self._rip_cancel.clear()
+        def work():
+            from .cd import rip_flac
+            def report(message, progress=None):
+                self._rip_message = message
+                if self.on_rip_status:
+                    self.dispatch(lambda: self.on_rip_status(dict(message=message, progress=progress)))
+            try:
+                self._return_local()
+                self.rpc(['stop'])
+                rip_flac(info['disc'], drive['path'], self._rip_cancel, report)
+                self.refresh_library()
+            except Exception as exc:
+                report('Rip failed: ' + str(exc))
+            finally:
+                self._rip_lock.release()
+        threading.Thread(target=work, daemon=True, name='fm4-cd-rip').start()
+        return True
+
     def play_playlist(self, name, callback):
         def work():
             try:
@@ -334,6 +438,9 @@ class LyrionListener:
 
     def save_current_track(self, callback, name='FM4 Favorites'):
         song = self.store.get()
+        if song.uri.startswith('http://127.0.0.1:9180/cd/'):
+            self.dispatch(lambda: callback(False, 'Rip the CD before saving'))
+            return
         def work():
             try:
                 if not song.uri:
