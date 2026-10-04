@@ -54,6 +54,10 @@ class PiCoreApp(App):
         modern = self.fsm.screens.get('modern')
         if hasattr(modern, 'interact'):
             modern.interact()
+        if cmd == 'volume':
+            self.note_activity()
+            self.nudge_volume(1 if arg == '+' else -1)
+            return
         if cmd in ('bbc_radio_2', 'bbc_radio_4'):
             station = 'bbc_radio_two' if cmd == 'bbc_radio_2' else 'bbc_radio_fourfm'
             self.note_activity()
@@ -422,6 +426,7 @@ def main():
     listener.get_audio_outputs()
     buttons = None
     power_button = None
+    remote = None
     if not args.sim:
         from .buttons import FM4Buttons
         from ..hardware import MCP
@@ -433,6 +438,18 @@ def main():
         power_button = PowerButton(lambda: events.put(('callback',
                                     lambda: app.handle('shutdown'))), stop)
         power_button.start()
+        if app.settings.get('ir', 'enabled', default=True):
+            from .ir import Remote
+            from ..inputs.ir import IrListener
+            app.settings.set('ir', 'profile', 'Apple Aluminium Remote (this unit)')
+            bridge = IrListener(lambda cmd, arg=None: events.put(('callback',
+                lambda: app.handle(cmd, arg))), app=app)
+            try:
+                remote = Remote(lambda key, repeat: bridge._on_line(
+                    '0 %02x %s Apple_Aluminium_Sable' % (int(repeat), key)), stop)
+                remote.start()
+            except Exception as exc:
+                print('IR unavailable:', exc)
         from .bluetooth import BluetoothHandover
         BluetoothHandover(stop).start()
     app.fsm.go('clock')
@@ -469,6 +486,8 @@ def main():
             buttons.stop()
         if power_button:
             power_button.join(timeout=1)
+        if remote:
+            remote.join(timeout=1)
         app.levels.close()
         display.cleanup()
 
