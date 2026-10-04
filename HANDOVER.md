@@ -282,3 +282,16 @@ User asked to enter the real password privately on the FM4 and report its connec
 IP. Real join, saved-profile reboot and operation with Ethernet unplugged have NOT
 yet been verified. Do not advise unplugging Ethernet until an actual Wi-Fi IP is
 confirmed. No Wi-Fi passwords/configuration are exported to GitHub or OneDrive.
+
+## Wi-Fi join confirmed — default communications address
+
+User confirmed encoder join succeeded at 192.168.1.19. Existing trusted SSH session
+independently confirms wlan0 has 192.168.1.19. Use this Wi-Fi address as the default
+for future device communication and web links; Ethernet 192.168.1.18 is secondary.
+Saved-profile reboot remains untested. User intends to leave Ethernet unplugged.
+
+Windows has an old SSH identity recorded for .19. Verified FM4 ECDSA fingerprint
+through the existing trusted SSH session: SHA256:3wjzghdCT4LAkz9D+67hSAq2lfXGkUjS2WIXM0KNFHw,
+exactly matching the key presented by .19. Until known_hosts is deliberately updated,
+ssh/scp -o HostKeyAlias=192.168.1.18 to 192.168.1.19 verifies against the existing FM4
+identity; do not disable strict host-key verification or blindly delete old keys.
