@@ -43,7 +43,7 @@ class FM4Modern(ModernScreen):
                         self._peak_hold_until[channel] = now + 1.0
                     elif now > self._peak_hold_until[channel]:
                         fall_time = min(elapsed, now-self._peak_hold_until[channel])
-                        self._ppm[channel] = max(value, self._ppm[channel]-fall_time/2.8)
+                        self._ppm[channel] = max(value, self._ppm[channel]-fall_time/8.0)
                 values = self._ppm
             else:
                 values = self.app.levels.read()
