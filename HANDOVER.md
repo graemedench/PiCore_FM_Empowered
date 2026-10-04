@@ -311,3 +311,6 @@ Storage diagnosis: kernel logged usb 2-1 disconnect at uptime 5078s, ext4 shutdo
 
 ### 2026-10-04 — USB recovery and Wi-Fi label
 Read-only ro,noload recovery mount of reconnected /dev/sdb2 located intact mydata.tgz and mydatabk.tgz. tar integrity/list check passed, including panel settings and Wi-Fi configuration. Normal reboot recovered storage as /dev/sda2; no fresh I/O errors in startup check. Wi-Fi auto-rejoined .19 and panel auto-started. Redeployed latest runner/listener. Replaced Volumio-specific iwgetid path lookup in menu status with interface operstate and route address; removes false Not connected label on piCorePlayer Wi-Fi. User also noted carousel icons; deferred appearance audit. CD drive physical arrival confirmed, dynamic source needs optical driver and playback adapter.
+
+### 2026-10-04 — Physical shutdown/wake verified by user
+Graeme tested the shutdown button and wake-up and reported both worked perfectly. Mark physical GPIO21 shutdown/wake behaviour user-verified; no additional shutdown was initiated remotely.
