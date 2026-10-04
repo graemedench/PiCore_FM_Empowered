@@ -169,7 +169,10 @@ stereo RMS snapshots, with no audio files recorded. 16/32-bit silence and stereo
 level checks passed; live receiver bars still await confirmation. Run native setup
 first, meter setup second (the latter sets SHAIRPORT_OUT/BT_OUT_DEVICE=fm4_receiver).
 Root ALSA includes tc's .asoundrc; persistence includes root/.asoundrc explicitly.
-Native AirPlay daemon restored after diagnostics. Full receiver metadata remains
+Live AirPlay ALSA meter snapshots subsequently showed nonzero stereo levels, and
+AudioLevels.read() returned the receiver feed successfully. OLED appearance and
+audible sound still need user confirmation. Native daemon is running with
+-d fm4_receiver; ALSA hardware status RUNNING verified. Native AirPlay daemon restored after diagnostics. Full receiver metadata remains
 pending. Radio shortcut URLs returned HTTP 200 HLS playlists but actual playback
 still requires verification; no HLS plugin was found in the inspected directories.
 CD playback/ripping deferred at user's request. No completed installer claimed.
