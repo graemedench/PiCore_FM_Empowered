@@ -3,3 +3,10 @@
 *.ps1 text eol=crlf
 *.md text
 *.json text
+
+*.pdf -text
+*.stl -text
+*.3mf -text
+*.ipt -text
+*.png -text
+*.jpg -text
