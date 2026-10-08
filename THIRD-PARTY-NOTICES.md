@@ -3,6 +3,14 @@
 Audit date: 8 October 2026. This is a component inventory and recorded findings,
 not a blanket declaration that every asset has cleared legal review.
 
+We have made a good-faith effort to identify components, retain notices and
+respect applicable terms. If an attribution, permission or licence requirement
+has been missed, please [report it](https://github.com/graemedench/PiCore_FM_Empowered/issues)
+with the affected file/component and relevant terms. We will investigate promptly
+and correct any confirmed omission or breach, including removing affected
+material where necessary. This statement does not replace licence obligations
+or resolve the outstanding checks recorded below.
+
 ## Scope of our notices
 
 Any FM4/Quadify Empowered personal-use restriction applies only to contributions

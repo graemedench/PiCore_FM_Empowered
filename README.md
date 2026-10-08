@@ -29,6 +29,15 @@ See [third-party credits and licence audit](THIRD-PARTY-NOTICES.md) for dependen
 retained notices and outstanding permission checks. Our personal-use notice does
 not override third-party licence rights.
 
+We have made a good-faith effort to identify third-party components, preserve
+their notices and respect their licence terms. Some checks remain open and are
+listed in the audit; this is not a guarantee of complete licence compliance.
+If you believe we have missed an attribution, permission or licence requirement,
+please [open an issue](https://github.com/graemedench/PiCore_FM_Empowered/issues)
+with the affected file or component and relevant terms. We will investigate
+promptly and correct any confirmed omission or breach, including removing
+affected material where necessary.
+
 Based on [Matt's original Sable project](https://github.com/theshepherdmatt/sable) and [Graeme's Quadify Empowered modifications](https://github.com/graemedench/quadify_empowered), using [piCorePlayer](https://www.picoreplayer.org/) and [Lyrion Music Server](https://lyrion.org/).
 
 Vibe coded by Graeme Dench with Alex (OpenAI Codex). Graeme directed the features, supplied the hardware and performed hands-on testing; Alex did the heavy lifting on implementation, integration, debugging and documentation. Matt's original design and development made this port possible; Matt has granted permission for this port. Original project rights and notices remain applicable.
