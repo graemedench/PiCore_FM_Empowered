@@ -64,6 +64,26 @@ storage or import any music, playlists, account tokens, Wi-Fi or network-backup 
 - No CD drive is needed. CD controls appear when a supported drive is attached.
 - Beta remote learning supports the current 32-bit decoder, not every IR protocol.
 
+## Browser addresses
+
+Replace `YOUR-PI-IP` with the address shown in **Settings → Service URLs**
+or on your piCorePlayer page. The OLED shows addresses using the current IP.
+These are address templates; `YOUR-PI-IP` is not typed literally into the browser.
+
+| Page | Address |
+| --- | --- |
+| piCorePlayer setup | `http://YOUR-PI-IP/` |
+| FM4 web player | `http://YOUR-PI-IP:9000/` |
+| TIDAL sign-in settings | `http://YOUR-PI-IP:9000/plugins/TIDAL/settings.html` |
+| BBC Sounds sign-in settings | `http://YOUR-PI-IP:9000/plugins/BBCSounds/settings/basic.html` |
+| FM4 Favorites | `http://YOUR-PI-IP/fm4-favorites.html` |
+| Lyrion server settings | `http://YOUR-PI-IP:9000/settings/server/basic.html` |
+| Windows Music share | `\\YOUR-PI-IP\Music` |
+
+TIDAL settings provides the device-link sign-in instructions for your own account.
+Use the local plugin addresses above; the current beta does not provide `/tidal`
+or `/bbc` aliases.
+
 ## Acceptance checklist
 
 - [ ] Both installer phases complete without manual repairs; retain terminal output.
