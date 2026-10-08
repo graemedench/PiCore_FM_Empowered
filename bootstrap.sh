@@ -56,7 +56,7 @@ fi
 if [ -f "$DEST/.fm4-beta-bundle" ] && [ -f "$DEST/install.sh" ]; then
     echo 'Resuming the original downloaded beta; your in-progress installation is preserved.'
     # Apply installer fixes without replacing the original runtime archive.
-    for SCRIPT in install.py install.sh time-sync.sh; do
+    for SCRIPT in install.py install.sh time-sync.sh DEJAVU-LICENSE.txt THIRD-PARTY-NOTICES.md EMPOWERED-NOTICE.md; do
         wget -O "$DEST/$SCRIPT.part" "$BASE/$SCRIPT"
         mv "$DEST/$SCRIPT.part" "$DEST/$SCRIPT"
     done

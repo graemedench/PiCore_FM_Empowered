@@ -157,7 +157,25 @@ def ensure_favorites():
     run('chown', 'tc:staff', str(playlist))
     print('Empty FM4 Favorites created')
 
+def install_notices():
+    """Retain notices alongside installed copies, including older bundle repairs."""
+    changed = False
+    for target, name in ((RECOVERY, 'DEJAVU-LICENSE.txt'),
+                         (STAGE, 'DEJAVU-LICENSE.txt'),
+                         (STAGE, 'THIRD-PARTY-NOTICES.md'),
+                         (STAGE, 'EMPOWERED-NOTICE.md')):
+        source = HERE / name
+        if source.is_file() and target.is_dir():
+            destination = target / name
+            if not destination.exists() or destination.read_bytes() != source.read_bytes():
+                shutil.copy2(source, destination)
+                run('chown', 'tc:staff', str(destination))
+                changed = True
+    if changed:
+        run('pcp', 'bu')
+
 def update_shutdown_runtime():
+    install_notices()
     changed = False
     for name in ('power.py', 'runner.py'):
         source = HERE / 'updates' / name
@@ -208,6 +226,9 @@ def install():
     run('sudo', '-u', 'tc', 'python3.11', '-m', 'pip', 'install', '--only-binary=:all:', '--target', str(RECOVERY / 'vendor'), '-r', str(HERE / 'requirements-lock.txt'))
     font = next(Path('/usr/local/share/fonts').rglob('DejaVuSans.ttf'))
     shutil.copy2(font, RECOVERY / 'arial.ttf')
+    font_notice = HERE / 'recovery-panel/DEJAVU-LICENSE.txt'
+    if font_notice.exists():
+        shutil.copy2(font_notice, RECOVERY / 'DEJAVU-LICENSE.txt')
     panel = profile['panel']
     panel.setdefault('ir', {}).setdefault('pair_id', 0x15)
     # Preserve the captured assignments instead of applying upstream defaults.
