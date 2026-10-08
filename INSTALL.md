@@ -16,8 +16,22 @@ drive disconnected and intact. Do not ignore errors from the FM4 installer.
   [model-specific pin checks in HARDWARE.md](HARDWARE.md).
 - Your own TIDAL/BBC accounts if you want those services. A CD drive is optional.
 
-Check the [wiring and GPIO pinout](HARDWARE.md) first. Shutdown now uses
-**GPIO26 / physical pin 37**, not the older GPIO21 / pin 40 wiring.
+Check the [wiring and GPIO pinout](HARDWARE.md) first. The shutdown switch uses
+**GPIO26 / physical pin 37**.
+
+### Raspberry Pi 3 compatibility
+
+A Pi 3B or 3B+ is a candidate for testing, rather than a confirmed supported
+platform. piCorePlayer's [official Imager list](https://github.com/piCorePlayer/pCP-Releases/blob/Master/rpi-imager.json)
+includes Pi 3 for the 64-bit image. We expect playback and the panel to be
+feasible, but have not tested the full FM4 port on one. Spectrum responsiveness
+and ripping while playing music need particular attention with less processing
+and memory headroom. A 3B+ is preferable for this trial.
+
+Use the **64-bit image** and a working USB-boot arrangement with partition 2
+mounted at `/mnt/sda2`. The current installer does not support an SD-card boot
+layout. USB boot must already work on your particular Pi 3 before installing.
+The Pi 4B remains our tested platform.
 
 ## 1. Flash piCorePlayer 64-bit
 

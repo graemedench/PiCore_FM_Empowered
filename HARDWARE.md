@@ -5,6 +5,8 @@ The tested unit is a **Raspberry Pi 4B**, running piCorePlayer 11.1.0
 Headphones output have been tested. This is not yet a claim of compatibility
 with every Pi model, display, DAC HAT or IR remote.
 
+Pi 3B/3B+ compatibility is untested; see the [Pi 3 installation note](INSTALL.md#raspberry-pi-3-compatibility).
+
 BCM GPIO numbers below are the software names. Physical pins are positions on
 the Pi's 40-pin header; do not confuse the two numbering schemes.
 
@@ -37,20 +39,15 @@ See [Matt's original Quadify wiring guide](https://quadify.uk/wiring.html).
 Our GPIO4 IR receiver and added GPIO26 shutdown switch are port-specific additions.
 Power down and disconnect power before changing wiring.
 
-![Move the shutdown signal from physical pin 40 to pin 37](shutdown-pin-move.png)
-
-Older beta wiring used GPIO21 / pin 40. Move only that signal wire to GPIO26 /
-pin 37 with power disconnected. Keep its existing ground. Rerun the installer
-command before powering down to move the wire; reboot loads the updated code.
 The setting `power.shutdown_gpio` can be changed in `config/pcp-settings.json`;
-`null` disables the physical input. No GPIO21 fallback is used.
+`null` disables the physical input.
 
 ## DAC HATs, including IQaudio
 
 **The current beta is not yet validated with a DAC HAT.**
 
-IQaudio/Raspberry Pi audio HATs use I2S on GPIO18/19/20/21. Shutdown has therefore
-moved to **GPIO26 / pin 37**. GPIO26 is not listed as reserved for the standard
+IQaudio/Raspberry Pi audio HATs use I2S on GPIO18/19/20/21. Our shutdown switch uses
+**GPIO26 / pin 37**, separate from those I2S signals. GPIO26 is not listed as reserved for the standard
 IQaudio DAC+/DAC Pro, but it is not universally available: HiFiBerry MiniAmp
 and DAC8x/ADC8x/Studio DAC8x reserve it. HiFiBerry Digi+ Pro/Digi2 Pro also conflict
 with our encoder GPIO5/6; some amplifier boards reserve our IR GPIO4. Check

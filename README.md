@@ -19,7 +19,7 @@ After a successful phase, answer y at the reboot prompt; reconnect and run the s
 ## What is included
 
 - [INSTALL.md](INSTALL.md): Raspberry Pi Imager, 64-bit selection, screenshot walkthrough, time sync, installer and first-use checks.
-- [HARDWARE.md](HARDWARE.md): wiring picture, physical/BCM pin table, GPIO26 migration and DAC HAT limits.
+- [HARDWARE.md](HARDWARE.md): wiring picture, physical/BCM pin table, current shutdown wiring and DAC HAT limits.
 - [CONTROLS.md](CONTROLS.md): features and short/long press controls.
 - One beta bundle and its checksum; bootstrap and installer/runtime repair source alongside them. Only screenshots use an images folder.
 
