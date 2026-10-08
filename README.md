@@ -17,6 +17,13 @@ Your existing settings, account sign-ins, music and Favorites are preserved.
 Keep Ethernet connected until Wi-Fi shows a working IP address. See the
 [installation guide](INSTALL.md) if the clock needs syncing before downloading.
 
+**Updated after 22:40 BST on 8 October 2026?** Future patches can now be applied
+from the FM4 panel: **Settings → Check / Apply Updates → Apply latest patches? →
+Yes, apply patches**. On success, choose **Reboot now** or **Later** with the encoder.
+Older builds need the SSH command above once to add this menu option. Keep power
+and internet connected while patching. This reapplies the latest patches; it
+does not compare release version numbers.
+
 **First tester beta: full scripted clean-install hardware validation is still pending.** Keep your working boot drive intact and use a freshly flashed piCorePlayer 11.1.0 64-bit USB drive on the tested Pi 4 FM4 hardware.
 
 See [the illustrated installation guide](INSTALL.md). Download the installer directly in SSH:
