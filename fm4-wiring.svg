@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="760" viewBox="0 0 1200 760">
+<style>text{font-family:Arial;fill:#172b40}.title{font-size:30px;font-weight:bold}.h{font-size:22px;font-weight:bold}.t{font-size:18px}.s{font-size:15px}.box{fill:white;stroke:#849ab2;stroke-width:2}path{fill:none;stroke:#487da8;stroke-width:3}</style>
+<rect width="1200" height="760" fill="#f3f6fa"/>
+<text x="35" y="45" class="title">FM4 beta — Raspberry Pi 4 wiring overview</text>
+<text x="35" y="78" class="t">BCM GPIO numbers first; physical 40-pin header positions in brackets.</text>
+<rect x="442" y="142" width="316" height="490" rx="18" class="box"/>
+<text x="475" y="186" class="h">Raspberry Pi 4</text>
+<text x="469" y="225" class="t">SPI0: GPIO10, 11, 8</text>
+<text x="469" y="259" class="t">OLED: GPIO24, 25</text>
+<text x="469" y="321" class="t">I2C-1: GPIO2, 3</text>
+<text x="469" y="396" class="t">Encoder: GPIO13, 5, 6</text>
+<text x="469" y="469" class="t">IR input: GPIO4</text>
+<text x="469" y="537" class="t">Shutdown: GPIO26</text>
+<text x="469" y="595" class="s">Ground is shared by all modules</text>
+<rect x="28" y="130" width="374" height="185" rx="12" class="box"/>
+<text x="48" y="165" class="h">SSD1322 OLED · 256 × 64</text>
+<text x="48" y="199" class="t">MOSI → GPIO10 (19); CLK → GPIO11 (23)</text>
+<text x="48" y="231" class="t">CS → GPIO8 (24); DC → GPIO24 (18)</text>
+<text x="48" y="263" class="t">RST → GPIO25 (22)</text>
+<text x="48" y="295" class="s">VCC → 3.3 V, GND → ground (Matt's guide)</text>
+<path d="M402 228 H442"/>
+<rect x="28" y="356" width="374" height="141" rx="12" class="box"/>
+<text x="48" y="392" class="h">Rotary encoder</text>
+<text x="48" y="426" class="t">A/CLK → GPIO13 (33); B/DT → GPIO5 (29)</text>
+<text x="48" y="458" class="t">Push switch → GPIO6 (31)</text>
+<text x="48" y="483" class="s">Ground / power according to encoder module</text>
+<path d="M402 397 H442"/>
+<rect x="800" y="222" width="374" height="158" rx="12" class="box"/>
+<text x="820" y="258" class="h">MCP23017 · address 0x20</text>
+<text x="820" y="292" class="t">SDA → GPIO2 (3); SCL → GPIO3 (5)</text>
+<text x="820" y="324" class="t">Buttons / LEDs → Quadify button PCB</text>
+<text x="820" y="354" class="s">Module power / PCB wiring: original Quadify guide</text>
+<path d="M758 321 H800"/>
+<rect x="800" y="412" width="374" height="121" rx="12" class="box"/>
+<text x="820" y="448" class="h">Optional HS0038 IR receiver</text>
+<text x="820" y="482" class="t">OUT → GPIO4 (7); VCC → 3.3 V</text>
+<text x="820" y="513" class="s">GND → ground; check your receiver's pin order</text>
+<path d="M758 469 H800"/>
+<rect x="800" y="566" width="374" height="112" rx="12" class="box"/>
+<text x="820" y="602" class="h">Shutdown switch · momentary</text>
+<text x="820" y="637" class="t">GPIO26 (37) ↔ switch ↔ ground</text>
+<text x="820" y="664" class="s">Active-low with software pull-up; NOT pin 40</text>
+<path d="M758 537 H780 V620 H800"/>
+<text x="35" y="701" class="t">Power off before wiring. Physical pin numbers are not GPIO numbers.</text>
+<text x="35" y="733" class="s">GPIO26 avoids the former GPIO21 / I2S conflict, but check each DAC HAT's reserved pins. Full HAT operation is not yet validated.</text>
+</svg>

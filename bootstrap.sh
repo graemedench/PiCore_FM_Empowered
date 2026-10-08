@@ -57,12 +57,12 @@ if [ -f "$DEST/.fm4-beta-bundle" ] && [ -f "$DEST/install.sh" ]; then
     echo 'Resuming the original downloaded beta; your in-progress installation is preserved.'
     # Apply installer fixes without replacing the original runtime archive.
     for SCRIPT in install.py install.sh time-sync.sh; do
-        wget -O "$DEST/$SCRIPT.part" "$BASE/installer/$SCRIPT"
+        wget -O "$DEST/$SCRIPT.part" "$BASE/$SCRIPT"
         mv "$DEST/$SCRIPT.part" "$DEST/$SCRIPT"
     done
     mkdir -p "$DEST/updates"
     for SCRIPT in power.py runner.py; do
-        wget -O "$DEST/updates/$SCRIPT.part" "$BASE/updates/$SCRIPT"
+        wget -O "$DEST/updates/$SCRIPT.part" "$BASE/$SCRIPT"
         mv "$DEST/updates/$SCRIPT.part" "$DEST/updates/$SCRIPT"
     done
     cd "$DEST"

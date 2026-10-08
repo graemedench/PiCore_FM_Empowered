@@ -8,6 +8,8 @@ with every Pi model, display, DAC HAT or IR remote.
 BCM GPIO numbers below are the software names. Physical pins are positions on
 the Pi's 40-pin header; do not confuse the two numbering schemes.
 
+![FM4 modules, GPIO signals and physical header pins](fm4-wiring.svg)
+
 | Connection | BCM GPIO / bus | Physical header pin |
 | --- | --- | --- |
 | OLED MOSI | GPIO10 / SPI0 MOSI | 19 |
