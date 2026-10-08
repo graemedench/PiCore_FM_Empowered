@@ -92,6 +92,11 @@ def native_package(name):
     if name + '.tcz' not in lines:
         path.write_text('\n'.join(lines + [name + '.tcz']) + '\n')
 
+def prepare_wifi():
+    """Add tools/firmware to fresh and completed installs; do not join a network."""
+    for name in ('wireless_tools', 'wpa_supplicant', 'firmware-rpi-wifi'):
+        native_package(name)
+
 def prepare():
     if os.geteuid() != 0 or check(require_ready=False):
         raise SystemExit('Run sudo --prepare on a fresh supported USB-boot installation')
@@ -99,9 +104,9 @@ def prepare():
     backup.mkdir(parents=True, mode=0o700)
     for name, source in [('pcp.cfg', CFG), ('onboot.lst', Path('/mnt/sda2/tce/onboot.lst'))]:
         shutil.copy2(source, backup / name)
-    for name in ('slimserver', 'samba4', 'pcp-shairportsync', 'pcp-bt',
-                 'wireless_tools', 'wpa_supplicant', 'firmware-rpi-wifi'):
+    for name in ('slimserver', 'samba4', 'pcp-shairportsync', 'pcp-bt'):
         native_package(name)
+    prepare_wifi()
     boot = Path('/mnt/sda1')
     boot.mkdir(exist_ok=True)
     boot_mounts = [line.split() for line in Path('/proc/mounts').read_text().splitlines() if line.split()[1] == str(boot)]
@@ -176,6 +181,7 @@ def install_notices():
         run('pcp', 'bu')
 
 def update_shutdown_runtime():
+    prepare_wifi()
     install_notices()
     changed = False
     for name in ('power.py', 'runner.py'):

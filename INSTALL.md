@@ -16,6 +16,8 @@ drive disconnected and intact. Do not ignore errors from the FM4 installer.
   Wi-Fi settings or the native piCorePlayer Wi-Fi page. Keep Ethernet connected
   until a wireless IP is confirmed. Wi-Fi passwords are not supplied by us;
   USB Wi-Fi adapters may require additional model-specific firmware.
+  Existing FM4 beta users can rerun the same bootstrap command to add these
+  Wi-Fi dependencies; their saved network settings and Favorites are preserved.
 - A Windows/Mac/Linux computer, browser and SSH terminal.
 - Headphones, HDMI or a USB DAC for the initial test. DAC HATs require the
   [model-specific pin checks in HARDWARE.md](HARDWARE.md).
