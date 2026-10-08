@@ -17,4 +17,16 @@ if ! command -v python3.11 >/dev/null 2>&1; then
   sudo -u tc pcp-load -i python3.11.tcz
   grep -qx 'python3.11.tcz' /mnt/sda2/tce/onboot.lst || echo 'python3.11.tcz' >> /mnt/sda2/tce/onboot.lst
 fi
-exec python3.11 install.py "$MODE"
+python3.11 install.py "$MODE"
+if [ "$MODE" != '--check' ]; then
+  if [ -t 0 ]; then
+    printf '\nPhase completed successfully. Reboot now? [y/N]: '
+    IFS= read -r FM4_REBOOT_REPLY || FM4_REBOOT_REPLY=n
+    case "$FM4_REBOOT_REPLY" in
+      y|Y|yes|YES) echo 'Rebooting piCorePlayer...'; pcp rb ;;
+      *) echo 'Reboot when ready with: pcp rb. After preparation, reconnect and run the same installer command.' ;;
+    esac
+  else
+    echo 'Phase completed. Reboot when ready with: pcp rb'
+  fi
+fi

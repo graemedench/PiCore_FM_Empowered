@@ -37,7 +37,8 @@ wget -O /tmp/fm4-bootstrap.sh https://raw.githubusercontent.com/graemedench/PiCo
 The bootstrap downloads the beta over HTTPS, verifies its SHA-256 checksum and
 keeps the bundle on the SSD at `/mnt/sda2/fm4-beta-installer`.
 
-After preparation completes, reboot through the piCorePlayer web interface.
+After preparation completes, the installer asks **Reboot now? [y/N]**.
+Type `y` and press Enter to run `pcp rb`, or press Enter to postpone it.
 SSH back in and paste the **same command** again, or resume the downloaded copy:
 
 ```sh
@@ -45,7 +46,7 @@ cd /mnt/sda2/fm4-beta-installer
 sudo sh install.sh --setup
 ```
 
-After installation completes, reboot again. These explicit reboot steps let you
+After installation completes, the same prompt offers the final reboot. These reboot steps let you
 read the log and catch a failure during the first beta test. This is a test build,
 not yet a verified end-to-end clean installation.
 
