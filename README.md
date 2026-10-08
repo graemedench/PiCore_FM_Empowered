@@ -5,7 +5,7 @@ A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 ## Existing beta users: please rerun the installer
 
 Updates on **8 October 2026** fix missing onboard Wi-Fi tools/firmware, improve
-Wi-Fi connection feedback, reduce the piCorePlayer settings-backup size, and
+Wi-Fi connection feedback and
 correct guest write permissions on the Music share. Please rerun this command
 over SSH to apply the fixes, then reboot when prompted:
 
@@ -14,6 +14,10 @@ wget -O /tmp/fm4-bootstrap.sh https://raw.githubusercontent.com/graemedench/PiCo
 ```
 
 Your existing settings, account sign-ins, music and Favorites are preserved.
+**Backup cleanup is withdrawn pending reboot investigation.** The installer no
+longer moves Python dependencies or install tools out of `/home/tc`. If you
+already applied that cleanup, this update does not automatically undo it;
+retain your original recovery backup and report any boot problem.
 Keep Ethernet connected until Wi-Fi shows a working IP address. See the
 [installation guide](INSTALL.md) if the clock needs syncing before downloading.
 

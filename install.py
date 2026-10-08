@@ -180,29 +180,8 @@ def install_notices():
     if changed:
         run('pcp', 'bu')
 
-def compact_runtime():
-    """Keep replaceable Python packages on persistent disk, outside filetool."""
-    root = Path('/mnt/sda2/FM4 Runtime')
-    root.mkdir(exist_ok=True)
-    filetool = Path('/opt/.filetool.lst')
-    entries = filetool.read_text().splitlines()
-    if 'home' in entries and 'home/tc' in entries:
-        filetool.write_text('\n'.join(x for x in entries if x != 'home/tc') + '\n')
-    for original, name in ((RECOVERY / 'vendor', 'panel-vendor'),
-                           (Path('/home/tc/.local'), 'python-user')):
-        if original.is_symlink() or not original.is_dir():
-            continue
-        target = root / name
-        if target.exists():
-            raise RuntimeError('Existing runtime destination preserved: ' + str(target))
-        shutil.move(str(original), str(target))
-        original.symlink_to(target, target_is_directory=True)
-        run('chown', '-R', 'tc:staff', str(target))
-        print('Persistent Python storage:', target)
-
 def update_shutdown_runtime():
     prepare_wifi()
-    compact_runtime()
     music = Path('/mnt/sda2/Music')
     if music.is_dir():
         run('chown', 'tc:staff', str(music))
