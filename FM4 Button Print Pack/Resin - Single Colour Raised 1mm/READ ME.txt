@@ -1,5 +1,0 @@
-QUADIFY FM4 - RESIN SINGLE-COLOUR BUTTONS
-
-Each STL in this folder is one single-colour cap, ready to import into a resin slicer. The icon stands 1 mm above the cap face for a clear tactile result. There are no separate body or white parts to assemble. Blank_-_Resin_Single_Colour.stl is the plain, no-icon version.
-
-Use the FDM Body + White files in the parent folder for the two-colour versions.
