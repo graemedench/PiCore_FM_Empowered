@@ -13,6 +13,10 @@ Download the base image from https://docs.picoreplayer.org/downloads/.
 1. Flash the USB drive and boot over Ethernet.
 2. Open the piCorePlayer web interface, set your own password and enable SSH.
 3. Enter `pool.ntp.org` in the guided NTP step and choose **Set and Enable**.
+   The installer also enables persistent NTP, preserves an explicit server setting
+   and attempts a bounded time sync if the clock has reset. If the first HTTPS
+   download cannot run because the date is wrong, first run
+   `sudo busybox ntpd -n -q -p pool.ntp.org`, then retry the install command.
 4. Enable Lyrion server mode, select your audio output and resize the partition.
    Use the largest size in the dropdown, then reboot. At least 2 GB free is required.
 5. Check the date after reboot with `date` in SSH. Correct time is required for HTTPS.
