@@ -370,6 +370,8 @@ class PiCoreMenu(MenuScreen):
             super().handle_scroll(delta)
 
     def render(self, canvas, draw, w, h):
+        if self.stack and self._cur['label'] == 'PATCHED - REBOOT?':
+            self.app.fsm.reset_menu_timer()
         entry = self._shortcut_entry
         if entry and entry['stage'] == 'press':
             rows = [('Short press', ''), ('Long press', ''), ('Cancel', '')]
@@ -397,6 +399,21 @@ class PiCoreMenu(MenuScreen):
             self.text(canvas, (3, 15 + index*11), line, font, fill=190)
         self.text(canvas, (3, 54), 'Open in browser | Press to return', font, fill=105)
 
+    def _reboot_after_update(self):
+        self.app.show_osd('REBOOTING', 'Please wait', duration=60)
+        self._wifi_jobs.submit(subprocess.run, ['pcp', 'rb'], capture_output=True)
+
+    def _update_later(self):
+        self.app.go(self.app.base_screen())
+        self.app.show_osd('PATCHED', 'Reboot later to load', duration=5)
+
+    def _show_update_reboot(self):
+        self.app._osd = None
+        self.app.go('menu')
+        self.stack.append(self._frame('PATCHED - REBOOT?', [
+            ('Later', self._update_later), ('Reboot now', self._reboot_after_update)]))
+        self.app.render()
+
     def _apply_updates(self):
         if getattr(self, '_update_busy', False):
             self.app.show_osd('UPDATE', 'Already running', duration=5)
@@ -411,7 +428,10 @@ class PiCoreMenu(MenuScreen):
                 ok, message = False, 'Update failed; see update log'
             def done():
                 self._update_busy = False
-                self.app.show_osd('UPDATE COMPLETE' if ok else 'UPDATE FAILED', message, duration=30)
+                if ok:
+                    self._show_update_reboot()
+                else:
+                    self.app.show_osd('PATCH FAILED', 'See fm4-update.log', duration=15)
             self.app.listener.dispatch(done)
         self._wifi_jobs.submit(work)
 

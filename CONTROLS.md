@@ -43,7 +43,8 @@ See INSTALL.md. This beta still needs full clean-install acceptance testing.
 
 Settings → **Check / Apply Updates** → **Apply latest patches?** →
 **Yes, apply patches** runs the public installer again. Cancel is available before
-starting. Keep power and internet connected; success asks you to reboot to load
+starting. Keep power and internet connected; success offers Reboot now or Later to load
 the updated panel. Failures retain `/mnt/sda2/fm4-update.log` for diagnosis.
 This reapplies current patches; it does not compare release version numbers.
+
 
