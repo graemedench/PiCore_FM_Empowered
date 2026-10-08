@@ -203,6 +203,10 @@ def compact_runtime():
 def update_shutdown_runtime():
     prepare_wifi()
     compact_runtime()
+    music = Path('/mnt/sda2/Music')
+    if music.is_dir():
+        run('chown', 'tc:staff', str(music))
+        music.chmod(0o775)
     install_notices()
     changed = False
     for name in ('power.py', 'runner.py', 'wifi.py'):
@@ -269,6 +273,7 @@ def install():
         path = Path('/mnt/sda2') / name
         path.mkdir(exist_ok=True)
         run('chown', 'tc:staff', str(path))
+        path.chmod(0o775)
     for helper in ('ensure-player-id.py', 'setup-native-cd.py'):
         run('python3.11', str(STAGE / helper))
     text = CFG.read_text()
