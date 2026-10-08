@@ -2,9 +2,15 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
-**Public release preparation is paused while a clean installation is restored and tested.** The public files have been cleared for now. Tested source, installation instructions and an installer will be published here once that process is complete. There is currently no public install command or verified fresh-install release.
+**First tester beta: full scripted clean-install hardware validation is still pending.** Keep your working boot drive intact and use a freshly flashed piCorePlayer 11.1.0 64-bit USB drive on the tested Pi 4 FM4 hardware.
 
-The complete working project, documentation, hardware files and development records are maintained in the project's private OneDrive backup. Earlier repository commits remain in Git history.
+See [the beta installation guide](BETA-INSTALL.md). Download the installer directly in SSH:
+
+```sh
+wget -O /tmp/fm4-bootstrap.sh https://raw.githubusercontent.com/graemedench/PiCore_FM_Empowered/main/bootstrap.sh && sudo sh /tmp/fm4-bootstrap.sh
+```
+
+Preparation requires a reboot; rerun the same command after reconnecting. Select Settings → Audio Output after installation. Accounts, music and personal playlists are not imported. The beta archive includes its Python/shell source and original project notices. The private working project and development logs remain in OneDrive.
 
 ## Credits
 
