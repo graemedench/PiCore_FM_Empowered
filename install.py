@@ -180,11 +180,32 @@ def install_notices():
     if changed:
         run('pcp', 'bu')
 
+def compact_runtime():
+    """Keep replaceable Python packages on persistent disk, outside filetool."""
+    root = Path('/mnt/sda2/FM4 Runtime')
+    root.mkdir(exist_ok=True)
+    filetool = Path('/opt/.filetool.lst')
+    entries = filetool.read_text().splitlines()
+    if 'home' in entries and 'home/tc' in entries:
+        filetool.write_text('\n'.join(x for x in entries if x != 'home/tc') + '\n')
+    for original, name in ((RECOVERY / 'vendor', 'panel-vendor'),
+                           (Path('/home/tc/.local'), 'python-user')):
+        if original.is_symlink() or not original.is_dir():
+            continue
+        target = root / name
+        if target.exists():
+            raise RuntimeError('Existing runtime destination preserved: ' + str(target))
+        shutil.move(str(original), str(target))
+        original.symlink_to(target, target_is_directory=True)
+        run('chown', '-R', 'tc:staff', str(target))
+        print('Persistent Python storage:', target)
+
 def update_shutdown_runtime():
     prepare_wifi()
+    compact_runtime()
     install_notices()
     changed = False
-    for name in ('power.py', 'runner.py'):
+    for name in ('power.py', 'runner.py', 'wifi.py'):
         source = HERE / 'updates' / name
         if source.exists():
             destination = STAGE / 'src/sable/pcp' / name
@@ -314,7 +335,7 @@ directory mask = 0775
     # Samba creates its state directory lazily; filetool requires it to exist.
     Path('/usr/local/var/lib/samba').mkdir(parents=True, exist_ok=True)
     for entry in ('home/tc', 'usr/local/etc/pcp', 'usr/local/etc/samba/smb.conf', 'usr/local/var/lib/samba'):
-        if entry not in entries:
+        if entry not in entries and not (entry == 'home/tc' and 'home' in entries):
             entries.append(entry)
     Path('/opt/.filetool.lst').write_text('\n'.join(entries) + '\n')
     # Startup is enabled last, after dependencies and files are in place.

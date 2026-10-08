@@ -294,7 +294,7 @@ class PiCoreMenu(MenuScreen):
             self._wifi_busy = True
             ssid, password = entry['ssid'], entry['password']
             self._wifi_entry = None
-            self.app.show_osd('WI-FI', 'Joining network')
+            self.app.show_osd('WI-FI', 'Joining; allow up to 1 minute', duration=90)
             def work():
                 from .wifi import connect
                 try:
@@ -303,7 +303,7 @@ class PiCoreMenu(MenuScreen):
                     ok, message = False, 'Connection failed'
                 def done():
                     self._wifi_busy = False
-                    self.app.show_osd('WI-FI CONNECTED' if ok else 'WI-FI', message, duration=6)
+                    self.app.show_osd('WI-FI CONNECTED' if ok else 'WI-FI', message, duration=15)
                 self.app.listener.dispatch(done)
                 if ok:
                     result = subprocess.run(['pcp', 'bu'], capture_output=True, timeout=90)

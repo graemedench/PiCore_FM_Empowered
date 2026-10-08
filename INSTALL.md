@@ -246,6 +246,11 @@ CD and remote hardware are optional. Beta remote learning recognises the current
 
 ## What to test and report
 
+Python dependencies and install tools are stored under `/mnt/sda2/FM4 Runtime`,
+with links from the panel's usual paths, to keep piCorePlayer's settings backup
+small. Preserve this directory when cloning the disk; `mydata.tgz` alone is a
+settings backup and does not contain the complete application dependency tree.
+
 - Both phases finish without manual file repairs; keep any failure output.
 - Time recovers after boot; audio output selection and transport controls work.
 - TIDAL/BBC use your accounts; Favorites and settings survive reboot.
