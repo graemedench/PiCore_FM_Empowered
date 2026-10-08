@@ -7,7 +7,8 @@ A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 See [the beta installation guide](BETA-INSTALL.md). Download the installer directly in SSH:
 
 Check [hardware and wiring assumptions](HARDWARE.md) before installing. DAC HAT
-support is not yet validated; our added GPIO21 shutdown input conflicts with I2S.
+support is not yet validated; shutdown now uses GPIO26 / pin 37, which must be
+checked against the particular HAT's reserved pins.
 
 ```sh
 wget -O /tmp/fm4-bootstrap.sh https://raw.githubusercontent.com/graemedench/PiCore_FM_Empowered/main/bootstrap.sh && sudo sh /tmp/fm4-bootstrap.sh

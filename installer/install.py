@@ -157,11 +157,26 @@ def ensure_favorites():
     run('chown', 'tc:staff', str(playlist))
     print('Empty FM4 Favorites created')
 
+def update_shutdown_runtime():
+    changed = False
+    for name in ('power.py', 'runner.py'):
+        source = HERE / 'updates' / name
+        if source.exists():
+            destination = STAGE / 'src/sable/pcp' / name
+            if not destination.exists() or source.read_bytes() != destination.read_bytes():
+                shutil.copy2(source, destination)
+                run('chown', 'tc:staff', str(destination))
+                changed = True
+    if changed:
+        run('pcp', 'bu')
+    print('Shutdown default is GPIO26, physical pin 37. Move the wire with power disconnected; reboot to load updated code.')
+
 def install():
     if os.geteuid() != 0:
         raise SystemExit('Run installation with sudo; --check needs no sudo')
     if state().get('complete'):
         ensure_favorites()
+        update_shutdown_runtime()
         print('Installation already completed. Existing settings preserved.')
         return
     if check():
@@ -264,6 +279,7 @@ directory mask = 0775
     for plugin in json.loads((HERE / 'fm4-plugins.json').read_text()):
         rpc(['pref', 'plugin.state:' + plugin['name'], 'enabled'])
     ensure_favorites()
+    update_shutdown_runtime()
     run('/usr/local/etc/init.d/slimserver', 'stop')
     run('/usr/local/etc/init.d/slimserver', 'start')
     entries = Path('/opt/.filetool.lst').read_text().splitlines()
@@ -293,6 +309,7 @@ if __name__ == '__main__':
         progress = state()
         if progress.get('complete'):
             ensure_favorites()
+            update_shutdown_runtime()
             print('Already installed. Reboot if you have not done so, then test the panel.')
         elif not progress.get('prepared_boot'):
             prepare()

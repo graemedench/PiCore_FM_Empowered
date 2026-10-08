@@ -60,6 +60,11 @@ if [ -f "$DEST/.fm4-beta-bundle" ] && [ -f "$DEST/install.sh" ]; then
         wget -O "$DEST/$SCRIPT.part" "$BASE/installer/$SCRIPT"
         mv "$DEST/$SCRIPT.part" "$DEST/$SCRIPT"
     done
+    mkdir -p "$DEST/updates"
+    for SCRIPT in power.py runner.py; do
+        wget -O "$DEST/updates/$SCRIPT.part" "$BASE/updates/$SCRIPT"
+        mv "$DEST/updates/$SCRIPT.part" "$DEST/updates/$SCRIPT"
+    done
     cd "$DEST"
     exec /bin/sh ./install.sh --setup
 fi

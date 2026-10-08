@@ -11,8 +11,9 @@ Download the base image from https://docs.picoreplayer.org/downloads/.
 ## Before installation
 
 First check [the assumed hardware and wiring](HARDWARE.md). DAC HATs need
-additional review: the added GPIO21 shutdown switch conflicts with I2S audio,
-so this first beta test uses USB audio or Headphones.
+additional review: shutdown now uses GPIO26 / physical pin 37 to avoid the old
+GPIO21/I2S conflict. Check the exact HAT's pin list. This first beta test uses USB
+audio or Headphones; HAT operation still needs physical testing.
 
 1. Flash the USB drive and boot over Ethernet.
 2. Open the piCorePlayer web interface, set your own password and enable SSH.
