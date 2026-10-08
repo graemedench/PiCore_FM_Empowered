@@ -397,6 +397,24 @@ class PiCoreMenu(MenuScreen):
             self.text(canvas, (3, 15 + index*11), line, font, fill=190)
         self.text(canvas, (3, 54), 'Open in browser | Press to return', font, fill=105)
 
+    def _apply_updates(self):
+        if getattr(self, '_update_busy', False):
+            self.app.show_osd('UPDATE', 'Already running', duration=5)
+            return
+        self._update_busy = True
+        self.app.show_osd('UPDATING', 'Keep power on; please wait', duration=1800)
+        def work():
+            from .update import apply
+            try:
+                ok, message = apply()
+            except Exception:
+                ok, message = False, 'Update failed; see update log'
+            def done():
+                self._update_busy = False
+                self.app.show_osd('UPDATE COMPLETE' if ok else 'UPDATE FAILED', message, duration=30)
+            self.app.listener.dispatch(done)
+        self._wifi_jobs.submit(work)
+
     def _build_tree(self):
         tree = super()._build_tree()
         # Expose only functioning settings during the staged port.
@@ -413,6 +431,10 @@ class PiCoreMenu(MenuScreen):
             elif row[0] == 'Network':
                 tree[index] = (row[0], row[1][:-1] + [
                     ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
+        tree.insert(-1, ('Check / Apply Updates', [
+            ('Apply latest patches?', [
+                ('Cancel', '__back__'), ('Yes, apply patches', self._apply_updates)]),
+            ('Back', '__back__')]))
         tree.insert(-1, ("Add G's Mini Tidal List", self._add_mini_playlist))
         tree.insert(-1, ('Pair Apple Remote', self._pair_ir))
         learn_keys = [('Up', 'KEY_UP'), ('Down', 'KEY_DOWN'),

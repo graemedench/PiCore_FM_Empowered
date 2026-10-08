@@ -209,7 +209,7 @@ def update_shutdown_runtime():
         music.chmod(0o775)
     install_notices()
     changed = False
-    for name in ('power.py', 'runner.py', 'wifi.py'):
+    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py'):
         source = HERE / 'updates' / name
         if source.exists():
             destination = STAGE / 'src/sable/pcp' / name

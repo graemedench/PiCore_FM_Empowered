@@ -39,3 +39,11 @@ each dial: bright fast level needle and a dimmer peak needle with a one-second h
 
 The installer configures native AirPlay 2, Bluetooth and SMB; streaming accounts need your own sign-in.
 See INSTALL.md. This beta still needs full clean-install acceptance testing.
+# Updates from the panel
+
+Settings → **Check / Apply Updates** → **Apply latest patches?** →
+**Yes, apply patches** runs the public installer again. Cancel is available before
+starting. Keep power and internet connected; success asks you to reboot to load
+the updated panel. Failures retain `/mnt/sda2/fm4-update.log` for diagnosis.
+This reapplies current patches; it does not compare release version numbers.
+
