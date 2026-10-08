@@ -99,7 +99,8 @@ def prepare():
     backup.mkdir(parents=True, mode=0o700)
     for name, source in [('pcp.cfg', CFG), ('onboot.lst', Path('/mnt/sda2/tce/onboot.lst'))]:
         shutil.copy2(source, backup / name)
-    for name in ('slimserver', 'samba4', 'pcp-shairportsync', 'pcp-bt'):
+    for name in ('slimserver', 'samba4', 'pcp-shairportsync', 'pcp-bt',
+                 'wireless_tools', 'wpa_supplicant', 'firmware-rpi-wifi'):
         native_package(name)
     boot = Path('/mnt/sda1')
     boot.mkdir(exist_ok=True)

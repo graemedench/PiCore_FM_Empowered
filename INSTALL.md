@@ -11,6 +11,11 @@ drive disconnected and intact. Do not ignore errors from the FM4 installer.
 - A spare USB stick or SSD. This beta expects USB partition 2 at `/mnt/sda2`
   and at least 2 GB free after resizing. SD-card layouts and Pi 5 are not validated.
 - Ethernet and internet access for setup and package downloads.
+  The installer also loads the native tools and firmware for onboard Raspberry Pi
+  Wi-Fi. After the installation reboot, join your network through the panel's
+  Wi-Fi settings or the native piCorePlayer Wi-Fi page. Keep Ethernet connected
+  until a wireless IP is confirmed. Wi-Fi passwords are not supplied by us;
+  USB Wi-Fi adapters may require additional model-specific firmware.
 - A Windows/Mac/Linux computer, browser and SSH terminal.
 - Headphones, HDMI or a USB DAC for the initial test. DAC HATs require the
   [model-specific pin checks in HARDWARE.md](HARDWARE.md).
