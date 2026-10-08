@@ -145,10 +145,23 @@ def extract(archive, target):
                 raise RuntimeError('Unsafe archive member: ' + item.name)
         source.extractall(target, filter='data')
 
+def ensure_favorites():
+    """Create the empty native playlist once; never replace a user's saved tracks."""
+    playlist = Path('/mnt/sda2/Playlists/FM4 Favorites.m3u')
+    if playlist.exists():
+        print('FM4 Favorites preserved')
+        return
+    rpc(['playlists', 'new', 'name:FM4 Favorites'])
+    if not playlist.exists():
+        raise RuntimeError('Lyrion did not create FM4 Favorites; check its playlist directory')
+    run('chown', 'tc:staff', str(playlist))
+    print('Empty FM4 Favorites created')
+
 def install():
     if os.geteuid() != 0:
         raise SystemExit('Run installation with sudo; --check needs no sudo')
     if state().get('complete'):
+        ensure_favorites()
         print('Installation already completed. Existing settings preserved.')
         return
     if check():
@@ -250,6 +263,7 @@ directory mask = 0775
         rpc(['pref', key, value])
     for plugin in json.loads((HERE / 'fm4-plugins.json').read_text()):
         rpc(['pref', 'plugin.state:' + plugin['name'], 'enabled'])
+    ensure_favorites()
     run('/usr/local/etc/init.d/slimserver', 'stop')
     run('/usr/local/etc/init.d/slimserver', 'start')
     entries = Path('/opt/.filetool.lst').read_text().splitlines()
@@ -278,6 +292,7 @@ if __name__ == '__main__':
     if args.setup:
         progress = state()
         if progress.get('complete'):
+            ensure_favorites()
             print('Already installed. Reboot if you have not done so, then test the panel.')
         elif not progress.get('prepared_boot'):
             prepare()

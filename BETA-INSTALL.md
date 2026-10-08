@@ -58,7 +58,8 @@ storage or import any music, playlists, account tokens, Wi-Fi or network-backup 
 - Sign into TIDAL and BBC Sounds through Settings → Service URLs. The web player
   is `http://YOUR-PI-IP:9000/`; Favorites is `http://YOUR-PI-IP/fm4-favorites.html`.
 - Button 7 resolves My Mix 1 / My Mix 2 against the signed-in TIDAL account.
-- Favorites begins empty. Button 8 saves a track. **Add G's Mini Tidal List** is optional.
+- The installer creates an empty **FM4 Favorites** playlist. Button 8 saves a track.
+  Rerunning the installer preserves your saved tracks. **Add G's Mini Tidal List** is optional.
 - The writable Music share is `\\YOUR-PI-IP\Music`. This beta uses guest access;
   some Windows 11 systems require client settings changes. It does not enable SMB1.
 - No CD drive is needed. CD controls appear when a supported drive is attached.
