@@ -40,9 +40,9 @@
       },
       "btn_7": {
         "action": "play_uri",
-        "arg": "tidal://mymusic/mixes/0026e9b35979c2633352b995fa995f | My Mix 1",
+        "arg": "",
         "hold_action": "play_uri",
-        "hold_arg": "tidal://mymusic/mixes/016631b3ba9c5d5a39ea1a74b5e303 | TIDAL Mix"
+        "hold_arg": ""
       },
       "btn_8": {
         "action": "save_track",
@@ -68,11 +68,11 @@
     },
     "ir": {
       "enabled": true,
-      "profile": "Apple Aluminium Remote (this unit)",
+      "profile": "Apple Aluminium Remote",
       "pair_id": 21
     },
     "playback": {
-      "mode": "random"
+      "mode": "normal"
     },
     "screensaver": {
       "clock_after_s": 300,

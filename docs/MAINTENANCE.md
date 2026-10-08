@@ -18,8 +18,6 @@ for the next boot. A successful save is different from a complete backup of
 your music drive. Copy music, playlists and any private settings you need to
 your own protected backup location separately.
 
-Graeme's working project mirror is
-`C:\Users\Graeme\OneDrive\3D Prints Etc\Quadify FM4\piCorePlayer_Empowered`.
 The source repository contains public code, documentation, models and build
 instructions. It excludes account passwords, private server backups, library
 files and installed dependency folders. The local installer archive is a
@@ -36,7 +34,7 @@ Do not restart the panel or modify CD tools while a rip is running. Check for
 
 After a controlled update, check the panel log, test the changed feature and
 save with `pcp bu`. Record the change, checks and remaining limitations in
-[HANDOVER.md](../HANDOVER.md) and [CHANGELOG.md](../CHANGELOG.md). Source transfers
+[CHANGELOG.md](../CHANGELOG.md). Source transfers
 and repository sync use HTTPS. A full clean-drive installation test is still
 required before calling the installer a stable release.
 

@@ -1,10 +1,10 @@
 # PiCore FM Empowered
 
-A piCorePlayer port of the modified Quadify/Sable interface for Graeme's FM4:
+A piCorePlayer port of the modified Quadify/Sable interface for FM4 hardware:
 the familiar Sable presentation with responsive controls, standalone Lyrion,
 streaming, receivers, CD tools and printable hardware files in one project.
 
-**Release candidate:** the working FM4 has been tested during development.
+**Development preview — not yet a verified fresh-install release.** The working FM4 has been tested during development.
 A complete fresh-SSD installation and Bluetooth audio still need acceptance
 checks. See [the verification map](FEATURE-MAP.md) for exact status. This is an
 interface/install overlay, not a bootable disk image.
@@ -21,8 +21,7 @@ interface/install overlay, not a bootable disk image.
 | [Build notes](docs/FM4-BUILD-NOTES.md) | Reversible mounting and rear-panel conversion |
 | [Maintenance](docs/MAINTENANCE.md) | Persistent files, backups, updates and troubleshooting |
 | [Feature/test status](FEATURE-MAP.md) | Implemented features and outstanding physical checks |
-| [Development log](HANDOVER.md) | Decisions and verification for future work |
-| [Change log](CHANGELOG.md) | Development changes |
+| [Change log](CHANGELOG.md) | Public project milestones |
 
 ## Included features
 

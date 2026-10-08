@@ -10,3 +10,14 @@ build/
 *.tar.gz
 
 installer-bundle/
+
+# Working-copy records are maintained outside the public repository.
+HANDOVER.md
+STAGING.md
+previews/
+docs/FRESH-INSTALL-WALKTHROUGH.md
+docs/install-screenshots/
+private/
+*.playlist
+*.m3u
+.fm4-backup.*

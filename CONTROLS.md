@@ -10,7 +10,7 @@ Default Empowered controls (hold about 1.2 seconds):
 | 4 | Next track in queue | No separate default |
 | 5 | BBC Radio 2 | Greatest Hits Radio |
 | 6 | BBC Radio 4 | Absolute 80s |
-| 7 | Assigned TIDAL mix/source | Second assigned mix/source |
+| 7 | User-assigned source (initially unassigned) | User-assigned second source (initially unassigned) |
 | 8 | Save track to FM4 Favorites | Save current source as a shortcut |
 
 The shortcut picker assigns button 5, 6 or 7, then Short press, Long press or

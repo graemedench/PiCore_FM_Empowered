@@ -41,7 +41,7 @@ def native_player_id():
             return match[1]
         return Path('/sys/class/net/eth0/address').read_text().strip()
     except OSError:
-        return 'd8:3a:dd:30:37:15'  # Desktop fixture fallback only.
+        return '00:00:00:00:00:00'  # Desktop fixture fallback only.
 
 
 class LyrionListener:

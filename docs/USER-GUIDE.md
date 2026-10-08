@@ -64,8 +64,7 @@ Settings → Service URLs → **Web player** displays `http://<current-IP>:9000/
 Choose that entry to show the address; the submenu labels are not literal URLs.
 The IP is resolved when opening the entry, so it follows the active network
 route. If detection fails the hostname fallback is used. The same submenu links
-to BBC Sounds/TIDAL sign-in and server settings. Graeme's current Wi-Fi address
-is an example, not a required address for a new installation.
+to BBC Sounds/TIDAL sign-in and server settings. Use the device's current address on your own network.
 
 Settings → Service URLs → **FM4 Favorites page** shows the artwork-enabled
 saved-track page at `http://<current-IP>/fm4-favorites.html`. TIDAL entries link

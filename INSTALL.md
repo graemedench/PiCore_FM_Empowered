@@ -1,4 +1,4 @@
-# Fresh SSD installation - release candidate
+# Fresh SSD installation — development preview
 
 This installs the FM4 interface over an official piCorePlayer image. It never
 flashes or partitions a disk. The working FM4 is tested; the expanded installer
@@ -16,7 +16,7 @@ hardware acceptance test. Keep the original boot drive until that passes.
 
 The base image provides the operating system; this project's installer adds
 FM4 functionality. Generated archives are build products, excluded from Git.
-Graeme's local backup includes `fm4-installer.tar.gz`. Do not run the old
+Build `fm4-installer.tar.gz` from the source as described below. Do not run the old
 Volumio installer on piCorePlayer.
 
 ## Prepare the SSD and build the bundle
@@ -75,25 +75,25 @@ native web page, then run the acceptance checklist.
 
 ## What comes back automatically
 
-- Captured front-panel buttons, short/long shortcuts, clock/idle/brightness and
-  display preferences, playback mode, refresh interval and Apple remote identity.
+- Default front-panel buttons, radio shortcuts, clock/idle/brightness and
+  display preferences, playback mode and refresh interval. Pair your own Apple remote.
 - Local Lyrion and a stable player identity derived from the new Pi, with
   Squeezelite directed to localhost rather than another network server.
-- Headphones output matching the captured build, AirPlay 2/Bluetooth configuration,
+- Headphones output using the default profile, AirPlay 2/Bluetooth configuration,
   real audio-meter routing and native startup/persistence.
 - Music and Playlists paths; an empty FM4 Favorites playlist is created by the
   first Save action. The Favorites web page is regenerated at startup.
 - Pinned TIDAL, BBC Sounds, Material Skin, PlayHLS and the supplementary radio/
   artwork plugins listed in [fm4-plugins.json](fm4-plugins.json).
-- The captured **password-free Music share**. Anyone on the reachable local
-  network can read/write it, matching the current development unit. Change
+- The default **password-free Music share**. Anyone on the reachable local
+  network can read/write it, as configured by this preview. Change
   `guest_music_share`/the share setup before installation if you need another
   policy; authenticated sharing is not automated in this candidate.
 
 Wi-Fi, system/account passwords, streaming tokens, music, existing playlist
 contents, Bluetooth pairings and old machine MAC/IP addresses are excluded.
-Sign into TIDAL and BBC Sounds yourself. Captured TIDAL mix shortcuts belong to
-Graeme's account; another account should reassign button 7. Music and existing
+Sign into TIDAL and BBC Sounds yourself. Button 7 has no personal TIDAL mix assigned;
+assign your own source using the shortcut picker. Music and existing
 playlists can be restored separately; this installer does not copy them.
 
 The MusicArtistInfo/Material versions follow the pinned manifest, which can be
