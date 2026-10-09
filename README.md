@@ -4,7 +4,15 @@ A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
 ## 9 October 2026 update
 
-Settings are now grouped into six sections. This update adds knob-adjusted power-on volume and display timeouts, additional remote learning actions and popup text that fits the OLED. See the [menu map](MENU.md). Existing learned keys and preferences are retained. Apply the update below, then reboot to load it.
+The latest update has been tested on Graeme's FM4. It includes:
+
+- **Grouped Settings:** Display, Audio, Remote, Network & Services, Library & Shortcuts, and System. Now Playing and Back stay at the top level.
+- **Power-on Volume:** Settings → Audio → Power-on Volume. Turn the knob to choose Off or 0–100% in 1% steps, click to save, or hold to cancel. The chosen level applies at startup and when playback resumes after an hour paused or stopped. AirPlay and Bluetooth keep the sending device's volume control.
+- **Display Timeouts:** Settings → Display → Display Timeouts. Adjust pause-to-clock, clock dimming and display-off in 30-second steps, up to two hours. Zero means Off. Turn to adjust, click to save, hold to cancel.
+- **Expanded remote learning:** Settings → Remote → Beta Learn remote. Alongside navigation, play/pause, volume and mute, learn dedicated next/previous track, Stop, Repeat/shuffle mode, Save track, Now Playing and navigation Back. Existing learned keys are preserved.
+- **Popup sizing:** Message headings and details scale to fit the OLED.
+
+See the [full Settings menu map](MENU.md) and [button and remote controls](CONTROLS.md). Apply the update below, then reboot to load it. This tested update does not replace the remaining clean-install beta checks.
 
 ## Existing beta users: please rerun the installer
 
@@ -28,7 +36,7 @@ Keep Ethernet connected until Wi-Fi shows a working IP address. See the
 **Updated after 22:40 BST on 8 October 2026?** Future patches can now be applied
 from the FM4 panel: **Settings → System → Check / Apply Updates → Apply latest patches? →
 Yes, apply patches**. On success, choose **Reboot now** or **Later** with the encoder.
-Older builds need the SSH command above once to add this menu option. Keep power
+On older builds, Check / Apply Updates is directly under Settings. Builds without that option need the SSH command above once. Keep power
 and internet connected while patching. This reapplies the latest patches; it
 does not compare release version numbers.
 
@@ -51,6 +59,7 @@ After a successful phase, answer y at the reboot prompt; reconnect and run the s
 - [INSTALL.md](INSTALL.md): Raspberry Pi Imager, 64-bit selection, screenshot walkthrough, time sync, installer and first-use checks.
 - [HARDWARE.md](HARDWARE.md): wiring picture, physical/BCM pin table, current shutdown wiring and DAC HAT limits.
 - [CONTROLS.md](CONTROLS.md): features and short/long press controls.
+- [MENU.md](MENU.md): complete Settings menu map, numeric editors and remote learning.
 - One beta bundle and its checksum; bootstrap and installer/runtime repair source alongside them. Only screenshots use an images folder.
 
 ## Credits
