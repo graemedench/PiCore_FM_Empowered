@@ -18,7 +18,34 @@ from ..screens.browse import BrowseScreen, _play_all_tracks
 from .listener import LyrionListener, native_player_id
 
 
+def fitted_text(canvas, fonts, text, y, size=26, face='sans_bold', fill=255):
+    """Fit a centred single line inside the actual OLED width."""
+    from PIL import ImageDraw
+    from ..screens.base import crisp_text
+    text = str(text or '').replace('\n', ' ')
+    draw = ImageDraw.Draw(canvas)
+    available = canvas.width - 12
+    while size > 8 and draw.textlength(text, font=fonts.get(face, size)) > available:
+        size -= 1
+    font = fonts.get(face, size)
+    if draw.textlength(text, font=font) > available:
+        while text and draw.textlength(text + '...', font=font) > available:
+            text = text[:-1]
+        text += '...'
+    crisp_text(canvas, (canvas.width // 2, y), text, font, fill=fill, anchor='mm')
+
+
 class PiCoreApp(App):
+    def _draw_osd(self, img):
+        if not self._osd or self._osd_volume or time.monotonic() >= self._osd[2]:
+            return super()._draw_osd(img)
+        from PIL import Image
+        out = Image.blend(img, Image.new('L', img.size, 0), .8)
+        big, small, _ = self._osd
+        fitted_text(out, self.fonts, small, out.height // 2 - 15, 11, 'sans', 160)
+        fitted_text(out, self.fonts, big, out.height // 2 + 8)
+        return out
+
     def _on_state(self, old, new):
         now = time.monotonic()
         idle_since = getattr(self, '_volume_idle_since', None)
@@ -170,6 +197,31 @@ class PiCoreBrowse(BrowseScreen):
 
 
 class PiCoreMenu(MenuScreen):
+    def _edit_number(self, label, section, key, default, minimum, maximum, step, unit):
+        value = self.app.settings.get(section, key, default=default)
+        self._number_entry = dict(label=label, section=section, key=key,
+            value=minimum if value is None else int(value), minimum=minimum,
+            maximum=maximum, step=step, unit=unit)
+        self.app.fsm.reset_menu_timer()
+
+    def _save_number(self):
+        entry = self._number_entry
+        value = entry['value']
+        if entry['key'] == 'power_on_volume' and value < 0:
+            value = None
+        self.app.settings.set(entry['section'], entry['key'], value)
+        self._number_entry = None
+        if entry['key'] == 'clock_after_s' and self.app.store.get().status == 'pause':
+            self.app._arm_pause_timer()
+        self.app.note_activity()
+        self.app.fsm.reset_menu_timer()
+        self.app.show_osd('SAVED', entry['label'])
+        self._wifi_jobs.submit(subprocess.run, ['pcp', 'bu'], capture_output=True, timeout=90)
+
+    def on_exit(self):
+        self._number_entry = None
+        super().on_exit()
+
     def _power_volume_label(self):
         value = self.app.settings.get('audio', 'power_on_volume', default=None)
         return 'Off' if value is None else str(value) + '%'
@@ -369,6 +421,9 @@ class PiCoreMenu(MenuScreen):
         self.app.render()
 
     def handle_select(self):
+        if getattr(self, '_number_entry', None):
+            self._save_number()
+            return
         entry = self._shortcut_entry
         if entry and entry['stage'] == 'press' and entry['index'] == 2:
             self._shortcut_entry = None
@@ -381,6 +436,10 @@ class PiCoreMenu(MenuScreen):
         super().handle_select()
 
     def handle_back(self):
+        if getattr(self, '_number_entry', None):
+            self._number_entry = None
+            self.app.fsm.reset_menu_timer()
+            return
         remote = getattr(self.app, 'ir_remote', None)
         if remote and remote.learn_until:
             self._cancel_ir_learn()
@@ -391,6 +450,12 @@ class PiCoreMenu(MenuScreen):
         super().handle_back()
 
     def handle_scroll(self, delta):
+        entry = getattr(self, '_number_entry', None)
+        if entry:
+            entry['value'] = max(entry['minimum'], min(entry['maximum'],
+                entry['value'] + int(delta) * entry['step']))
+            self.app.fsm.reset_menu_timer()
+            return
         entry = self._shortcut_entry
         if entry and entry['stage'] == 'press':
             entry['index'] = (entry['index'] + delta) % 3
@@ -400,6 +465,17 @@ class PiCoreMenu(MenuScreen):
             super().handle_scroll(delta)
 
     def render(self, canvas, draw, w, h):
+        entry = getattr(self, '_number_entry', None)
+        if entry:
+            self.app.fsm.reset_menu_timer()
+            value = entry['value']
+            off = value < 0 or (entry['unit'] == 'seconds' and value == 0)
+            display = 'Off' if off else (str(value) + '%' if entry['unit'] == '%' else
+                (str(value // 60) + 'm ' + str(value % 60) + 's'))
+            fitted_text(canvas, self.app.fonts, entry['label'], 8, 11)
+            fitted_text(canvas, self.app.fonts, display, h // 2, 26)
+            fitted_text(canvas, self.app.fonts, 'Turn: adjust | Click: save | Hold: cancel', h-8, 9, 'sans', 130)
+            return
         if self.stack and self._cur['label'] == 'PATCHED - REBOOT?':
             self.app.fsm.reset_menu_timer()
         entry = self._shortcut_entry
@@ -423,11 +499,11 @@ class PiCoreMenu(MenuScreen):
         self.app.fsm.reset_menu_timer()
         title, url = self._signin_url
         font = self.app.fonts.get('mono', 9)
-        self.text(canvas, (3, 1), title.upper(), font, fill=230)
+        fitted_text(canvas, self.app.fonts, title.upper(), 6, 9, 'mono', 230)
         for index, line in enumerate(textwrap.wrap(url, width=40,
                                                   break_on_hyphens=False)):
             self.text(canvas, (3, 15 + index*11), line, font, fill=190)
-        self.text(canvas, (3, 54), 'Open in browser | Press to return', font, fill=105)
+        fitted_text(canvas, self.app.fonts, 'Open in browser | Press to return', h-5, 9, 'mono', 105)
 
     def _reboot_after_update(self):
         self.app.show_osd('REBOOTING', 'Please wait', duration=60)
@@ -481,10 +557,15 @@ class PiCoreMenu(MenuScreen):
             elif row[0] == 'Network':
                 tree[index] = (row[0], row[1][:-1] + [
                     ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
-        tree.insert(3, ('Power-on Volume', [
-            ('Off', lambda: self._set_power_volume(None))] + [
-            (str(value) + '%', lambda value=value: self._set_power_volume(value))
-            for value in range(0, 101, 5)] + [('Back', '__back__')], self._power_volume_label))
+        tree.insert(3, ('Power-on Volume', lambda: self._edit_number(
+            'Power-on Volume', 'audio', 'power_on_volume', None, -1, 100, 1, '%'),
+            self._power_volume_label))
+        tree.insert(4, ('Display Timeouts', [
+            (label, lambda label=label, key=key, default=default: self._edit_number(
+                label, 'screensaver', key, default, 0, 7200, 30, 'seconds'))
+            for label, key, default in [('Pause to clock', 'clock_after_s', 300),
+                ('Clock dim after', 'dim_s', 120), ('Display off after', 'idle_s', 3600)]
+            ] + [('Back', '__back__')]))
         tree.insert(-1, ('Check / Apply Updates', [
             ('Apply latest patches?', [
                 ('Cancel', '__back__'), ('Yes, apply patches', self._apply_updates)]),
@@ -496,7 +577,11 @@ class PiCoreMenu(MenuScreen):
                       ('Select', 'KEY_ENTER'), ('Menu', 'KEY_HOME'),
                       ('Back / previous', 'KEY_BACK'), ('Play / pause', 'KEY_PLAY'),
                       ('Volume up', 'KEY_VOLUMEUP'), ('Volume down', 'KEY_VOLUMEDOWN'),
-                      ('Mute', 'KEY_MUTE')]
+                      ('Mute', 'KEY_MUTE'),
+                      ('Next track', 'KEY_NEXTSONG'), ('Previous track', 'KEY_PREVIOUSSONG'),
+                      ('Stop', 'KEY_STOP'), ('Repeat / shuffle mode', 'KEY_REPEAT'),
+                      ('Save track', 'KEY_RECORD'), ('Now Playing', 'KEY_INFO'),
+                      ('Back (navigation)', 'KEY_EXIT')]
         tree.insert(-1, ('Beta Learn remote', [
             ('Learn ' + label, lambda label=label, key=key: self._learn_ir(label, key))
             for label, key in learn_keys] + [
@@ -513,7 +598,26 @@ class PiCoreMenu(MenuScreen):
                 'settings/server/basic.html')),
             ('Back', '__back__'),
         ]))
-        return tree
+        by_name = {row[0]: row for row in tree}
+        groups = [
+            ('Display', ('Display Mode', 'Brightness', 'Display Timeouts')),
+            ('Audio', ('Audio Output', 'Power-on Volume', 'Playback')),
+            ('Remote', ('Pair Apple Remote', 'Beta Learn remote')),
+            ('Network & Services', ('Network', 'Service URLs')),
+            ('Library & Shortcuts', ('Music Library', 'Shortcuts', "Add G's Mini Tidal List")),
+            ('System', ('Storage', 'Check / Apply Updates', 'Shutdown')),
+        ]
+        used = {'Now Playing', 'Back'}
+        grouped = [by_name['Now Playing']]
+        for title, names in groups:
+            rows = [by_name[name] for name in names if name in by_name]
+            used.update(names)
+            grouped.append((title, rows + [('Back', '__back__')]))
+        # Keep future settings reachable if a new row has not yet been grouped.
+        grouped[-1][1][-1:-1] = [row for row in tree if row[0] not in used]
+        grouped.append(by_name['Back'])
+        return grouped
+
 
 
 def main():

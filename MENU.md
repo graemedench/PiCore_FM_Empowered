@@ -1,0 +1,93 @@
+# FM4 Settings menu map
+
+Open the source carousel with the encoder, select **Settings**, then turn to choose a section. Click opens/selects; hold goes back. Each submenu also has a Back entry. Saved preferences and learned remote keys survive updates.
+
+```text
+Settings
+├── Now Playing
+├── Display
+│   ├── Display Mode
+│   │   ├── Modern: Panel
+│   │   ├── Modern: Panel Performance
+│   │   ├── Modern: Cinema
+│   │   ├── Panel / Needle VU
+│   │   ├── Panel / Spectrum
+│   │   └── Panel / Twin Needle VU
+│   ├── Brightness → Low / Medium / High
+│   └── Display Timeouts
+│       ├── Pause to clock
+│       ├── Clock dim after
+│       └── Display off after
+├── Audio
+│   ├── Audio Output → detected audio devices
+│   ├── Power-on Volume
+│   └── Playback
+│       ├── Play Single
+│       ├── Play All
+│       ├── Repeat Single
+│       ├── Repeat All
+│       └── Shuffle
+├── Remote
+│   ├── Pair Apple Remote
+│   └── Beta Learn remote
+│       ├── Learn Up / Down / Left / Right
+│       ├── Learn Select / Menu
+│       ├── Learn Back / previous (context-sensitive)
+│       ├── Learn Play / pause
+│       ├── Learn Volume up / Volume down / Mute
+│       ├── Learn Next track / Previous track
+│       ├── Learn Stop
+│       ├── Learn Repeat / shuffle mode
+│       ├── Learn Save track
+│       ├── Learn Now Playing
+│       ├── Learn Back (navigation)
+│       ├── Cancel learning
+│       └── Restore Apple defaults
+├── Network & Services
+│   ├── Network
+│   │   ├── IP Address
+│   │   ├── Wi-Fi Networks → choose network → enter password → join
+│   │   └── Wi-Fi status / IP
+│   └── Service URLs
+│       ├── Web player
+│       ├── FM4 Favorites page
+│       ├── BBC Sounds
+│       ├── TIDAL
+│       └── Server settings
+├── Library & Shortcuts
+│   ├── Music Library
+│   │   ├── Refresh now
+│   │   └── Auto refresh → Off / Every 15 minutes / Every hour
+│   ├── Shortcuts → Reset 5–7 Defaults
+│   └── Add G's Mini Tidal List
+├── System
+│   ├── Storage
+│   ├── Check / Apply Updates
+│   │   └── Apply latest patches? → Cancel / Yes, apply patches
+│   │       └── When complete → Later / Reboot now
+│   └── Shutdown → Confirm Shutdown / Cancel
+└── Back
+```
+
+Back entries inside submenus are omitted from the diagram for clarity.
+
+## Numeric controls
+
+Click **Power-on Volume** or a **Display Timeouts** entry to open its editor. Turn the knob to adjust, click to save, or hold to cancel. Cancelling leaves the saved value unchanged.
+
+| Setting | Range | Step | Behaviour |
+| --- | --- | --- | --- |
+| Power-on Volume | Off, 0–100% | 1% | Applies at startup and on playback resume after an hour paused or stopped. Off is below 0%; 0% is silent. AirPlay/Bluetooth remain controlled by the sending device. |
+| Pause to clock | Off, up to 2 hours | 30 seconds | Switches paused playback to the clock. Stopped playback already returns to the clock. |
+| Clock dim after | Off, up to 2 hours | 30 seconds | Dims the idle display after the chosen delay. |
+| Display off after | Off, up to 2 hours | 30 seconds | Turns the idle OLED off after the chosen delay. An interaction wakes it. |
+
+Timeout zero means Off. Normal active playback stays awake. Display timeout editing stays open until saved or cancelled; ordinary menu navigation retains its inactivity return timer.
+
+## Remote learning
+
+Choose a Learn action, then press the desired key within 30 seconds. Relearning an action replaces its old key; assigning an already-used key gives it the new action. Dedicated Next/Previous work as track controls in any view. Arrows retain their context-sensitive navigation. Repeat/shuffle mode cycles the available playback modes. Restore Apple defaults clears custom learned mappings.
+
+## Updates
+
+Use **Settings → System → Check / Apply Updates**. Older builds have Check / Apply Updates directly under Settings. Keep power and internet connected, and choose Reboot now or reboot later after completion. See [installation and update instructions](INSTALL.md) and [button controls](CONTROLS.md).

@@ -41,7 +41,7 @@ The installer configures native AirPlay 2, Bluetooth and SMB; streaming accounts
 See INSTALL.md. This beta still needs full clean-install acceptance testing.
 # Updates from the panel
 
-Settings → **Check / Apply Updates** → **Apply latest patches?** →
+Settings → **System** → **Check / Apply Updates** → **Apply latest patches?** →
 **Yes, apply patches** runs the public installer again. Cancel is available before
 starting. Keep power and internet connected; success offers Reboot now or Later to load
 the updated panel. Failures retain `/mnt/sda2/fm4-update.log` for diagnosis.
@@ -49,4 +49,6 @@ This reapplies current patches; it does not compare release version numbers.
 
 
 
-Power-on Volume (Settings): Off, or 0–100% in 5% steps. Applies at startup and when Lyrion playback resumes after at least one hour paused or stopped. Continuous playback does not trigger it. AirPlay/Bluetooth volume remains controlled on the sending device. Default: Off. Preferences survive updates and reboot.
+Power-on Volume (Settings → Audio): Off, or 0–100% adjusted with the knob in 1% steps. Click saves; hold cancels. Applies at startup and when Lyrion playback resumes after at least one hour paused or stopped. Continuous playback does not trigger it. AirPlay/Bluetooth volume remains controlled on the sending device. Default: Off. Preferences survive updates and reboot.
+
+See [the complete Settings menu map](MENU.md). Display timeouts use the same knob editor in 30-second steps (Off to two hours). Dedicated remote learning also includes next/previous track, Stop, Repeat/shuffle mode, Save track, Now Playing and navigation Back. Popup text scales to fit the OLED.

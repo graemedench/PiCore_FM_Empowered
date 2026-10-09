@@ -129,7 +129,7 @@ try an alternative native repository rather than bypassing HTTPS verification.
 ### Audio output
 
 Choose the connected USB DAC, Headphones or HDMI output, then **Save**.
-You can change this later on the OLED under **Settings → Audio Output**.
+You can change this later on the OLED under **Settings → Audio → Audio Output**.
 
 ![Detected audio devices](images/10-select-audio-output.png)
 
@@ -209,7 +209,7 @@ The installer does not import Graeme's accounts, music, Wi-Fi or private backups
 ## 5. First-use checks
 
 1. Confirm the OLED, encoder and buttons respond.
-2. Open **Settings → Audio Output**, choose your attached device and play a track.
+2. Open **Settings → Audio → Audio Output**, choose your attached device and play a track.
    If the DAC is missing, connect it and reopen the menu. This also sets receiver routing.
 3. Open **Settings → Service URLs** for the current browser addresses. Sign into
    TIDAL and BBC Sounds using your own accounts.

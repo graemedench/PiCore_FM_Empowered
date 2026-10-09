@@ -2,6 +2,10 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## 9 October 2026 update
+
+Settings are now grouped into six sections. This update adds knob-adjusted power-on volume and display timeouts, additional remote learning actions and popup text that fits the OLED. See the [menu map](MENU.md). Existing learned keys and preferences are retained. Apply the update below, then reboot to load it.
+
 ## Existing beta users: please rerun the installer
 
 Updates on **8 October 2026** fix missing onboard Wi-Fi tools/firmware, improve
@@ -22,7 +26,7 @@ Keep Ethernet connected until Wi-Fi shows a working IP address. See the
 [installation guide](INSTALL.md) if the clock needs syncing before downloading.
 
 **Updated after 22:40 BST on 8 October 2026?** Future patches can now be applied
-from the FM4 panel: **Settings → Check / Apply Updates → Apply latest patches? →
+from the FM4 panel: **Settings → System → Check / Apply Updates → Apply latest patches? →
 Yes, apply patches**. On success, choose **Reboot now** or **Later** with the encoder.
 Older builds need the SSH command above once to add this menu option. Keep power
 and internet connected while patching. This reapplies the latest patches; it
@@ -40,7 +44,7 @@ checked against the particular HAT's reserved pins.
 wget -O /tmp/fm4-bootstrap.sh https://raw.githubusercontent.com/graemedench/PiCore_FM_Empowered/main/bootstrap.sh && sudo sh /tmp/fm4-bootstrap.sh
 ```
 
-After a successful phase, answer y at the reboot prompt; reconnect and run the same command. Allow about one minute for network time after reboot. If date is still wrong, use the force-sync step in the guide before downloading. Select Settings → Audio Output after installation. Accounts, music and personal playlists are not imported. The beta archive includes its Python/shell source and original project notices. The private working project and development logs are kept privately for now.
+After a successful phase, answer y at the reboot prompt; reconnect and run the same command. Allow about one minute for network time after reboot. If date is still wrong, use the force-sync step in the guide before downloading. Select Settings → Audio → Audio Output after installation. Accounts, music and personal playlists are not imported. The beta archive includes its Python/shell source and original project notices. The private working project and development logs are kept privately for now.
 
 ## What is included
 
