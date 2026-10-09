@@ -180,6 +180,24 @@ def install_notices():
     if changed:
         run('pcp', 'bu')
 
+def enable_boot_oled():
+    if not (STAGE / 'boot-oled.sh').exists():
+        return False
+    boot = Path('/opt/bootlocal.sh')
+    text = boot.read_text()
+    marker = '# FM4 early OLED status'
+    if marker in text:
+        return False
+    if '#pCPstart------' not in text:
+        raise RuntimeError('Native boot startup marker missing; boot file preserved')
+    backup = Path('/mnt/sda2/bootlocal-before-fm4-oled.sh')
+    if not backup.exists():
+        shutil.copy2(boot, backup)
+    text = text.replace('#pCPstart------', marker + '\n/bin/sh ' + str(STAGE / 'boot-oled.sh') + '\n#pCPstart------', 1)
+    boot.write_text(text)
+    return True
+
+
 def update_shutdown_runtime():
     prepare_wifi()
     music = Path('/mnt/sda2/Music')
@@ -188,16 +206,20 @@ def update_shutdown_runtime():
         music.chmod(0o775)
     install_notices()
     changed = False
-    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py'):
+    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py', 'boot_splash.py', 'boot-indicator.py', 'boot-oled.sh', 'stage-start.sh'):
         source = HERE / 'updates' / name
         if source.exists():
             destination = (STAGE / 'src/sable/inputs/ir.py' if name == 'ir-input.py'
+                           else STAGE / name if name in ('boot-oled.sh', 'stage-start.sh')
+                           else STAGE / 'src/sable/boot_indicator.py' if name == 'boot-indicator.py'
                            else STAGE / 'src/sable/settings.py' if name == 'settings.py'
                            else STAGE / 'src/sable/pcp' / name)
             if not destination.exists() or source.read_bytes() != destination.read_bytes():
                 shutil.copy2(source, destination)
                 run('chown', 'tc:staff', str(destination))
                 changed = True
+    if enable_boot_oled():
+        changed = True
     if changed:
         run('pcp', 'bu')
     print('Shutdown default is GPIO26, physical pin 37. Move the wire with power disconnected; reboot to load updated code.')

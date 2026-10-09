@@ -4,6 +4,8 @@ A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
 ## 9 October 2026 update
 
+**Boot feedback:** the OLED now shows FM4 and startup messages while piCorePlayer loads, accompanied by the original soft LED crossfade through LEDs 1, 3, 5 and 7. The red LED stays out of the animation. Both hand over to the normal panel when ready. This provides earlier feedback; it does not promise a shorter overall boot. Existing users: apply the update and reboot.
+
 The latest update has been tested on Graeme's FM4. It includes:
 
 - **Persistence fixes:** learned remote codes, Apple pairing and Power-on Volume survive panel restarts and reboot. Codes already lost on an older build need to be learned again.
