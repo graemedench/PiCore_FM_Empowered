@@ -117,3 +117,8 @@ not distribute a cover-art collection or grant reuse rights in those images.
 
 The concrete packaging fixes from this audit are the DejaVu notice and the
 clarification that our personal-use terms do not override third-party licences.
+
+
+### Optional HDMI display
+
+HDMI Now Playing uses the native piCorePlayer `pcp-jivelite-vis` package, based on Logitech Jive/Jivelite and the piCorePlayer visualiser build. It is downloaded separately from the piCorePlayer repository. Upstream code and package assets retain their original licences and notices; this project does not relicense them. See https://github.com/blaisedias/jivelite and the installed package notices.

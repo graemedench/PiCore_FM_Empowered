@@ -6,10 +6,14 @@ A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
 The latest update has been tested on Graeme's FM4. It includes:
 
+- **Persistence fixes:** learned remote codes, Apple pairing and Power-on Volume survive panel restarts and reboot. Codes already lost on an older build need to be learned again.
+- **BBC radio metadata:** Radio 2/4 shortcuts use BBC Sounds for programme details and artwork, with a direct-stream fallback. The OLED shows the station heading and programme title below.
+- **HDMI Now Playing (Beta):** Settings → Display. Optional Jivelite tools are downloaded when enabled; English and automatic Now Playing are selected. Connect HDMI before enabling and reboot when requested. HDMI restarts can leave a blank display; reboot to recover. This feature still needs broader testing.
+
 - **Grouped Settings:** Display, Audio, Remote, Network & Services, Library & Shortcuts, and System. Now Playing and Back stay at the top level.
 - **Power-on Volume:** Settings → Audio → Power-on Volume. Turn the knob to choose Off or 0–100% in 1% steps, click to save, or hold to cancel. The chosen level applies at startup and when playback resumes after an hour paused or stopped. AirPlay and Bluetooth keep the sending device's volume control.
 - **Display Timeouts:** Settings → Display → Display Timeouts. Adjust pause-to-clock, clock dimming and display-off in 30-second steps, up to two hours. Zero means Off. Turn to adjust, click to save, hold to cancel.
-- **Expanded remote learning:** Settings → Remote → Beta Learn remote. Alongside navigation, play/pause, volume and mute, learn dedicated next/previous track, Stop, Repeat/shuffle mode, Save track, Now Playing and navigation Back. Existing learned keys are preserved.
+- **Expanded remote learning:** Settings → Remote → Learn Remote. Alongside navigation, play/pause, volume and mute, learn dedicated next/previous track, Stop, Repeat/shuffle mode, Save track, Now Playing and navigation Back. Existing learned keys are preserved.
 - **Popup sizing:** Message headings and details scale to fit the OLED.
 
 See the [full Settings menu map](MENU.md) and [button and remote controls](CONTROLS.md). Apply the update below, then reboot to load it. This tested update does not replace the remaining clean-install beta checks.

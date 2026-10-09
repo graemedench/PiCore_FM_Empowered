@@ -197,6 +197,72 @@ class PiCoreBrowse(BrowseScreen):
 
 
 class PiCoreMenu(MenuScreen):
+    def _hdmi_label(self):
+        try:
+            config = Path('/usr/local/etc/pcp/pcp.cfg').read_text()
+            return 'On' if 'JIVELITE="yes"' in config else 'Off'
+        except OSError:
+            return 'Off'
+
+    def _set_hdmi(self, enabled):
+        self.app.show_osd('HDMI', 'Enabling...' if enabled else 'Disabling...', duration=90)
+        def work():
+            try:
+                import re
+                launch = Path('/opt/jivelite/bin/jivelite.sh')
+                if enabled:
+                    from .hdmi import prepare
+                    prepare()
+                if enabled:
+                    prefs = Path('/home/tc/.jivelite/userpath-vis/settings')
+                    prefs.mkdir(parents=True, exist_ok=True)
+                    (prefs / 'SetupLanguage.lua').write_text('settings = {locale="EN",}\n')
+                    (prefs / 'SetupWelcome.lua').write_text('settings = {setupDone=true,}\n')
+                    skin = prefs / 'SelectSkin.lua'
+                    if not skin.exists():
+                        skin.write_text('settings = {skin="JogglerSkin",}\n')
+                    playing = prefs / 'NowPlaying.lua'
+                    contents = playing.read_text() if playing.exists() else 'settings = {}'
+                    if 'goNowPlayingAtStart=' in contents:
+                        contents = re.sub(r'goNowPlayingAtStart=(true|false)',
+                            'goNowPlayingAtStart=true', contents)
+                    else:
+                        contents = contents.replace('settings = {',
+                            'settings = {goNowPlayingAtStart=true,', 1)
+                    playing.write_text(contents)
+                config = Path('/usr/local/etc/pcp/pcp.cfg')
+                contents = config.read_text()
+                value = 'yes' if enabled else 'no'
+                contents = re.sub(r'^JIVELITE=.*$', 'JIVELITE="' + value + '"',
+                    contents, flags=re.MULTILINE)
+                config.write_text(contents)
+                # Stop the launcher before its child so its restart loop cannot respawn it.
+                subprocess.run(['pkill', '-f', '^/bin/sh /opt/jivelite/bin/jivelite.sh$'], capture_output=True)
+                subprocess.run(['pkill', '-f', '^/opt/jivelite/bin/jivelite$'], capture_output=True)
+                time.sleep(.3)
+                subprocess.run(['pkill', '-KILL', '-f', '^/opt/jivelite/bin/jivelite$'], capture_output=True)
+                if enabled:
+                    discovery = prefs / 'SlimDiscovery.lua'
+                    if discovery.exists():
+                        contents = discovery.read_text()
+                        contents = re.sub(r'ip="[^"]*"', 'ip="127.0.0.1"', contents)
+                        discovery.write_text(contents)
+                if enabled and Path('/sys/class/graphics/fb0').exists():
+                    with open('/tmp/fm4-hdmi-start.log', 'ab') as log:
+                        subprocess.Popen(['/bin/sh', str(launch)], stdin=subprocess.DEVNULL,
+                            stdout=log, stderr=log, start_new_session=True)
+                saved = subprocess.run(['pcp', 'bu'], capture_output=True, timeout=120)
+                if saved.returncode:
+                    raise RuntimeError('Backup failed; see system log')
+                message = ('English / Now Playing' if Path('/sys/class/graphics/fb0').exists()
+                           else 'Reboot with HDMI connected') if enabled else 'Off'
+                self.app.listener.dispatch(lambda: self.app.show_osd('HDMI', message, duration=5))
+            except Exception as exc:
+                message = str(exc)
+                self.app.listener.dispatch(lambda message=message:
+                    self.app.show_osd('HDMI', message, duration=8))
+        self._wifi_jobs.submit(work)
+
     def _edit_number(self, label, section, key, default, minimum, maximum, step, unit):
         value = self.app.settings.get(section, key, default=default)
         self._number_entry = dict(label=label, section=section, key=key,
@@ -582,7 +648,7 @@ class PiCoreMenu(MenuScreen):
                       ('Stop', 'KEY_STOP'), ('Repeat / shuffle mode', 'KEY_REPEAT'),
                       ('Save track', 'KEY_RECORD'), ('Now Playing', 'KEY_INFO'),
                       ('Back (navigation)', 'KEY_EXIT')]
-        tree.insert(-1, ('Beta Learn remote', [
+        tree.insert(-1, ('Learn Remote', [
             ('Learn ' + label, lambda label=label, key=key: self._learn_ir(label, key))
             for label, key in learn_keys] + [
                 ('Cancel learning', self._cancel_ir_learn),
@@ -598,11 +664,14 @@ class PiCoreMenu(MenuScreen):
                 'settings/server/basic.html')),
             ('Back', '__back__'),
         ]))
+        tree.insert(-1, ('HDMI Now Playing (Beta)', [
+            ('On', lambda: self._set_hdmi(True)),
+            ('Off', lambda: self._set_hdmi(False)), ('Back', '__back__')], self._hdmi_label))
         by_name = {row[0]: row for row in tree}
         groups = [
-            ('Display', ('Display Mode', 'Brightness', 'Display Timeouts')),
+            ('Display', ('Display Mode', 'Brightness', 'Display Timeouts', 'HDMI Now Playing (Beta)')),
             ('Audio', ('Audio Output', 'Power-on Volume', 'Playback')),
-            ('Remote', ('Pair Apple Remote', 'Beta Learn remote')),
+            ('Remote', ('Pair Apple Remote', 'Learn Remote')),
             ('Network & Services', ('Network', 'Service URLs')),
             ('Library & Shortcuts', ('Music Library', 'Shortcuts', "Add G's Mini Tidal List")),
             ('System', ('Storage', 'Check / Apply Updates', 'Shutdown')),

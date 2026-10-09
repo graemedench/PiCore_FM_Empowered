@@ -13,6 +13,7 @@ Settings
 │   │   ├── Panel / Needle VU
 │   │   ├── Panel / Spectrum
 │   │   └── Panel / Twin Needle VU
+│   ├── HDMI Now Playing (Beta) — On / Off
 │   ├── Brightness → Low / Medium / High
 │   └── Display Timeouts
 │       ├── Pause to clock
@@ -29,7 +30,7 @@ Settings
 │       └── Shuffle
 ├── Remote
 │   ├── Pair Apple Remote
-│   └── Beta Learn remote
+│   └── Learn Remote
 │       ├── Learn Up / Down / Left / Right
 │       ├── Learn Select / Menu
 │       ├── Learn Back / previous (context-sensitive)

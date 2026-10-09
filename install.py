@@ -188,10 +188,11 @@ def update_shutdown_runtime():
         music.chmod(0o775)
     install_notices()
     changed = False
-    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py'):
+    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py'):
         source = HERE / 'updates' / name
         if source.exists():
             destination = (STAGE / 'src/sable/inputs/ir.py' if name == 'ir-input.py'
+                           else STAGE / 'src/sable/settings.py' if name == 'settings.py'
                            else STAGE / 'src/sable/pcp' / name)
             if not destination.exists() or source.read_bytes() != destination.read_bytes():
                 shutil.copy2(source, destination)

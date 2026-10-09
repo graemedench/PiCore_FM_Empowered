@@ -266,3 +266,8 @@ Based on [Matt's original Sable](https://github.com/theshepherdmatt/sable),
 Graeme and Alex (OpenAI Codex) vibe-coded this port: Graeme guided and tested
 the hardware; Alex did the implementation and integration work. Original rights
 and notices remain applicable.
+
+
+## Optional HDMI Now Playing (Beta)
+
+Connect a powered HDMI screen, then choose Settings → Display → HDMI Now Playing (Beta) → On. The first enable downloads native piCorePlayer Jivelite tools and prepares the display driver; use Ethernet or working Wi-Fi. Reboot with HDMI connected after first enable. English and automatic Now Playing are selected. This is optional and remains disabled unless selected. Display restarts may leave HDMI blank; reboot to recover. Audio and OLED continue independently. Native Jivelite is an upstream component, installed from the piCorePlayer repository.
