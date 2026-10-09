@@ -48,3 +48,5 @@ the updated panel. Failures retain `/mnt/sda2/fm4-update.log` for diagnosis.
 This reapplies current patches; it does not compare release version numbers.
 
 
+
+Power-on Volume (Settings): Off, or 0–100% in 5% steps. Applies at startup and when Lyrion playback resumes after at least one hour paused or stopped. Continuous playback does not trigger it. AirPlay/Bluetooth volume remains controlled on the sending device. Default: Off. Preferences survive updates and reboot.

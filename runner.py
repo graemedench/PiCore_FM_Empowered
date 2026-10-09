@@ -19,6 +19,27 @@ from .listener import LyrionListener, native_player_id
 
 
 class PiCoreApp(App):
+    def _on_state(self, old, new):
+        now = time.monotonic()
+        idle_since = getattr(self, '_volume_idle_since', None)
+        first = not hasattr(self, '_volume_idle_since')
+        if first:
+            self._volume_idle_since = None if new.status == 'play' else now
+        elif new.status != 'play' and idle_since is None:
+            self._volume_idle_since = now
+        resumed = (new.status == 'play' and idle_since is not None
+                   and now - idle_since >= 3600)
+        if new.status == 'play':
+            self._volume_idle_since = None
+        marker = Path('/tmp/fm4-power-volume-applied')
+        startup = first and not marker.exists()
+        if startup:
+            marker.touch()
+        value = self.settings.get('audio', 'power_on_volume', default=None)
+        if (startup or resumed) and value is not None and new.service not in ('airplay', 'bluetooth'):
+            self.listener.set_volume(max(0, min(100, int(value))))
+        super()._on_state(old, new)
+
     def set_audio_output(self, output):
         self.show_osd('AUDIO OUTPUT', 'Switching...')
         def done(error):
@@ -149,6 +170,15 @@ class PiCoreBrowse(BrowseScreen):
 
 
 class PiCoreMenu(MenuScreen):
+    def _power_volume_label(self):
+        value = self.app.settings.get('audio', 'power_on_volume', default=None)
+        return 'Off' if value is None else str(value) + '%'
+
+    def _set_power_volume(self, value):
+        self.app.settings.set('audio', 'power_on_volume', value)
+        self.app.show_osd('POWER-ON VOLUME', 'Off' if value is None else str(value) + '%')
+        self._wifi_jobs.submit(subprocess.run, ['pcp', 'bu'], capture_output=True, timeout=90)
+
     def _audio_output_items(self):
         items = [(d['name'], lambda value=d['id']: self._set_audio_output(value))
                  for d in getattr(self.app.listener, 'audio_outputs', [])]
@@ -451,6 +481,10 @@ class PiCoreMenu(MenuScreen):
             elif row[0] == 'Network':
                 tree[index] = (row[0], row[1][:-1] + [
                     ('Wi-Fi status / IP', self._show_wifi_status), row[1][-1]], *row[2:])
+        tree.insert(3, ('Power-on Volume', [
+            ('Off', lambda: self._set_power_volume(None))] + [
+            (str(value) + '%', lambda value=value: self._set_power_volume(value))
+            for value in range(0, 101, 5)] + [('Back', '__back__')], self._power_volume_label))
         tree.insert(-1, ('Check / Apply Updates', [
             ('Apply latest patches?', [
                 ('Cancel', '__back__'), ('Yes, apply patches', self._apply_updates)]),
