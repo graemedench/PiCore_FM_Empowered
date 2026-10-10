@@ -11,20 +11,28 @@ import subprocess
 import tarfile
 import time
 import urllib.request
+from storage import storage_location
 
 HERE = Path(__file__).resolve().parent
 STAGE = Path('/home/tc/sable-pcp-stage')
 RECOVERY = Path('/home/tc/quadify-pcp')
 CFG = Path('/usr/local/etc/pcp/pcp.cfg')
-STATE = Path('/mnt/sda2/fm4-installer-state.json')
+def system_root():
+    return storage_location()[0]
+
+def system_tce():
+    return storage_location()[1]
+
+def state_path():
+    return system_root() / 'fm4-installer-state.json'
 
 def state():
-    return json.loads(STATE.read_text()) if STATE.exists() else {}
+    return json.loads(state_path().read_text()) if state_path().exists() else {}
 
 def save_state(values):
-    temporary = STATE.with_suffix('.tmp')
+    temporary = state_path().with_suffix('.tmp')
     temporary.write_text(json.dumps(values, indent=2) + '\n')
-    temporary.replace(STATE)
+    temporary.replace(state_path())
 
 def run(*args):
     progress = state()
@@ -44,16 +52,16 @@ def check(require_ready=True):
     problems = []
     if platform.machine() != 'aarch64':
         problems.append('Requires the tested aarch64 piCorePlayer image')
-    paths = [CFG, Path('/mnt/sda2/tce/onboot.lst'), HERE / 'fm4-profile.json', HERE / 'fm4-plugins.json']
+    paths = [CFG, system_tce() / 'onboot.lst', HERE / 'fm4-profile.json', HERE / 'fm4-plugins.json']
     if require_ready:
         paths.append(Path('/dev/spidev0.0'))
     for path in paths:
         if not path.exists():
             problems.append('Missing prerequisite: ' + str(path))
     mounts = Path('/proc/mounts').read_text() if Path('/proc/mounts').exists() else ''
-    if not any(line.split()[:2] == ['/dev/sda2', '/mnt/sda2'] for line in mounts.splitlines()):
-        problems.append('Requires /dev/sda2 mounted at /mnt/sda2; no disk layout will be changed')
-    elif shutil.disk_usage(Path('/mnt/sda2')).free < 2 * 1024**3:
+    if not any(line.split()[1:2] == [str(system_root())] for line in mounts.splitlines()):
+        problems.append('Active piCorePlayer storage must be mounted; no disk layout will be changed')
+    elif shutil.disk_usage(system_root()).free < 2 * 1024**3:
         problems.append('At least 2 GB free on the expanded system partition is required')
     if require_ready:
         try:
@@ -87,7 +95,7 @@ def native_package(name):
     # Follow the same download/load route used by the native LMS install page.
     run('sudo', '-u', 'tc', 'pcp-load', '-w', name + '.tcz')
     run('sudo', '-u', 'tc', 'pcp-load', '-i', name + '.tcz')
-    path = Path('/mnt/sda2/tce/onboot.lst')
+    path = system_tce() / 'onboot.lst'
     lines = path.read_text().splitlines()
     if name + '.tcz' not in lines:
         path.write_text('\n'.join(lines + [name + '.tcz']) + '\n')
@@ -102,19 +110,23 @@ def prepare():
         raise SystemExit('Run sudo --prepare on a fresh supported USB-boot installation')
     backup = Path('/home/tc/fm4-install-backup') / ('prepare-' + time.strftime('%Y%m%d-%H%M%S'))
     backup.mkdir(parents=True, mode=0o700)
-    for name, source in [('pcp.cfg', CFG), ('onboot.lst', Path('/mnt/sda2/tce/onboot.lst'))]:
+    for name, source in [('pcp.cfg', CFG), ('onboot.lst', system_tce() / 'onboot.lst')]:
         shutil.copy2(source, backup / name)
     for name in ('slimserver', 'samba4', 'pcp-shairportsync', 'pcp-bt'):
         native_package(name)
     prepare_wifi()
-    boot = Path('/mnt/sda1')
+    system_device = next(line.split()[0] for line in Path('/proc/mounts').read_text().splitlines() if line.split()[1] == str(system_root()))
+    if not re.fullmatch(r'/dev/sd[a-z]+2', system_device):
+        raise RuntimeError('Fresh preparation requires a supported USB system partition; no disk layout will be changed')
+    boot_device = system_device[:-1] + '1'
+    boot = Path('/mnt') / Path(boot_device).name
     boot.mkdir(exist_ok=True)
     boot_mounts = [line.split() for line in Path('/proc/mounts').read_text().splitlines() if line.split()[1] == str(boot)]
     mounted = bool(boot_mounts)
-    if mounted and boot_mounts[0][0] != '/dev/sda1':
-        raise RuntimeError('Boot mount is not /dev/sda1; refusing configuration changes')
+    if mounted and boot_mounts[0][0] != boot_device:
+        raise RuntimeError('Boot mount is not the detected system boot partition; refusing configuration changes')
     if not mounted:
-        run('mount', '-t', 'vfat', '/dev/sda1', str(boot))
+        run('mount', '-t', 'vfat', boot_device, str(boot))
     try:
         config = boot / 'config.txt'
         if not config.is_file():
@@ -153,7 +165,7 @@ def extract(archive, target):
 
 def ensure_favorites():
     """Create the empty native playlist once; never replace a user's saved tracks."""
-    playlist = Path('/mnt/sda2/Playlists/FM4 Favorites.m3u')
+    playlist = system_root() / 'Playlists/FM4 Favorites.m3u'
     if playlist.exists():
         print('FM4 Favorites preserved')
         return
@@ -190,7 +202,7 @@ def enable_boot_oled():
         return False
     if '#pCPstart------' not in text:
         raise RuntimeError('Native boot startup marker missing; boot file preserved')
-    backup = Path('/mnt/sda2/bootlocal-before-fm4-oled.sh')
+    backup = system_root() / 'bootlocal-before-fm4-oled.sh'
     if not backup.exists():
         shutil.copy2(boot, backup)
     text = text.replace('#pCPstart------', marker + '\n/bin/sh ' + str(STAGE / 'boot-oled.sh') + '\n#pCPstart------', 1)
@@ -200,13 +212,13 @@ def enable_boot_oled():
 
 def update_shutdown_runtime():
     prepare_wifi()
-    music = Path('/mnt/sda2/Music')
+    music = system_root() / 'Music'
     if music.is_dir():
         run('chown', 'tc:staff', str(music))
         music.chmod(0o775)
     install_notices()
     changed = False
-    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py', 'hardware_web.py','system_status.py','sable-status.html','sable-status.cgi','sable-hardware.html','sable-hardware.cgi','hardware_config.py','transport.py','ir.py','display.py','boot_splash.py', 'boot-indicator.py', 'boot-oled.sh', 'stage-start.sh', 'source-icons.py', 'sable-config.html', 'streaming-plugins.py', 'receiver_hook.py', 'receiver_metadata.py', 'receiver_art.py', 'receiver-maintenance.py'):
+    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py', 'hardware_web.py','storage.py','system_status.py','sable-status.html','sable-status.cgi','sable-hardware.html','sable-hardware.cgi','hardware_config.py','transport.py','ir.py','display.py','boot_splash.py', 'boot-indicator.py', 'boot-oled.sh', 'stage-start.sh', 'source-icons.py', 'sable-config.html', 'streaming-plugins.py', 'receiver_hook.py', 'receiver_metadata.py', 'receiver_art.py', 'receiver-maintenance.py'):
         source = HERE / 'updates' / name
         if source.exists():
             destination = (STAGE / 'src/sable/inputs/ir.py' if name == 'ir-input.py'
@@ -243,7 +255,7 @@ def install():
         raise SystemExit('Resolve the prerequisites in INSTALL.md first')
     backup = Path('/home/tc/fm4-install-backup') / time.strftime('%Y%m%d-%H%M%S')
     backup.mkdir(parents=True, mode=0o700)
-    for name, source in [('pcp.cfg', CFG), ('onboot.lst', Path('/mnt/sda2/tce/onboot.lst')), ('filetool.lst', Path('/opt/.filetool.lst'))]:
+    for name, source in [('pcp.cfg', CFG), ('onboot.lst', system_tce() / 'onboot.lst'), ('filetool.lst', Path('/opt/.filetool.lst'))]:
         shutil.copy2(source, backup / name)
     (backup / 'install.log').write_text('Fresh FM4 overlay install started\n')
     profile = json.loads((HERE / 'fm4-profile.json').read_text())
@@ -280,7 +292,7 @@ def install():
         panel_path.write_text(json.dumps(panel, indent=2) + '\n')
         progress = state(); progress['panel_saved'] = True; save_state(progress)
     for name in ('Music', 'Playlists'):
-        path = Path('/mnt/sda2') / name
+        path = system_root() / name
         path.mkdir(exist_ok=True)
         run('chown', 'tc:staff', str(path))
         path.chmod(0o775)
@@ -314,7 +326,7 @@ def install():
         shutil.copy2(samba, backup / 'smb.conf')
     if samba.is_symlink():
         samba.unlink()
-    samba.write_text('''[global]
+    samba.write_text(f'''[global]
 workgroup = WORKGROUP
 security = user
 map to guest = Bad User
@@ -323,7 +335,7 @@ server min protocol = SMB2
 load printers = no
 disable spoolss = yes
 [Music]
-path = /mnt/sda2/Music
+path = {system_root() / 'Music'}
 browseable = yes
 read only = no
 guest ok = yes
@@ -334,8 +346,8 @@ create mask = 0664
 directory mask = 0775
 ''')
     run('python3.11', str(STAGE / 'install-profile-plugins.py'), str(HERE / 'fm4-plugins.json'))
-    run('chown', '-R', 'tc:staff', '/mnt/sda2/tce/slimserver/Cache/InstalledPlugins')
-    for key, value in [('mediadirs', ['/mnt/sda2/Music']), ('playlistdir', '/mnt/sda2/Playlists'),
+    run('chown', '-R', 'tc:staff', str(system_tce() / 'slimserver/Cache/InstalledPlugins'))
+    for key, value in [('mediadirs', [str(system_root() / 'Music')]), ('playlistdir', str(system_root() / 'Playlists')),
                        ('language', profile['server']['language']), ('skin', profile['server']['skin']), ('wizardDone', 1),
                        ('plugin.onlinelibrary:enableLocalTracksOnly', 1),
                        ('libraryId', hashlib.md5(b'localTracksOnly').hexdigest()[:8])]:

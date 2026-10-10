@@ -2,6 +2,12 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## USB-drive update fix
+
+The updater now queries piCorePlayer's active extension directory to locate system storage, instead of assuming `/mnt/sda2`. This fixes an immediate “Patch failed” when another USB drive changes drive numbering. Downloads, updater logs and installer checkpoints follow the detected system drive; no disk is formatted or renamed. If storage cannot be verified as mounted read/write, the update stops rather than guessing.
+
+**Older installations:** if the menu updater fails instantly, unplug the extra music drive, reboot, apply the update, then reboot again. Alternatively rerun the SSH bootstrap command in [INSTALL.md](INSTALL.md). Logs are saved as `fm4-update.log` on the detected system volume. Discovery failures are recorded in `/tmp/fm4-update.log`.
+
 ## System Status page
 
 Open `http://YOUR-IP/sable-config.html` → **System status**, or `http://YOUR-IP/sable-status.html`. See CPU usage, memory, CPU temperature, uptime, drive read/write activity and free storage space. Refreshes every five seconds while the page is visible; refresh can be switched off. It is read-only and writes no monitoring history to the drive.

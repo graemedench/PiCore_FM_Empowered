@@ -3,7 +3,23 @@
 set -eu
 [ "$(id -u)" = 0 ] || { echo 'Run with sudo sh'; exit 1; }
 [ "$(uname -m)" = aarch64 ] || { echo 'This beta requires 64-bit piCorePlayer'; exit 1; }
-grep -q '^/dev/sda2 /mnt/sda2 ' /proc/mounts || { echo 'USB piCorePlayer layout required'; exit 1; }
+# Follow piCorePlayer's active extension directory, not USB enumeration order.
+if [ -L /etc/sysconfig/tcedir ]; then
+    FM4_TCE=$(readlink -f /etc/sysconfig/tcedir)
+else
+    FM4_TCE=$(cat /etc/sysconfig/tcedir)
+fi
+case "$FM4_TCE" in /*) ;; *) echo 'Active extension directory unavailable'; exit 1;; esac
+FM4_TCE=$(readlink -f "$FM4_TCE")
+[ -f "$FM4_TCE/onboot.lst" ] || { echo 'Active extension directory missing onboot.lst'; exit 1; }
+FM4_STORAGE=$FM4_TCE
+while ! awk -v target="$FM4_STORAGE" '$2 == target && $1 ~ /^\/dev\// && $4 ~ /(^|,)rw(,|$)/ {found=1} END {exit !found}' /proc/mounts; do
+    [ "$FM4_STORAGE" != / ] || { echo 'System storage not mounted read/write; refusing to guess'; exit 1; }
+    FM4_STORAGE=$(dirname "$FM4_STORAGE")
+done
+export FM4_TCE FM4_STORAGE
+echo "System storage: $FM4_STORAGE (extensions: $FM4_TCE)"
+
 [ -f /usr/local/etc/pcp/pcp.cfg ] || { echo 'piCorePlayer configuration not found'; exit 1; }
 # Persistent native pCP NTP configuration and bounded recovery of an invalid clock.
 fm4_time_check() {
@@ -47,7 +63,7 @@ if grep -qxF 'usr/local/var/lib/samba' /opt/.filetool.lst; then
 fi
 fm4_time_check
 BASE=https://raw.githubusercontent.com/graemedench/PiCore_FM_Empowered/main
-DEST=/mnt/sda2/fm4-beta-installer
+DEST="$FM4_STORAGE/fm4-beta-installer"
 mkdir -p "$DEST"
 if [ -f "$DEST/install.sh" ] && [ ! -f "$DEST/.fm4-beta-bundle" ]; then
     echo 'Existing unrelated installer directory preserved. Inspect it before proceeding.'
@@ -56,12 +72,12 @@ fi
 if [ -f "$DEST/.fm4-beta-bundle" ] && [ -f "$DEST/install.sh" ]; then
     echo 'Resuming the original downloaded beta; your in-progress installation is preserved.'
     # Apply installer fixes without replacing the original runtime archive.
-    for SCRIPT in install.py install.sh time-sync.sh DEJAVU-LICENSE.txt THIRD-PARTY-NOTICES.md EMPOWERED-NOTICE.md; do
+    for SCRIPT in install.py storage.py install.sh time-sync.sh DEJAVU-LICENSE.txt THIRD-PARTY-NOTICES.md EMPOWERED-NOTICE.md; do
         wget -O "$DEST/$SCRIPT.part" "$BASE/$SCRIPT"
         mv "$DEST/$SCRIPT.part" "$DEST/$SCRIPT"
     done
     mkdir -p "$DEST/updates"
-    for SCRIPT in power.py runner.py wifi.py update.py ir-input.py settings.py listener.py hdmi.py hardware_web.py system_status.py sable-status.html sable-status.cgi hardware_config.py transport.py ir.py sable-hardware.html sable-hardware.cgi display.py boot_splash.py boot-indicator.py boot-oled.sh stage-start.sh source-icons.py sable-config.html streaming-plugins.py receiver_hook.py receiver_metadata.py receiver_art.py receiver-maintenance.py; do
+    for SCRIPT in power.py runner.py wifi.py update.py ir-input.py settings.py listener.py hdmi.py hardware_web.py storage.py system_status.py sable-status.html sable-status.cgi hardware_config.py transport.py ir.py sable-hardware.html sable-hardware.cgi display.py boot_splash.py boot-indicator.py boot-oled.sh stage-start.sh source-icons.py sable-config.html streaming-plugins.py receiver_hook.py receiver_metadata.py receiver_art.py receiver-maintenance.py; do
         wget -O "$DEST/updates/$SCRIPT.part" "$BASE/$SCRIPT"
         mv "$DEST/updates/$SCRIPT.part" "$DEST/updates/$SCRIPT"
     done
