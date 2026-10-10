@@ -61,7 +61,7 @@ if [ -f "$DEST/.fm4-beta-bundle" ] && [ -f "$DEST/install.sh" ]; then
         mv "$DEST/$SCRIPT.part" "$DEST/$SCRIPT"
     done
     mkdir -p "$DEST/updates"
-    for SCRIPT in power.py runner.py wifi.py update.py ir-input.py settings.py listener.py hdmi.py boot_splash.py boot-indicator.py boot-oled.sh stage-start.sh source-icons.py sable-config.html streaming-plugins.py receiver_hook.py receiver_metadata.py receiver_art.py receiver-maintenance.py; do
+    for SCRIPT in power.py runner.py wifi.py update.py ir-input.py settings.py listener.py hdmi.py display.py boot_splash.py boot-indicator.py boot-oled.sh stage-start.sh source-icons.py sable-config.html streaming-plugins.py receiver_hook.py receiver_metadata.py receiver_art.py receiver-maintenance.py; do
         wget -O "$DEST/updates/$SCRIPT.part" "$BASE/$SCRIPT"
         mv "$DEST/updates/$SCRIPT.part" "$DEST/updates/$SCRIPT"
     done

@@ -2,6 +2,10 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## OLED screen rotation — 10 October 2026
+
+Settings → Display → Screen Rotation now offers **Normal** and **Upside-down**. The OLED flips immediately, remembers the selection, and uses the same orientation for the startup screen. Tested on Graeme’s unit in both orientations. Included in fresh installs and updates through Settings → System → Check / Apply Updates. This setting affects the OLED only.
+
 ## HDMI console fix — 10 October 2026
 
 HDMI now selects the graphics console opened by Jivelite at startup and when enabled from Settings, rather than assuming a fixed console number. This fixes the observed boot-console/black-screen mismatch. A full reboot was tested on Graeme’s unit and the HDMI picture was confirmed. Apply the update and reboot. HDMI receiver metadata remains unfinished.

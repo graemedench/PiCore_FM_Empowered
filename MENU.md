@@ -15,6 +15,7 @@ Settings
 │   │   └── Panel / Twin Needle VU
 │   ├── HDMI Now Playing (Beta) — On / Off
 │   ├── Brightness → Low / Medium / High
+│   ├── Screen Rotation → Normal / Upside-down
 │   └── Display Timeouts
 │       ├── Pause to clock
 │       ├── Clock dim after
@@ -122,3 +123,5 @@ This fixes the local audio handover; HDMI AirPlay metadata is still separate wor
 Use **Settings → System → Check / Apply Updates**. Older builds have Check / Apply Updates directly under Settings. Keep power and internet connected, and choose Reboot now or reboot later after completion. See [installation and update instructions](INSTALL.md) and [button controls](CONTROLS.md).
 
 HDMI startup and the On action automatically select Jivelite’s actual graphics console. Verified after a full reboot; receiver-specific HDMI metadata remains unfinished.
+
+Screen Rotation applies immediately to the OLED and is saved for panel startup and the early boot screen. HDMI orientation is unaffected.

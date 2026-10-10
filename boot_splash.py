@@ -34,6 +34,8 @@ def main():
     signal.signal(signal.SIGTERM, stop)
     serial = Serial()
     device = ssd1322(serial, width=256, height=64)
+    from ..settings import Settings
+    rotation = int(Settings().get('display', 'rotate', default=0) or 0)
     font = ImageFont.truetype('/home/tc/quadify-pcp/arial.ttf', 12)
     title = ImageFont.truetype('/home/tc/quadify-pcp/arial.ttf', 19)
     start = time.monotonic()
@@ -50,7 +52,7 @@ def main():
             # Activity indicator, not an invented completion percentage.
             x = 235 if int(time.monotonic() * 2) % 2 else 243
             draw.ellipse((x, 51, x+4, 55), fill='white')
-            device.display(image)
+            device.display(image.rotate(180) if rotation == 180 else image)
             time.sleep(.5)
     finally:
         leds.terminate()

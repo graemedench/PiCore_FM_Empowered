@@ -658,9 +658,6 @@ class PiCoreMenu(MenuScreen):
 
     def _build_tree(self):
         tree = super()._build_tree()
-        # Expose only functioning settings during the staged port.
-        tree = [row for row in tree if row[0] not in
-                ('Screen Rotation',)]
         for index, row in enumerate(tree):
             if row[0] == 'Display Mode':
                 choices = [item for item in row[1] if item[0].startswith('Modern:')]
@@ -737,7 +734,7 @@ class PiCoreMenu(MenuScreen):
                 lambda tag=tag: 'Shown' if self.app.settings.get('streaming_services', tag, default=False) else 'Hidden'))
         by_name['Streaming Services'] = ('Streaming Services', streaming + [('Back', '__back__')])
         groups = [
-            ('Display', ('Display Mode', 'Brightness', 'Display Timeouts', 'HDMI Now Playing (Beta)')),
+            ('Display', ('Display Mode', 'Brightness', 'Screen Rotation', 'Display Timeouts', 'HDMI Now Playing (Beta)')),
             ('Audio', ('Audio Output', 'Power-on Volume', 'Playback', 'AirPlay', 'Bluetooth')),
             ('Remote', ('Pair Apple Remote', 'Learn Remote')),
             ('Streaming Services', ('Streaming Services',)),

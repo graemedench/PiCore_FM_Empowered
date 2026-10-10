@@ -206,7 +206,7 @@ def update_shutdown_runtime():
         music.chmod(0o775)
     install_notices()
     changed = False
-    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py', 'boot_splash.py', 'boot-indicator.py', 'boot-oled.sh', 'stage-start.sh', 'source-icons.py', 'sable-config.html', 'streaming-plugins.py', 'receiver_hook.py', 'receiver_metadata.py', 'receiver_art.py', 'receiver-maintenance.py'):
+    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py', 'display.py','boot_splash.py', 'boot-indicator.py', 'boot-oled.sh', 'stage-start.sh', 'source-icons.py', 'sable-config.html', 'streaming-plugins.py', 'receiver_hook.py', 'receiver_metadata.py', 'receiver_art.py', 'receiver-maintenance.py'):
         source = HERE / 'updates' / name
         if source.exists():
             destination = (STAGE / 'src/sable/inputs/ir.py' if name == 'ir-input.py'
