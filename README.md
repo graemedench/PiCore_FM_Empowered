@@ -2,6 +2,12 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## Display settings persistence fix
+
+Brightness and Screen Rotation now trigger piCorePlayer's native backup and are restored from the panel's active settings at startup, including the early OLED screen. Wait for **DISPLAY SAVED — Safe to reboot** before rebooting. Saving runs the full piCorePlayer backup and can take a while; a failure is reported rather than claiming the settings are safely stored.
+
+Verified after a full reboot with upside-down rotation and medium brightness. Included in fresh installs and Settings updates.
+
 ## USB-drive update fix
 
 The updater now queries piCorePlayer's active extension directory to locate system storage, instead of assuming `/mnt/sda2`. This fixes an immediate “Patch failed” when another USB drive changes drive numbering. Downloads, updater logs and installer checkpoints follow the detected system drive; no disk is formatted or renamed. If storage cannot be verified as mounted read/write, the update stops rather than guessing.
@@ -16,7 +22,7 @@ CPU and drive activity are short samples, not long-term averages. Drive busy tim
 
 ## Alpha Hardware Setup — Not Supported — Use at own risk
 
-**Pin remapping and alternative wiring have not been user tested.** The shared configuration was checked with the existing wiring after reboot, and automated tests plus a browser save/restart using unchanged pins were run. These checks do not prove that remapping works with other hardware or DAC HATs.
+**One remapped setup is user confirmed:** encoder switch GPIO4 and IR receiver GPIO27, working after rewiring and reboot. Other mappings and alternative hardware remain unverified. The shared configuration was checked with the existing wiring after reboot, and automated tests plus a browser save/restart using unchanged pins were run. These checks do not prove that remapping works with other hardware or DAC HATs.
 
 Open `http://YOUR-IP/sable-config.html` → **Hardware Setup — Alpha**, or `http://YOUR-IP/sable-hardware.html`. Dropdowns show BCM GPIO and physical pin numbers, optional devices can be marked not connected, and the proposed mapping is checked before saving. Save restarts the panel; a previous-mapping restore is available. Incorrect wiring can disable the display or controls. Keep SSH available and disconnect power before moving wires. See [hardware setup details](HARDWARE.md).
 
@@ -26,7 +32,7 @@ Included in fresh installs and Settings updates. Existing hardware configuration
 
 | Feature | Current status / remaining checks |
 | --- | --- |
-| **Hardware Setup — Alpha** | **Not Supported — Use at own risk.** Changed GPIO mappings, NC hardware combinations, DAC HAT configurations and real hardware recovery have not been user tested. |
+| **Hardware Setup — Alpha** | **Not Supported — Use at own risk.** Encoder switch GPIO4 / IR GPIO27 was user confirmed after reboot. Other mappings, NC hardware combinations, DAC HAT configurations and hardware recovery remain unverified. |
 | **Beta Spotify / SpotOn** | Authenticated playback has not been verified; account authorisation still needs a successful end-to-end test. |
 | **Beta Qobuz** | Authenticated browsing and playback have not been verified with a subscription. |
 | **HDMI Now Playing — Beta** | Basic display and console selection were tested on one unit. Broader screen/hotplug testing remains; AirPlay/Bluetooth metadata on HDMI is unfinished. |

@@ -197,6 +197,27 @@ class PiCoreBrowse(BrowseScreen):
 
 
 class PiCoreMenu(MenuScreen):
+    def _save_display_preferences(self):
+        self.app.show_osd('DISPLAY', 'Saving settings...', duration=90)
+        def backup():
+            try:
+                result = subprocess.run(['pcp', 'bu'], capture_output=True, timeout=180)
+                ok = result.returncode == 0
+            except (OSError, subprocess.SubprocessError):
+                ok = False
+            self.app.listener.dispatch(lambda: self.app.show_osd(
+                'DISPLAY SAVED' if ok else 'BACKUP FAILED',
+                'Safe to reboot' if ok else 'Settings only saved in RAM', duration=8))
+        self._wifi_jobs.submit(backup)
+
+    def _set_rotate(self, degrees):
+        super()._set_rotate(degrees)
+        self._save_display_preferences()
+
+    def _set_brightness(self, level):
+        super()._set_brightness(level)
+        self._save_display_preferences()
+
     def _set_service_visible(self, tag, visible):
         self.app.settings.set('streaming_services', tag, visible)
         self.app.listener.get_sources()
@@ -767,6 +788,7 @@ def main():
     parser.add_argument('--sim', action='store_true')
     parser.add_argument('--seconds', type=float, default=0)
     args = parser.parse_args()
+    settings = Settings(args.settings)
     args.player = args.player or native_player_id()
     events, stop = queue.Queue(), threading.Event()
     signal.signal(signal.SIGTERM, lambda *_: stop.set())
@@ -786,7 +808,7 @@ def main():
         install_web()
         hardware = load(settings_path=args.settings)
         if hardware['oled']['enabled']:
-            display = PiCoreDisplay(hardware)
+            display = PiCoreDisplay(hardware, settings=settings)
         else:
             from ..display.sim import SimDisplay
             display = SimDisplay(256, 64, ascii_preview=False, log=lambda *_: None)
@@ -800,7 +822,9 @@ def main():
         if (Path(font_dir) / 'DejaVuSans.ttf').exists():
             fonts._DIR = font_dir
             break
-    app = PiCoreApp(display, Settings(args.settings), dry_run=args.sim)
+    app = PiCoreApp(display, settings, dry_run=args.sim)
+    app.set_brightness_from_settings()
+    app.set_rotate_from_settings()
     from .source_icons import PiCoreHome
     app.fsm.screens['home'] = PiCoreHome(app)
     from .clock import RipClock

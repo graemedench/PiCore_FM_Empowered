@@ -5,7 +5,7 @@ body{margin:0;background:#f5f5f2;color:#242424;font:16px/1.5 system-ui,sans-seri
 </style></head><body><main>
 <a href="/sable-config.html">← Sable configuration</a>
 <h1>Hardware Setup <small>Alpha</small></h1>
-<div class="warning"><strong>Alpha — Not Supported — Use at own risk</strong><b>Pin remapping and alternative hardware have not been user tested.</b> This changes the physical wiring used by Sable. Incorrect choices can stop the OLED or controls working. Confirm your DAC HAT’s reserved pins. Disconnect power before moving any wires. Keep SSH access available for recovery.</div>
+<div class="warning"><strong>Alpha — Not Supported — Use at own risk</strong><b>One GPIO4 encoder switch / GPIO27 IR mapping is user confirmed after reboot. Other mappings and alternative hardware remain unverified.</b> This changes the physical wiring used by Sable. Incorrect choices can stop the OLED or controls working. Confirm your DAC HAT’s reserved pins. Disconnect power before moving any wires. Keep SSH access available for recovery.</div>
 <p class="note">All GPIO numbers are BCM numbers. Each dropdown also shows the physical connector pin. Saving restarts the panel, not the Pi. This does not change kernel overlays or audio output settings.</p>
 <p id="message" role="status" aria-live="polite">Loading hardware configuration…</p>
 <form id="form" hidden><fieldset><legend>OLED display — SSD1322</legend>

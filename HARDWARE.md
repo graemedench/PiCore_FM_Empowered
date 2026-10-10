@@ -71,7 +71,7 @@ Source: [Raspberry Pi audio-board GPIO documentation](https://www.raspberrypi.co
 
 ## Hardware Setup — Alpha — Not Supported — Use at own risk
 
-**Pin remapping and alternative hardware have not been user tested.** Automated checks and an unchanged-mapping browser save/restart were exercised on the developer’s unit. Existing controls were checked after the shared-configuration reboot; this does not validate changed wiring, DAC HATs or hardware recovery across different devices.
+**User-confirmed mapping:** encoder switch GPIO4 and IR receiver GPIO27, both working after rewiring and reboot. Other mappings and alternative hardware remain unverified. Automated checks and an unchanged-mapping browser save/restart were exercised on the developer’s unit. Existing controls were checked after the shared-configuration reboot; this does not validate changed wiring, DAC HATs or hardware recovery across different devices.
 
 The piCore panel reads `/home/tc/sable-pcp-stage/config/hardware.json`.
 Numbers are BCM GPIO numbers, not physical connector pin numbers. Missing entries use current FM4 defaults. Normal updates preserve this file. The public bundle must not contain a user's hardware.json.

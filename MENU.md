@@ -124,7 +124,7 @@ Use **Settings → System → Check / Apply Updates**. Older builds have Check /
 
 HDMI startup and the On action automatically select Jivelite’s actual graphics console. Verified after a full reboot; receiver-specific HDMI metadata remains unfinished.
 
-Screen Rotation applies immediately to the OLED and is saved for panel startup and the early boot screen. HDMI orientation is unaffected.
+Screen Rotation and Brightness apply immediately. Wait for DISPLAY SAVED — Safe to reboot while the native backup runs; both are restored at startup and used by the early boot screen. HDMI orientation is unaffected.
 
 ## Browser configuration pages
 
@@ -148,4 +148,4 @@ Sable configuration
 └── piCorePlayer settings
 ```
 
-**Hardware Setup: Alpha — Not Supported — Use at own risk. Pin remapping and alternative hardware have not been user tested.** Browser save/restart was exercised with unchanged wiring. It is a browser page, not an OLED menu item. See [hardware details](HARDWARE.md) and the [testing status list](README.md#features-awaiting-testing-or-completion).
+**Hardware Setup: Alpha — Not Supported — Use at own risk. Encoder switch GPIO4 / IR GPIO27 is user confirmed after reboot; other mappings and alternative hardware remain unverified.** Browser save/restart was exercised with unchanged wiring. It is a browser page, not an OLED menu item. See [hardware details](HARDWARE.md) and the [testing status list](README.md#features-awaiting-testing-or-completion).

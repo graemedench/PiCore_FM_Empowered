@@ -39,7 +39,11 @@ def main():
     serial = Serial(hardware)
     device = ssd1322(serial, width=256, height=64)
     from ..settings import Settings
-    rotation = int(Settings().get('display', 'rotate', default=0) or 0)
+    settings = Settings('/home/tc/sable-pcp-stage/config/pcp-settings.json')
+    rotation = int(settings.get('display', 'rotate', default=0) or 0)
+    from .. import hardware as legacy_hardware
+    level = settings.get('display', 'brightness', default='high')
+    device.contrast(getattr(legacy_hardware.CONTRAST, level, legacy_hardware.CONTRAST.high))
     font = ImageFont.truetype('/home/tc/quadify-pcp/arial.ttf', 12)
     title = ImageFont.truetype('/home/tc/quadify-pcp/arial.ttf', 19)
     start = time.monotonic()

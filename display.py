@@ -7,7 +7,7 @@ from ..display.base import Display
 
 
 class PiCoreDisplay(Display):
-    def __init__(self, hardware=None):
+    def __init__(self, hardware=None, settings=None):
         super().__init__(256, 64)
         self._lock = threading.RLock()
         from .hardware_config import load
@@ -16,7 +16,8 @@ class PiCoreDisplay(Display):
                               mode='RGB', framebuffer=diff_to_previous())
         self._previous = None
         from ..settings import Settings
-        self._rotation = int(Settings().get('display', 'rotate', default=0) or 0)
+        settings = settings or Settings('/home/tc/sable-pcp-stage/config/pcp-settings.json')
+        self._rotation = int(settings.get('display', 'rotate', default=0) or 0)
 
     def present(self, image):
         with self._lock:
