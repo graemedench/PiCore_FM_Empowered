@@ -125,3 +125,26 @@ Use **Settings → System → Check / Apply Updates**. Older builds have Check /
 HDMI startup and the On action automatically select Jivelite’s actual graphics console. Verified after a full reboot; receiver-specific HDMI metadata remains unfinished.
 
 Screen Rotation applies immediately to the OLED and is saved for panel startup and the early boot screen. HDMI orientation is unaffected.
+
+## Browser configuration pages
+
+`http://YOUR-IP/sable-config.html`
+
+```text
+Sable configuration
+├── Streaming accounts → BBC Sounds / TIDAL / Beta Spotify / Beta Qobuz
+├── Web player
+├── FM4 Favorites
+├── Lyrion settings
+├── Hardware Setup — Alpha
+│   ├── OLED connected / chip select / DC / reset
+│   ├── Encoder connected / CLK / DT / switch / reverse direction
+│   ├── Button/LED board connected / address / button and LED orientation
+│   ├── IR receiver / Shutdown button → GPIO or Not connected
+│   ├── Reserved GPIOs → user-entered DAC HAT restrictions
+│   ├── Review → validate → Alpha acknowledgement → Save and restart panel
+│   └── Restore previous mapping → review and acknowledge
+└── piCorePlayer settings
+```
+
+**Hardware Setup: Alpha — Not Supported — Use at own risk. Pin remapping and alternative hardware have not been user tested.** Browser save/restart was exercised with unchanged wiring. It is a browser page, not an OLED menu item. See [hardware details](HARDWARE.md) and the [testing status list](README.md#features-awaiting-testing-or-completion).

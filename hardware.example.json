@@ -1,0 +1,9 @@
+{
+  "gpiochip": "/dev/gpiochip0",
+  "oled": {"enabled": true, "spi_port": 0, "spi_device": 0, "dc": 24, "rst": 25},
+  "rotary": {"enabled": true, "clk": 13, "dt": 5, "sw": 6, "reverse": true},
+  "mcp": {"enabled": true, "bus": 1, "addr": 32, "swap_columns": true, "led_reverse": true},
+  "ir": {"gpio": 4},
+  "power": {"gpio": 26},
+  "reserved_gpios": []
+}

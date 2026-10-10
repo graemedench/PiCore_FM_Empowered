@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Sable Hardware Setup — Alpha</title>
+<style>
+body{margin:0;background:#f5f5f2;color:#242424;font:16px/1.5 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:24px 20px 50px}h1{margin-bottom:8px}h2{font-size:21px}a{color:#225a91}.warning{background:#fff1d9;border:2px solid #b87510;border-radius:10px;padding:16px}.warning strong{display:block;font-size:20px}.note{color:#555}fieldset{background:white;border:1px solid #ddd;border-radius:10px;margin:20px 0;padding:18px}legend{font-weight:700;padding:0 8px}.row{display:grid;grid-template-columns:minmax(160px,1fr) minmax(180px,1fr);align-items:center;gap:12px;margin:10px 0}select,button{font:inherit;border:1px solid #aaa;border-radius:6px;padding:9px;background:white}select{width:100%}button{cursor:pointer}button:disabled{cursor:default;opacity:.5}.actions{display:flex;gap:12px;flex-wrap:wrap}.primary{background:#225a91;color:white;border-color:#225a91}#message{white-space:pre-line;margin:18px 0;font-weight:600}#review{background:white;padding:20px;border:1px solid #bbb;border-radius:10px}#changes{white-space:pre-line}input[type=checkbox]{width:19px;height:19px;vertical-align:middle}#reserved{min-height:180px}@media(max-width:520px){.row{grid-template-columns:1fr;gap:3px}}
+</style></head><body><main>
+<a href="/sable-config.html">← Sable configuration</a>
+<h1>Hardware Setup <small>Alpha</small></h1>
+<div class="warning"><strong>Alpha — Not Supported — Use at own risk</strong><b>Pin remapping and alternative hardware have not been user tested.</b> This changes the physical wiring used by Sable. Incorrect choices can stop the OLED or controls working. Confirm your DAC HAT’s reserved pins. Disconnect power before moving any wires. Keep SSH access available for recovery.</div>
+<p class="note">All GPIO numbers are BCM numbers. Each dropdown also shows the physical connector pin. Saving restarts the panel, not the Pi. This does not change kernel overlays or audio output settings.</p>
+<p id="message" role="status" aria-live="polite">Loading hardware configuration…</p>
+<form id="form" hidden><fieldset><legend>OLED display — SSD1322</legend>
+<label><input type="checkbox" id="oled.enabled"> Connected</label>
+<div class="row"><label for="oled.spi_device">SPI chip select</label><select id="oled.spi_device"><option value="0">SPI0 CE0 — GPIO8 / pin 24</option><option value="1">SPI0 CE1 — GPIO7 / pin 26</option></select></div>
+<div class="row"><label for="oled.dc">Data / command</label><select id="oled.dc" data-pin></select></div>
+<div class="row"><label for="oled.rst">Reset</label><select id="oled.rst" data-pin></select></div>
+<p class="note">SPI0 clock is GPIO11 / pin 23; data is GPIO10 / pin 19. Rotation is selected from the OLED Settings → Display menu.</p></fieldset>
+<fieldset><legend>Rotary encoder</legend><label><input type="checkbox" id="rotary.enabled"> Connected</label>
+<div class="row"><label for="rotary.clk">CLK</label><select id="rotary.clk" data-pin></select></div>
+<div class="row"><label for="rotary.dt">DT</label><select id="rotary.dt" data-pin></select></div>
+<div class="row"><label for="rotary.sw">Switch</label><select id="rotary.sw" data-pin data-nc></select></div>
+<label><input type="checkbox" id="rotary.reverse"> Reverse encoder direction</label></fieldset>
+<fieldset><legend>Front buttons and LEDs — MCP23017</legend><label><input type="checkbox" id="mcp.enabled"> Connected</label>
+<div class="row"><label for="mcp.addr">I²C address</label><select id="mcp.addr"></select></div>
+<p class="note">I²C1 uses GPIO2 / pin 3 and GPIO3 / pin 5. The button matrix wiring on the MCP board is unchanged.</p>
+<p><label><input type="checkbox" id="mcp.swap_columns"> Swap button columns</label></p>
+<label><input type="checkbox" id="mcp.led_reverse"> Reverse LED order</label></fieldset>
+<fieldset><legend>Optional inputs</legend>
+<div class="row"><label for="ir.gpio">IR remote receiver</label><select id="ir.gpio" data-pin data-nc></select></div>
+<div class="row"><label for="power.gpio">Shutdown button</label><select id="power.gpio" data-pin data-nc></select></div>
+<p class="note">Choose Not connected for an unused input. Shutdown is an active-low button to ground; this does not configure a hardware wake pin.</p></fieldset>
+<fieldset><legend>GPIOs reserved by your DAC HAT or other hardware</legend>
+<label for="reserved">Select every reserved GPIO (Ctrl/Cmd-click to select several).</label><select id="reserved" data-pin multiple></select>
+<p class="note">No HAT is detected automatically. Check its documentation. Reserved pins will be checked against your proposed mapping.</p></fieldset>
+<div class="actions"><button class="primary" type="submit">Review mapping</button><button id="reload" type="button">Cancel / reload saved mapping</button><button id="restore" type="button">Restore previous mapping…</button></div></form>
+<section id="review" hidden><h2>Review mapping</h2><p id="changes"></p><p><label><input id="ack" type="checkbox"> I understand: Alpha — Not Supported — Use at own risk.</label></p><div class="actions"><button class="primary" id="apply" disabled>Save and restart panel</button><button id="cancel">Back to editing</button></div></section>
+</main><script>
+const api='/cgi-bin/sable-hardware.cgi', el=id=>document.getElementById(id);
+const physical=[27,28,3,5,7,29,31,26,24,21,19,23,32,33,8,10,36,11,12,35,38,40,15,16,18,22,37,13];
+let saved, pending, restoreMode=false, polling=false;
+const fields=['oled.enabled','oled.spi_device','oled.dc','oled.rst','rotary.enabled','rotary.clk','rotary.dt','rotary.sw','rotary.reverse','mcp.enabled','mcp.addr','mcp.swap_columns','mcp.led_reverse','ir.gpio','power.gpio'];
+const labels={'oled.enabled':'OLED connected','oled.spi_device':'SPI chip select','oled.dc':'OLED DC','oled.rst':'OLED reset','rotary.enabled':'Encoder connected','rotary.clk':'Encoder CLK','rotary.dt':'Encoder DT','rotary.sw':'Encoder switch','rotary.reverse':'Encoder direction reversed','mcp.enabled':'Button/LED board connected','mcp.addr':'MCP address','mcp.swap_columns':'Swap button columns','mcp.led_reverse':'Reverse LED order','ir.gpio':'IR receiver','power.gpio':'Shutdown button'};
+document.querySelectorAll('[data-pin]').forEach(select=>{if(select.hasAttribute('data-nc'))select.add(new Option('Not connected (NC)','null'));for(let gpio=0;gpio<=27;gpio++)select.add(new Option(`GPIO${gpio} — physical pin ${physical[gpio]}`,String(gpio)));});
+for(let addr=32;addr<=39;addr++)el('mcp.addr').add(new Option('0x'+addr.toString(16)+' ('+addr+')',String(addr)));
+function message(text){el('message').textContent=text;}
+function busy(value){document.querySelectorAll('button, select, input').forEach(x=>x.disabled=value);if(!value){el('restore').disabled=!saved?.has_backup;el('apply').disabled=!el('ack').checked;}}
+async function call(body){const response=await fetch(api,body?{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({...body,token:saved.token,revision:saved.revision}),cache:'no-store'}:{cache:'no-store'});const data=await response.json();if(!response.ok||data.error&&!data.config)throw Error(data.error||'Request failed');return data;}
+function fill(config){fields.forEach(key=>{const [section,name]=key.split('.'), field=el(key), value=config[section][name];if(field.type==='checkbox')field.checked=value;else field.value=String(value);});[...el('reserved').options].forEach(x=>x.selected=config.reserved_gpios.includes(Number(x.value)));}
+function candidate(){const config=structuredClone(saved.config);fields.forEach(key=>{const [section,name]=key.split('.'),field=el(key);config[section][name]=field.type==='checkbox'?field.checked:field.value==='null'?null:Number(field.value);});config.reserved_gpios=[...el('reserved').selectedOptions].map(x=>Number(x.value));return config;}
+function describe(key,value){if(value===null)return 'Not connected';if(typeof value==='boolean')return value?'Yes':'No';if(key.endsWith('.addr'))return '0x'+value.toString(16);if(key==='oled.spi_device')return 'CE'+value;return `GPIO${value} / pin ${physical[value]}`;}
+function review(config,restore=false){message('Mapping validated. Review it before applying.');pending=config;restoreMode=restore;const lines=fields.filter(key=>{const [s,k]=key.split('.');return saved.config[s][k]!==config[s][k];}).map(key=>{const [s,k]=key.split('.');return `${labels[key]}: ${describe(key,saved.config[s][k])} → ${describe(key,config[s][k])}`;});if(JSON.stringify(saved.config.reserved_gpios)!==JSON.stringify(config.reserved_gpios))lines.push('Reserved GPIOs: '+(config.reserved_gpios.join(', ')||'None'));el('changes').textContent=(restore?'Restore the previous mapping.\n\n':'')+(lines.join('\n')||'No visible changes to the current mapping.');el('ack').checked=false;el('apply').disabled=true;el('apply').textContent=restore?'Restore and restart panel':'Save and restart panel';el('review').hidden=false;el('form').hidden=true;el('review').scrollIntoView({behavior:'smooth'});}
+async function load(){try{const data=await call();if(data.busy||['working','queued'].includes(data.status.phase)){busy(true);message(data.status.message);poll();return;}saved=data;fill(data.config);el('form').hidden=false;el('review').hidden=true;busy(false);message(data.error||data.status.message||'Saved mapping loaded. Review changes before applying.');}catch(error){message(error.message);}}
+function poll(){if(polling)return;polling=true;const check=async()=>{try{const data=await call();message(data.status.message);if(data.busy||['queued','working'].includes(data.status.phase)){setTimeout(check,2000);return;}polling=false;await load();}catch(error){polling=false;message(error.message+' Reload this page to check the result.');}};setTimeout(check,2000);}
+el('form').onsubmit=async event=>{event.preventDefault();try{busy(true);const data=await call({action:'validate',config:candidate()});busy(false);review(data.config);}catch(error){busy(false);message(error.message);}};
+el('ack').onchange=()=>el('apply').disabled=!el('ack').checked;
+el('cancel').onclick=()=>{el('review').hidden=true;el('form').hidden=false;};
+el('reload').onclick=load;
+el('restore').onclick=async()=>{try{busy(true);const data=await call({action:'preview_restore'});busy(false);review(data.config,true);}catch(error){busy(false);message(error.message);}};
+el('apply').onclick=async()=>{try{busy(true);const data=await call({action:restoreMode?'restore':'save',config:pending,acknowledge_alpha:el('ack').checked});if(data.busy){message(data.status.message);poll();return;}message('Applying mapping… Keep this page open.');poll();}catch(error){busy(false);message(error.message);}};
+load();
+</script></body></html>

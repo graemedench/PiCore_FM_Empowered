@@ -2,6 +2,28 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## Alpha Hardware Setup — Not Supported — Use at own risk
+
+**Pin remapping and alternative wiring have not been user tested.** The shared configuration was checked with the existing wiring after reboot, and automated tests plus a browser save/restart using unchanged pins were run. These checks do not prove that remapping works with other hardware or DAC HATs.
+
+Open `http://YOUR-IP/sable-config.html` → **Hardware Setup — Alpha**, or `http://YOUR-IP/sable-hardware.html`. Dropdowns show BCM GPIO and physical pin numbers, optional devices can be marked not connected, and the proposed mapping is checked before saving. Save restarts the panel; a previous-mapping restore is available. Incorrect wiring can disable the display or controls. Keep SSH available and disconnect power before moving wires. See [hardware setup details](HARDWARE.md).
+
+Included in fresh installs and Settings updates. Existing hardware configuration is preserved; no personal hardware mapping is shipped. Apply through Settings → System → Check / Apply Updates, then reboot.
+
+## Features awaiting testing or completion
+
+| Feature | Current status / remaining checks |
+| --- | --- |
+| **Hardware Setup — Alpha** | **Not Supported — Use at own risk.** Changed GPIO mappings, NC hardware combinations, DAC HAT configurations and real hardware recovery have not been user tested. |
+| **Beta Spotify / SpotOn** | Authenticated playback has not been verified; account authorisation still needs a successful end-to-end test. |
+| **Beta Qobuz** | Authenticated browsing and playback have not been verified with a subscription. |
+| **HDMI Now Playing — Beta** | Basic display and console selection were tested on one unit. Broader screen/hotplug testing remains; AirPlay/Bluetooth metadata on HDMI is unfinished. |
+| **Receiver artwork lookup** | Experimental and inconsistent across tracks. Correct artwork is not guaranteed; missing covers are possible. |
+| **Bluetooth pairing screen** | Pairing countdown/screen cleanup remains outstanding. Audio reconnect was tested on one iPhone; broader devices and repeated transitions need testing. |
+| **Latest clean installation and hardware compatibility** | Automated installer checks pass. A fresh-device test of this complete release, Pi 3 testing and DAC HAT compatibility testing remain. |
+
+This list distinguishes incomplete or unverified paths from features already checked on the development unit. DSP integration and the SSH hardware wizard are not implemented.
+
 ## OLED screen rotation — 10 October 2026
 
 Settings → Display → Screen Rotation now offers **Normal** and **Upside-down**. The OLED flips immediately, remembers the selection, and uses the same orientation for the startup screen. Tested on Graeme’s unit in both orientations. Included in fresh installs and updates through Settings → System → Check / Apply Updates. This setting affects the OLED only.

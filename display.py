@@ -2,15 +2,16 @@
 import threading
 from luma.oled.device import ssd1322
 from luma.core.framebuffer import diff_to_previous
-from panel import Serial
+from .transport import Serial
 from ..display.base import Display
 
 
 class PiCoreDisplay(Display):
-    def __init__(self):
+    def __init__(self, hardware=None):
         super().__init__(256, 64)
         self._lock = threading.RLock()
-        self.serial = Serial()
+        from .hardware_config import load
+        self.serial = Serial(hardware or load())
         self.device = ssd1322(self.serial, width=256, height=64,
                               mode='RGB', framebuffer=diff_to_previous())
         self._previous = None

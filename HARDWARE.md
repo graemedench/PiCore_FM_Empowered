@@ -39,8 +39,7 @@ See [Matt's original Quadify wiring guide](https://quadify.uk/wiring.html).
 Our GPIO4 IR receiver and added GPIO26 shutdown switch are port-specific additions.
 Power down and disconnect power before changing wiring.
 
-The setting `power.shutdown_gpio` can be changed in `config/pcp-settings.json`;
-`null` disables the physical input.
+Wiring is now read from `config/hardware.json`. Set `power.gpio` to `null` to disable the shutdown input. Earlier shutdown settings remain a fallback when no explicit hardware mapping is present. See the Alpha hardware setup section below.
 
 ## DAC HATs, including IQaudio
 
@@ -69,3 +68,26 @@ HAT playback, AirPlay/Bluetooth routing, meters and volume control need a separa
 hardware acceptance test before HAT support is advertised.
 
 Source: [Raspberry Pi audio-board GPIO documentation](https://www.raspberrypi.com/documentation/accessories/audio.html#gpio-usage).
+
+## Hardware Setup — Alpha — Not Supported — Use at own risk
+
+**Pin remapping and alternative hardware have not been user tested.** Automated checks and an unchanged-mapping browser save/restart were exercised on the developer’s unit. Existing controls were checked after the shared-configuration reboot; this does not validate changed wiring, DAC HATs or hardware recovery across different devices.
+
+The piCore panel reads `/home/tc/sable-pcp-stage/config/hardware.json`.
+Numbers are BCM GPIO numbers, not physical connector pin numbers. Missing entries use current FM4 defaults. Normal updates preserve this file. The public bundle must not contain a user's hardware.json.
+
+The example is [hardware.example.json](hardware.example.json). On the installed device it is `config/hardware.pcp.example.json`. OLED rotation remains a display preference, separate from wiring.
+
+Optional devices: set oled.enabled, rotary.enabled or mcp.enabled to false. Set ir.gpio or power.gpio to null for not connected; rotary.sw may also be null when the encoder has no switch. Missing OLED uses a silent headless display; disabled devices do not request GPIO/I2C/SPI resources.
+
+Validation rejects duplicate pins, invalid BCM numbers, conflicts with the enabled SPI/I2C bus pins, and entries in reserved_gpios. This is not automatic HAT detection: enter the HAT's reserved GPIOs explicitly. Current supported buses are SPI0 CE0/CE1 and I2C1; the MCP23017 address is a JSON decimal integer 32â€“39.
+
+Existing OLED/rotary/MCP wiring overrides are retained. Earlier IR-disabled and shutdown-pin settings remain defaults until the hardware configuration explicitly overrides them. Pin ownership is then controlled by hardware.json. The old standalone recovery panel is independent; the main Sable panel and its boot display use the shared configuration.
+
+Example: to put the encoder switch on GPIO4, set rotary.sw to 4 and ir.gpio to null (or move IR to another free GPIO). Disconnect power before changing wiring. Validate before restarting the panel; malformed/conflicting configuration stops hardware startup with an error instead of silently claiming other pins.
+
+The browser editor is available at `http://YOUR-IP/sable-hardware.html`, linked from `sable-config.html`. It is **Alpha — Not Supported — Use at own risk**. Dropdowns show GPIO and physical pin numbers; optional inputs support Not connected. Review validates the entire proposed mapping without changing files. Applying requires acknowledging the Alpha notice, saves a previous mapping, backs up piCorePlayer, then restarts the panel. Restore previous mapping is available from the same page. Failed panel startup triggers an attempt to restore and restart with the old mapping. A running process does not prove every control works: users must check their hardware after applying. Keep SSH available. The SSH wizard is still to be added.
+
+This page does not install kernel overlays, detect DAC HATs or configure hardware wake. Reserved GPIOs are entered manually. The existing piCorePlayer LAN web interface provides access; keep it on a trusted network. Save/restore requests require a same-origin JSON POST, page token and matching configuration revision.
+
+The single previous mapping toggles to the mapping before a restore; it is not an archive of all past configurations.

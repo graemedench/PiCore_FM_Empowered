@@ -6,7 +6,8 @@ import subprocess
 import sys
 import time
 from PIL import Image, ImageDraw, ImageFont
-from panel import Serial
+from .transport import Serial
+from .hardware_config import load
 from luma.oled.device import ssd1322
 
 STOP = Path('/tmp/fm4-boot-oled.stop')
@@ -25,6 +26,9 @@ def status(text):
 
 
 def main():
+    hardware = load()
+    if not hardware['oled']['enabled']:
+        return
     STOP.unlink(missing_ok=True)
     PID.write_text(str(os.getpid()))
     running = True
@@ -32,7 +36,7 @@ def main():
         nonlocal running
         running = False
     signal.signal(signal.SIGTERM, stop)
-    serial = Serial()
+    serial = Serial(hardware)
     device = ssd1322(serial, width=256, height=64)
     from ..settings import Settings
     rotation = int(Settings().get('display', 'rotate', default=0) or 0)

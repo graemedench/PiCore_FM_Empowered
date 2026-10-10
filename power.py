@@ -20,12 +20,12 @@ class HoldDetector:
 
 
 class PowerButton(threading.Thread):
-    def __init__(self, dispatch, stop, gpio=26):
+    def __init__(self, dispatch, stop, gpio=26, gpiochip='/dev/gpiochip0'):
         super().__init__(daemon=True, name='fm4-power')
         import gpiod
         from gpiod.line import Bias, Direction
         self.gpio = gpio
-        self.request = gpiod.request_lines('/dev/gpiochip0', consumer='fm4-power',
+        self.request = gpiod.request_lines(gpiochip, consumer='fm4-power',
             config={gpio: gpiod.LineSettings(direction=Direction.INPUT, bias=Bias.PULL_UP)})
         self.dispatch, self.stop = dispatch, stop
 

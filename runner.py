@@ -780,10 +780,20 @@ def main():
         lock_file = open('/tmp/quadify-panel.lock', 'w')
         fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
         from .display import PiCoreDisplay
-        from panel import Encoder
-        display = PiCoreDisplay()
-        encoder = Encoder(events, stop)
-        encoder.start()
+        from .transport import Encoder
+        from .hardware_config import load
+        from .hardware_web import install_web
+        install_web()
+        hardware = load(settings_path=args.settings)
+        if hardware['oled']['enabled']:
+            display = PiCoreDisplay(hardware)
+        else:
+            from ..display.sim import SimDisplay
+            display = SimDisplay(256, 64, ascii_preview=False, log=lambda *_: None)
+        encoder = None
+        if hardware['rotary']['enabled']:
+            encoder = Encoder(events, stop, hardware)
+            encoder.start()
     from ..display import fonts
     for font_dir in ('/usr/local/share/fonts/truetype/dejavu',
                      '/usr/local/share/fonts/dejavu', '/usr/share/fonts/truetype/dejavu'):
@@ -834,21 +844,22 @@ def main():
     remote = None
     if not args.sim:
         from .buttons import FM4Buttons
-        from ..hardware import MCP
-        buttons = FM4Buttons(MCP, lambda cmd, arg=None:
-            events.put(('callback', lambda: app.handle(cmd, arg))), app.store, app=app)
-        buttons.start()
-        listener.on_connect = buttons.signal_ready
+        from .hardware_config import mcp_pins
+        if hardware['mcp']['enabled']:
+            buttons = FM4Buttons(mcp_pins(hardware), lambda cmd, arg=None:
+                events.put(('callback', lambda: app.handle(cmd, arg))), app.store, app=app)
+            buttons.start()
+            listener.on_connect = buttons.signal_ready
         from .power import PowerButton
-        shutdown_gpio = app.settings.get('power', 'shutdown_gpio', default=26)
+        shutdown_gpio = hardware['power']['gpio']
         if shutdown_gpio is not None:
             try:
                 power_button = PowerButton(lambda: events.put(('callback',
-                    lambda: app.handle('shutdown'))), stop, gpio=shutdown_gpio)
+                    lambda: app.handle('shutdown'))), stop, gpio=shutdown_gpio, gpiochip=hardware['gpiochip'])
                 power_button.start()
             except Exception as exc:
                 print('Shutdown GPIO unavailable:', exc)
-        if app.settings.get('ir', 'enabled', default=True):
+        if hardware['ir']['gpio'] is not None:
             from .ir import Remote
             from ..inputs.ir import IrListener
             app.settings.set('ir', 'profile', 'Apple Aluminium Remote (this unit)')
@@ -858,7 +869,8 @@ def main():
                 remote = Remote(lambda key, repeat: bridge._on_line(
                     '0 %02x %s Apple_Aluminium_Sable' % (int(repeat), key)), stop,
                     pair_id=app.settings.get('ir', 'pair_id', default=0x15),
-                    mappings=app.settings.get('ir', 'learned', default={}))
+                    mappings=app.settings.get('ir', 'learned', default={}),
+                    gpio=hardware['ir']['gpio'], gpiochip=hardware['gpiochip'])
                 app.ir_remote = remote
                 remote.start()
             except Exception as exc:

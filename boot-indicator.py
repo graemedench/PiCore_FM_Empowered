@@ -7,7 +7,9 @@ booting, then systemd stops this service before Sable owns the LEDs.
 import signal
 import time
 
-from .hardware import MCP, led_byte
+from .hardware import led_byte
+from .pcp.hardware_config import load, mcp_pins
+MCP = None
 
 _STOP = False
 # Human-facing LED positions 1, 3, 5 and 7.  Position 8 (the red LED) is
@@ -45,7 +47,11 @@ def _crossfade(bus, old_mask, new_mask):
 
 
 def main():
-    global _STOP
+    global _STOP, MCP
+    hardware = load()
+    if not hardware['mcp']['enabled']:
+        return 0
+    MCP = mcp_pins(hardware)
     signal.signal(signal.SIGTERM, _stop)
     signal.signal(signal.SIGINT, _stop)
     try:
