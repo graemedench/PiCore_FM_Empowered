@@ -613,6 +613,42 @@ class PiCoreMenu(MenuScreen):
             self.app.listener.dispatch(done)
         self._wifi_jobs.submit(work)
 
+    def _receiver_control(self, action):
+        self.app.show_osd('RECEIVER', 'Please wait', duration=5)
+        def work():
+            try:
+                if action == 'pair':
+                    for command in ('power on', 'pairable on', 'discoverable on'):
+                        subprocess.run(['bluetoothctl', *command.split()], check=True,
+                                       capture_output=True, timeout=10)
+                    message = 'Find ' + socket.gethostname()
+                elif action == 'pair_off':
+                    subprocess.run(['bluetoothctl', 'discoverable', 'off'], check=True,
+                                   capture_output=True, timeout=10)
+                    message = 'Pairing hidden'
+                else:
+                    import re
+                    cfg = Path('/usr/local/etc/pcp/pcp.cfg')
+                    text, count = re.subn(r'^SHAIRPORT=.*$',
+                        'SHAIRPORT="' + ('ap2' if action == 'airplay_on' else 'no') + '"',
+                        cfg.read_text(), flags=re.M)
+                    if count != 1:
+                        raise RuntimeError('Missing AirPlay setting')
+                    cfg.write_text(text)
+                    subprocess.run(['/usr/local/etc/init.d/shairport-sync',
+                                    'start' if action == 'airplay_on' else 'stop'],
+                                   check=True, capture_output=True, timeout=15)
+                    if action == 'airplay_off':
+                        from .receiver_hook import end
+                        end('airplay')
+                    subprocess.run(['pcp', 'bu'], check=True, capture_output=True, timeout=120)
+                    message = 'AirPlay on' if action == 'airplay_on' else 'AirPlay off'
+                self.app.listener.dispatch(lambda: self.app.show_osd('RECEIVER', message, duration=5))
+            except Exception as exc:
+                print('Receiver control:', repr(exc))
+                self.app.listener.dispatch(lambda: self.app.show_osd('RECEIVER', 'Failed; see log', duration=5))
+        self._wifi_jobs.submit(work)
+
     def _build_tree(self):
         tree = super()._build_tree()
         # Expose only functioning settings during the staged port.
@@ -674,6 +710,12 @@ class PiCoreMenu(MenuScreen):
         tree.insert(-1, ('HDMI Now Playing (Beta)', [
             ('On', lambda: self._set_hdmi(True)),
             ('Off', lambda: self._set_hdmi(False)), ('Back', '__back__')], self._hdmi_label))
+        tree.insert(-1, ('AirPlay', [
+            ('On', lambda: self._receiver_control('airplay_on')),
+            ('Off', lambda: self._receiver_control('airplay_off')), ('Back', '__back__')]))
+        tree.insert(-1, ('Bluetooth', [
+            ('Pair device (3 minutes)', lambda: self._receiver_control('pair')),
+            ('Stop discovery', lambda: self._receiver_control('pair_off')), ('Back', '__back__')]))
         by_name = {row[0]: row for row in tree}
         streaming = []
         for label, tag, url in [('BBC Sounds', 'bbcsounds', 'plugins/BBCSounds/settings/basic.html'),
@@ -689,7 +731,7 @@ class PiCoreMenu(MenuScreen):
         by_name['Streaming Services'] = ('Streaming Services', streaming + [('Back', '__back__')])
         groups = [
             ('Display', ('Display Mode', 'Brightness', 'Display Timeouts', 'HDMI Now Playing (Beta)')),
-            ('Audio', ('Audio Output', 'Power-on Volume', 'Playback')),
+            ('Audio', ('Audio Output', 'Power-on Volume', 'Playback', 'AirPlay', 'Bluetooth')),
             ('Remote', ('Pair Apple Remote', 'Learn Remote')),
             ('Streaming Services', ('Streaming Services',)),
             ('Network & Services', ('Network', 'Service URLs')),

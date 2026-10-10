@@ -174,6 +174,13 @@ class LyrionListener:
                         album='', albumart='', uri='receiver:' + source, service=source,
                         seek=int((time.time() - active['started']) * 1000), duration=0,
                         stream=True)
+                    try:
+                        from .receiver_metadata import decorate
+                        decorate(state)
+                        from .receiver_art import decorate as receiver_art
+                        receiver_art(state)
+                    except Exception as exc:
+                        self.log('Receiver metadata:', type(exc).__name__)
                 else:
                     state = state_from_status(self.rpc(['status', '-', '1', 'tags:aldKcu']))
                     self.cd.metadata.decorate(state)

@@ -2,6 +2,12 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## Receiver controls and Bluetooth update — 10 October 2026
+
+Settings → Audio now includes AirPlay On/Off and Bluetooth pairing discovery for three minutes. AirPlay follows the device hostname after restarting the receiver or rebooting. Built-in Bluetooth is enabled at boot, and local playback releases the audio device before the Bluetooth helper starts. Audio was tested after disconnecting and reconnecting an iPhone. Apply the update and reboot.
+
+Receiver title/artist metadata and Bluetooth track timing are included. **Receiver artwork is experimental:** actual AirPlay artwork is preferred; otherwise exact album or recording/artist matches are attempted through MusicBrainz and Cover Art Archive. Missing covers remain possible. These lookups send track metadata to those services. **HDMI receiver display remains unfinished**, and pairing-screen/countdown cleanup is still outstanding. No DSP integration is included.
+
 ## 10 October 2026 update
 
 - **AirPlay release back to Sable:** fixes a failed handover where TIDAL skipped tracks or BBC appeared to play without sound after AirPlay stopped. The local player is checked rather than trusting its PID file; a stale file is cleared safely, startup is retried, and Lyrion must confirm reconnection before local playback continues. Tested on Graeme's unit with AirPlay followed by TIDAL and BBC Radio 2. Apply the update and reboot to load the fix.

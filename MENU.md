@@ -22,6 +22,8 @@ Settings
 ├── Audio
 │   ├── Audio Output → detected audio devices
 │   ├── Power-on Volume
+│   ├── AirPlay → On / Off
+│   ├── Bluetooth → Pair device (3 minutes) / Stop discovery
 │   └── Playback
 │       ├── Play Single
 │       ├── Play All

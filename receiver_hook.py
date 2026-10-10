@@ -95,8 +95,9 @@ def return_local():
         time.sleep(.1)
     state.unlink(missing_ok=True)
     ensure_local_player()
-    subprocess.run(['/usr/local/etc/init.d/shairport-sync', 'start'],
-                   stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if 'SHAIRPORT="no"' not in Path('/usr/local/etc/pcp/pcp.cfg').read_text():
+        subprocess.run(['/usr/local/etc/init.d/shairport-sync', 'start'],
+                       stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
 
 if __name__ == '__main__':
