@@ -112,4 +112,9 @@ Choose a Learn action, then press the desired key within 30 seconds. Relearning 
 
 ## Updates
 
+The 10 October AirPlay handover update restores the local Squeezelite player
+after receiver release, with stale PID detection, bounded startup retries and
+Lyrion connection confirmation. Tested with AirPlay followed by TIDAL/BBC.
+This fixes the local audio handover; HDMI AirPlay metadata is still separate work.
+
 Use **Settings → System → Check / Apply Updates**. Older builds have Check / Apply Updates directly under Settings. Keep power and internet connected, and choose Reboot now or reboot later after completion. See [installation and update instructions](INSTALL.md) and [button controls](CONTROLS.md).

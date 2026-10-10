@@ -4,6 +4,8 @@ A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
 ## 10 October 2026 update
 
+- **AirPlay release back to Sable:** fixes a failed handover where TIDAL skipped tracks or BBC appeared to play without sound after AirPlay stopped. The local player is checked rather than trusting its PID file; a stale file is cleared safely, startup is retried, and Lyrion must confirm reconnection before local playback continues. Tested on Graeme's unit with AirPlay followed by TIDAL and BBC Radio 2. Apply the update and reboot to load the fix.
+
 - **Sable configuration page:** open `http://YOUR-IP/sable-config.html` for all account links, web player, Favorites and device settings. Its links follow your device address. Find the URL in Settings → Network & Services → Service URLs.
 - **Streaming Services:** a new top-level Settings group controls which services appear in the carousel. Show/hide preserves accounts and playback. BBC Sounds and TIDAL remain shown by default.
 - **Beta Spotify and Beta Qobuz:** publisher plugins are installed for new and existing users; both start hidden. Spotify uses SpotOn and requires Premium; Qobuz needs a streaming subscription. Plugins load and account pages work, but authenticated playback has not yet been verified. Spotify profile lookup currently encountered HTTP 429 rate limiting. Remote sign-in can be completed by pasting the full loopback URL into SpotOn's Manual authorisation field.
