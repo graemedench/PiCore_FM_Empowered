@@ -62,7 +62,9 @@ class LyrionListener:
                                   ('Albums', 'albums'), ('Artists', 'artists'),
                                   ('Genres', 'genres'), ('Playlists', 'playlists'),
                                   ('Queue', 'queue'), ('TIDAL', 'tidal'),
-                                  ('BBC Sounds', 'bbcsounds')]]
+                                  ('BBC Sounds', 'bbcsounds'), ('Beta Spotify', 'spoton'),
+                                  ('Beta Qobuz', 'qobuz')]]
+        self.service_visible = lambda tag: tag in ('tidal', 'bbcsounds')
         self.audio_outputs = []
         self.audio_output = ''
         self._stop = threading.Event()
@@ -114,9 +116,9 @@ class LyrionListener:
         present = bool(devices())
         if present != self._cd_present:
             self._cd_present = present
-            self.browse_sources = [s for s in self.browse_sources if s['uri'] != 'pcp:cd']
+            self._sources = [s for s in self._sources if s['uri'] != 'pcp:cd']
             if present:
-                self.browse_sources.append(dict(name='Audio CD', uri='pcp:cd'))
+                self._sources.append(dict(name='Audio CD', uri='pcp:cd'))
             if self.on_sources:
                 sources = list(self.browse_sources)
                 self.dispatch(lambda: self.on_sources(sources))
@@ -195,7 +197,7 @@ class LyrionListener:
             try:
                 if command[0] in ('play', 'pause', 'stop') or (
                         command[0] == 'playlist' and command[1] in ('play', 'index')) or (
-                        command[0] in ('tidal', 'bbcsounds') and command[1] == 'playlist'):
+                        command[0] in ('tidal', 'bbcsounds', 'spoton', 'qobuz') and command[1] == 'playlist'):
                     self._return_local()
                 result = self.rpc(command)
                 self._status_wake.set()
@@ -240,6 +242,17 @@ class LyrionListener:
         if self.on_sources:
             self.dispatch(lambda: self.on_sources(self.browse_sources))
 
+    @property
+    def browse_sources(self):
+        return [source for source in self._sources
+                if source['uri'].removeprefix('pcp:') not in
+                ('tidal', 'bbcsounds', 'spoton', 'qobuz') or
+                self.service_visible(source['uri'].removeprefix('pcp:'))]
+
+    @browse_sources.setter
+    def browse_sources(self, value):
+        self._sources = value
+
     @staticmethod
     def folder(title, uri):
         return dict(title=title, uri=uri, type='folder', _folder=True, service='mpd')
@@ -282,11 +295,13 @@ class LyrionListener:
             return tracks + [dict(title='Eject CD', _cd_eject=True)]
         path = uri.removeprefix('pcp:')
         tag = path.partition('?')[0]
-        if tag in ('tidal', 'bbcsounds'):
+        if tag in ('tidal', 'bbcsounds', 'spoton', 'qobuz'):
             query = urllib.parse.parse_qs(path.partition('?')[2])
             args = ['item_id:' + query['item'][0]] if query.get('item') else []
             result = self.rpc([tag, 'items', '0', '100'] + args)
-            return [dict(title=row.get('name', 'Untitled'),
+            return [dict(title=row.get('name', 'Account setup required'), _notice=True)
+                    if not row.get('id') or row.get('type') in ('text', 'textarea') else
+                    dict(title=row.get('name', 'Untitled'),
                     uri='pcp:' + tag + ('?' + urllib.parse.urlencode({'item': row['id']})),
                     _folder=bool(row.get('hasitems')), type='folder' if row.get('hasitems') else 'song',
                     service=tag, _tidal_id=row['id'], _opml_tag=tag)
@@ -352,11 +367,11 @@ class LyrionListener:
         self.play_uri(item.get('uri', ''), title=item.get('title', ''))
 
     def play_uri(self, uri, **metadata):
-        self.active_collection_uri = uri if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')) else ''
+        self.active_collection_uri = uri if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?', 'pcp:spoton?', 'pcp:qobuz?')) else ''
         if uri.startswith('http://127.0.0.1:9180/cd/'):
             self.play_cd(uri)
             return
-        if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?')):
+        if uri.startswith(('pcp:tidal?', 'pcp:bbcsounds?', 'pcp:spoton?', 'pcp:qobuz?')):
             item_id = urllib.parse.parse_qs(uri.partition('?')[2])['item'][0]
             self._submit([uri[4:].partition('?')[0], 'playlist', 'play', 'item_id:' + item_id])
             return

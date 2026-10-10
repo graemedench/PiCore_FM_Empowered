@@ -122,3 +122,12 @@ clarification that our personal-use terms do not override third-party licences.
 ### Optional HDMI display
 
 HDMI Now Playing uses the native piCorePlayer `pcp-jivelite-vis` package, based on Logitech Jive/Jivelite and the piCorePlayer visualiser build. It is downloaded separately from the piCorePlayer repository. Upstream code and package assets retain their original licences and notices; this project does not relicense them. See https://github.com/blaisedias/jivelite and the installed package notices.
+# Beta streaming services
+
+SpotOn by Marek Stiefenhofer, building on Michael Herger's Spotty work:
+https://github.com/stiefenm/spoton (MIT). Downloaded from its publisher with
+checksum verification; included dependency notices remain in the plugin.
+Qobuz by Pierre Beck, Michael Herger, darrell, SamY and sveninndh:
+https://github.com/LMS-Community/plugin-Qobuz. Downloaded from the publisher;
+its original files and notices are preserved. These plugins are not authored
+by this project. Subscription and service terms still apply.

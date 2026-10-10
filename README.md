@@ -2,6 +2,14 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## 10 October 2026 update
+
+- **Sable configuration page:** open `http://YOUR-IP/sable-config.html` for all account links, web player, Favorites and device settings. Its links follow your device address. Find the URL in Settings → Network & Services → Service URLs.
+- **Streaming Services:** a new top-level Settings group controls which services appear in the carousel. Show/hide preserves accounts and playback. BBC Sounds and TIDAL remain shown by default.
+- **Beta Spotify and Beta Qobuz:** publisher plugins are installed for new and existing users; both start hidden. Spotify uses SpotOn and requires Premium; Qobuz needs a streaming subscription. Plugins load and account pages work, but authenticated playback has not yet been verified. Spotify profile lookup currently encountered HTTP 429 rate limiting. Remote sign-in can be completed by pasting the full loopback URL into SpotOn's Manual authorisation field.
+
+Apply through Settings → System → Check / Apply Updates, then reboot. Existing plugins/accounts are preserved. See [updated menu map](MENU.md). Fresh-install coverage is included but still needs a clean-device test.
+
 ## 9 October 2026 update
 
 **Boot feedback:** the OLED now shows FM4 and startup messages while piCorePlayer loads, accompanied by the original soft LED crossfade through LEDs 1, 3, 5 and 7. The red LED stays out of the animation. Both hand over to the normal panel when ready. This provides earlier feedback; it does not promise a shorter overall boot. Existing users: apply the update and reboot.

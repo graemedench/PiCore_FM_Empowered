@@ -44,12 +44,19 @@ Settings
 │       ├── Learn Back (navigation)
 │       ├── Cancel learning
 │       └── Restore Apple defaults
+├── Streaming Services
+│   ├── BBC Sounds
+│   ├── TIDAL
+│   ├── Beta Spotify
+│   └── Beta Qobuz
+│       Each service → Show in carousel / Hide from carousel / Account URL
 ├── Network & Services
 │   ├── Network
 │   │   ├── IP Address
 │   │   ├── Wi-Fi Networks → choose network → enter password → join
 │   │   └── Wi-Fi status / IP
 │   └── Service URLs
+│       ├── Sable configuration
 │       ├── Web player
 │       ├── FM4 Favorites page
 │       ├── BBC Sounds
@@ -71,6 +78,20 @@ Settings
 ```
 
 Back entries inside submenus are omitted from the diagram for clarity.
+
+## Streaming services and configuration page
+
+Open `http://YOUR-IP/sable-config.html` for account links, the web player,
+Favorites, Lyrion settings and piCorePlayer settings. Links follow the address
+used to open the page. The OLED URL is under Network & Services → Service URLs.
+
+Streaming Services controls carousel visibility without deleting accounts or
+changing playback. BBC Sounds/TIDAL default to shown; Beta Spotify/Qobuz to hidden.
+Spotify uses SpotOn and requires Premium; Qobuz needs a streaming subscription.
+Both new services have loaded successfully but authenticated playback remains
+untested. Spotify's shared-client profile request returned HTTP 429 in our test.
+For remote Spotify sign-in, paste the full loopback redirect URL into SpotOn's
+Manual authorisation field. Wait before retrying rate-limit errors.
 
 ## Numeric controls
 

@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sable configuration</title>
+<style>
+body{margin:0;background:#f5f5f2;color:#242424;font:17px/1.5 system-ui,sans-serif}main{max-width:850px;margin:auto;padding:30px 20px 50px}h1{margin-bottom:6px}h2{font-size:21px;margin-top:30px}.intro{color:#555;margin-top:0}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}.card{display:block;background:white;color:inherit;border:1px solid #ddd;border-radius:12px;padding:19px;text-decoration:none}.card:hover,.card:focus-visible{border-color:#555;box-shadow:0 2px 9px #0001}.card strong{display:block;font-size:20px}.card span{display:block;color:#555;font-size:15px;margin-top:5px}.note{font-size:15px;color:#555}footer{margin-top:35px;border-top:1px solid #ddd;padding-top:18px;font-size:14px;color:#666}
+</style>
+</head>
+<body><main>
+<h1>Sable configuration</h1>
+<p class="intro">Account setup and useful links for your piCorePlayer.</p>
+<h2>Streaming accounts</h2>
+<div class="grid">
+<a class="card" data-port="9000" data-path="/plugins/BBCSounds/settings/basic.html"><strong>BBC Sounds</strong><span>Sign in and manage BBC Sounds.</span></a>
+<a class="card" data-port="9000" data-path="/plugins/TIDAL/settings.html"><strong>TIDAL</strong><span>Link your TIDAL account.</span></a>
+<a class="card" data-port="9000" data-path="/plugins/SpotOn/settings/basic.html"><strong>Beta Spotify</strong><span>SpotOn account and playback authorisation. Spotify Premium required.</span></a>
+<a class="card" data-port="9000" data-path="/plugins/Qobuz/settings/basic.html"><strong>Beta Qobuz</strong><span>Sign in with your Qobuz account and streaming subscription.</span></a>
+</div>
+<p class="note">Choose which services appear on the OLED in Settings → Streaming Services. Hiding a service keeps its account settings.</p>
+<p class="note">Spotify remote sign-in: if your browser lands on an unavailable 127.0.0.1 page, copy its complete URL into SpotOn's Manual authorisation field. A “429 Too Many Requests” error means Spotify is rate limiting requests; wait before retrying. Spotify and Qobuz playback are not yet verified in this beta.</p>
+<h2>Player and device</h2>
+<div class="grid">
+<a class="card" data-port="9000" data-path="/"><strong>Web player</strong><span>Browse music and control playback.</span></a>
+<a class="card" href="/fm4-favorites.html"><strong>FM4 Favorites</strong><span>Your saved tracks and links.</span></a>
+<a class="card" data-port="9000" data-path="/settings/server/basic.html"><strong>Lyrion settings</strong><span>Music library and server configuration.</span></a>
+<a class="card" href="/"><strong>piCorePlayer settings</strong><span>Device, audio and network configuration.</span></a>
+</div>
+<noscript><p>Enable JavaScript to use the streaming and Lyrion links. They open on this device's address, port 9000.</p></noscript>
+<footer>Based on Sable, adapted for piCorePlayer. Account sign-in is handled by the individual Lyrion plugins.</footer>
+</main>
+<script>
+document.querySelectorAll('[data-port]').forEach(link=>{
+ const target=new URL(location.href);
+ target.port=link.dataset.port;target.pathname=link.dataset.path;
+ target.search='';target.hash='';link.href=target.href;
+});
+</script>
+</body></html>

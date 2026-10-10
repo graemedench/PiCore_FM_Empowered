@@ -23,6 +23,8 @@ GRAEME_SHORTCUTS = {
 }
 
 DEFAULTS = {
+    "streaming_services": {"bbcsounds": True, "tidal": True,
+                           "spoton": False, "qobuz": False},
     "library": {"refresh_minutes": 0},
     "display": {
         "screen": "modern",          # modern|spectrum

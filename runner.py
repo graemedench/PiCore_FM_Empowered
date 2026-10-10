@@ -197,6 +197,12 @@ class PiCoreBrowse(BrowseScreen):
 
 
 class PiCoreMenu(MenuScreen):
+    def _set_service_visible(self, tag, visible):
+        self.app.settings.set('streaming_services', tag, visible)
+        self.app.listener.get_sources()
+        self.app.show_osd('CAROUSEL', 'Shown' if visible else 'Hidden')
+        self._wifi_jobs.submit(subprocess.run, ['pcp', 'bu'], capture_output=True, timeout=90)
+
     def _hdmi_label(self):
         try:
             config = Path('/usr/local/etc/pcp/pcp.cfg').read_text()
@@ -654,6 +660,7 @@ class PiCoreMenu(MenuScreen):
                 ('Cancel learning', self._cancel_ir_learn),
                 ('Restore Apple defaults', self._reset_ir_learn), ('Back', '__back__')]))
         tree.insert(-1, ('Service URLs', [
+            ('Sable configuration', lambda: self._show_signin('Sable configuration', 'sable-config.html', 80)),
             ('Web player', lambda: self._show_signin('FM4 web player', '')),
             ('FM4 Favorites page', lambda: self._show_signin('FM4 Favorites', 'fm4-favorites.html', 80)), 
             ('BBC Sounds', lambda: self._show_signin('BBC Sounds sign-in',
@@ -668,10 +675,23 @@ class PiCoreMenu(MenuScreen):
             ('On', lambda: self._set_hdmi(True)),
             ('Off', lambda: self._set_hdmi(False)), ('Back', '__back__')], self._hdmi_label))
         by_name = {row[0]: row for row in tree}
+        streaming = []
+        for label, tag, url in [('BBC Sounds', 'bbcsounds', 'plugins/BBCSounds/settings/basic.html'),
+                                ('TIDAL', 'tidal', 'plugins/TIDAL/settings.html'),
+                                ('Beta Spotify', 'spoton', 'plugins/SpotOn/settings/basic.html'),
+                                ('Beta Qobuz', 'qobuz', 'plugins/Qobuz/settings/basic.html')]:
+            streaming.append((label, [
+                ('Show in carousel', lambda tag=tag: self._set_service_visible(tag, True)),
+                ('Hide from carousel', lambda tag=tag: self._set_service_visible(tag, False)),
+                ('Account / sign-in URL', lambda label=label, url=url: self._show_signin(label, url)),
+                ('Back', '__back__')],
+                lambda tag=tag: 'Shown' if self.app.settings.get('streaming_services', tag, default=False) else 'Hidden'))
+        by_name['Streaming Services'] = ('Streaming Services', streaming + [('Back', '__back__')])
         groups = [
             ('Display', ('Display Mode', 'Brightness', 'Display Timeouts', 'HDMI Now Playing (Beta)')),
             ('Audio', ('Audio Output', 'Power-on Volume', 'Playback')),
             ('Remote', ('Pair Apple Remote', 'Learn Remote')),
+            ('Streaming Services', ('Streaming Services',)),
             ('Network & Services', ('Network', 'Service URLs')),
             ('Library & Shortcuts', ('Music Library', 'Shortcuts', "Add G's Mini Tidal List")),
             ('System', ('Storage', 'Check / Apply Updates', 'Shutdown')),
@@ -679,7 +699,8 @@ class PiCoreMenu(MenuScreen):
         used = {'Now Playing', 'Back'}
         grouped = [by_name['Now Playing']]
         for title, names in groups:
-            rows = [by_name[name] for name in names if name in by_name]
+            rows = (streaming if title == 'Streaming Services' else
+                    [by_name[name] for name in names if name in by_name])
             used.update(names)
             grouped.append((title, rows + [('Back', '__back__')]))
         # Keep future settings reachable if a new row has not yet been grouped.
@@ -743,6 +764,14 @@ def main():
     listener = LyrionListener(app.store, lambda cb: events.put(('callback', cb)),
                               host=args.server, player=args.player)
     app.listener = listener
+    listener.service_visible = lambda tag: app.settings.get('streaming_services', tag, default=False)
+    if not args.sim:
+        try:
+            page = Path('assets/sable-config.html')
+            if page.exists():
+                Path('/var/www/sable-config.html').write_bytes(page.read_bytes())
+        except OSError as exc:
+            print('Configuration page unavailable:', exc)
     listener.cd.start()
     listener.refresh_minutes = lambda: app.settings.get('library', 'refresh_minutes', default=0)
     listener.on_browse = app.fsm.screens['browse'].on_browse_data
