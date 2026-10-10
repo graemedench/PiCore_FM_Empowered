@@ -136,6 +136,7 @@ Sable configuration
 ├── Web player
 ├── FM4 Favorites
 ├── Lyrion settings
+├── System status → CPU / memory / temperature / uptime / drive activity / storage
 ├── Hardware Setup — Alpha
 │   ├── OLED connected / chip select / DC / reset
 │   ├── Encoder connected / CLK / DT / switch / reverse direction

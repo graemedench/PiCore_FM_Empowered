@@ -206,11 +206,11 @@ def update_shutdown_runtime():
         music.chmod(0o775)
     install_notices()
     changed = False
-    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py', 'hardware_web.py','sable-hardware.html','sable-hardware.cgi','hardware_config.py','transport.py','ir.py','display.py','boot_splash.py', 'boot-indicator.py', 'boot-oled.sh', 'stage-start.sh', 'source-icons.py', 'sable-config.html', 'streaming-plugins.py', 'receiver_hook.py', 'receiver_metadata.py', 'receiver_art.py', 'receiver-maintenance.py'):
+    for name in ('power.py', 'runner.py', 'wifi.py', 'update.py', 'ir-input.py', 'settings.py', 'listener.py', 'hdmi.py', 'hardware_web.py','system_status.py','sable-status.html','sable-status.cgi','sable-hardware.html','sable-hardware.cgi','hardware_config.py','transport.py','ir.py','display.py','boot_splash.py', 'boot-indicator.py', 'boot-oled.sh', 'stage-start.sh', 'source-icons.py', 'sable-config.html', 'streaming-plugins.py', 'receiver_hook.py', 'receiver_metadata.py', 'receiver_art.py', 'receiver-maintenance.py'):
         source = HERE / 'updates' / name
         if source.exists():
             destination = (STAGE / 'src/sable/inputs/ir.py' if name == 'ir-input.py'
-                           else STAGE / 'assets' / name if name in ('sable-config.html','sable-hardware.html','sable-hardware.cgi')
+                           else STAGE / 'assets' / name if name in ('sable-config.html','sable-hardware.html','sable-hardware.cgi','sable-status.html','sable-status.cgi')
                            else STAGE / 'src/sable/pcp/source_icons.py' if name == 'source-icons.py'
                            else STAGE / name if name in ('boot-oled.sh', 'stage-start.sh', 'streaming-plugins.py', 'receiver-maintenance.py')
                            else STAGE / 'src/sable/boot_indicator.py' if name == 'boot-indicator.py'

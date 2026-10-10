@@ -243,17 +243,19 @@ def main():
 
 def install_web():
     """Recreate web assets from the persistent stage on panel startup."""
-    for source, target in [('sable-hardware.html', '/var/www/sable-hardware.html'),
+    for source, target in [('sable-status.html', '/var/www/sable-status.html'),
+                           ('sable-status.cgi', '/var/www/cgi-bin/sable-status.cgi'),
+                           ('sable-hardware.html', '/var/www/sable-hardware.html'),
                            ('sable-hardware.cgi', '/var/www/cgi-bin/sable-hardware.cgi')]:
         destination = Path(target)
         destination.parent.mkdir(parents=True, exist_ok=True)
-        destination.write_bytes((STAGE / 'assets' / source).read_bytes())
+        destination.write_bytes((STAGE / 'assets' / source).read_bytes().replace(b'\r\n', b'\n'))
         if source.endswith('.cgi'):
             destination.chmod(0o755)
     filelist = Path('/opt/.filetool.lst')
     if filelist.exists():
         entries = filelist.read_text().splitlines()
-        for entry in ('var/www/sable-hardware.html', 'var/www/cgi-bin/sable-hardware.cgi'):
+        for entry in ('var/www/sable-hardware.html', 'var/www/cgi-bin/sable-hardware.cgi', 'var/www/sable-status.html', 'var/www/cgi-bin/sable-status.cgi'):
             if entry not in entries:
                 with filelist.open('a') as out:
                     out.write('\n' + entry + '\n')

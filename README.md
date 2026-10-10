@@ -2,6 +2,12 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## System Status page
+
+Open `http://YOUR-IP/sable-config.html` → **System status**, or `http://YOUR-IP/sable-status.html`. See CPU usage, memory, CPU temperature, uptime, drive read/write activity and free storage space. Refreshes every five seconds while the page is visible; refresh can be switched off. It is read-only and writes no monitoring history to the drive.
+
+CPU and drive activity are short samples, not long-term averages. Drive busy time does not measure health or remaining life. Verified live on one Pi; included in fresh installs and Settings updates.
+
 ## Alpha Hardware Setup — Not Supported — Use at own risk
 
 **Pin remapping and alternative wiring have not been user tested.** The shared configuration was checked with the existing wiring after reboot, and automated tests plus a browser save/restart using unchanged pins were run. These checks do not prove that remapping works with other hardware or DAC HATs.
