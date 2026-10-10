@@ -120,3 +120,5 @@ Lyrion connection confirmation. Tested with AirPlay followed by TIDAL/BBC.
 This fixes the local audio handover; HDMI AirPlay metadata is still separate work.
 
 Use **Settings → System → Check / Apply Updates**. Older builds have Check / Apply Updates directly under Settings. Keep power and internet connected, and choose Reboot now or reboot later after completion. See [installation and update instructions](INSTALL.md) and [button controls](CONTROLS.md).
+
+HDMI startup and the On action automatically select Jivelite’s actual graphics console. Verified after a full reboot; receiver-specific HDMI metadata remains unfinished.

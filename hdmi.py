@@ -42,3 +42,31 @@ def prepare():
     text = config.read_text()
     text = re.sub(r'^SCREENVC4=.*$', 'SCREENVC4="yes"', text, flags=re.M)
     config.write_text(text)
+
+
+def select_graphics_console(timeout=20):
+    """SDL may open a different VT from its launcher; select its graphics fd."""
+    import time
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        config = Path('/usr/local/etc/pcp/pcp.cfg').read_text()
+        if not re.search(r'^JIVELITE="yes"$', config, re.M):
+            return False
+        for process in Path('/proc').glob('[0-9]*'):
+            try:
+                executable = (process / 'cmdline').read_bytes().split(b'\0', 1)[0]
+                if executable != b'/opt/jivelite/bin/jivelite':
+                    continue
+                for fd in sorted((process / 'fd').iterdir(), key=lambda p: int(p.name)):
+                    if int(fd.name) <= 2:
+                        continue
+                    target = str(fd.resolve())
+                    match = re.fullmatch(r'/dev/tty([1-9][0-9]*)', target)
+                    if match:
+                        subprocess.run(['chvt', match[1]], check=True, timeout=5)
+                        Path('/sys/class/graphics/fb0/blank').write_text('0\n')
+                        return True
+            except (OSError, subprocess.SubprocessError):
+                continue
+        time.sleep(.25)
+    return False

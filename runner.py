@@ -244,8 +244,11 @@ class PiCoreMenu(MenuScreen):
                 config.write_text(contents)
                 # Stop the launcher before its child so its restart loop cannot respawn it.
                 subprocess.run(['pkill', '-f', '^/bin/sh /opt/jivelite/bin/jivelite.sh$'], capture_output=True)
-                subprocess.run(['pkill', '-f', '^/opt/jivelite/bin/jivelite$'], capture_output=True)
-                time.sleep(.3)
+                subprocess.run(['pkill', '-INT', '-f', '^/opt/jivelite/bin/jivelite$'], capture_output=True)
+                for _ in range(30):
+                    if subprocess.run(['pgrep', '-f', '^/opt/jivelite/bin/jivelite$'], capture_output=True).returncode:
+                        break
+                    time.sleep(.1)
                 subprocess.run(['pkill', '-KILL', '-f', '^/opt/jivelite/bin/jivelite$'], capture_output=True)
                 if enabled:
                     discovery = prefs / 'SlimDiscovery.lua'
@@ -257,6 +260,10 @@ class PiCoreMenu(MenuScreen):
                     with open('/tmp/fm4-hdmi-start.log', 'ab') as log:
                         subprocess.Popen(['/bin/sh', str(launch)], stdin=subprocess.DEVNULL,
                             stdout=log, stderr=log, start_new_session=True)
+                if enabled:
+                    from .hdmi import select_graphics_console
+                    if not select_graphics_console():
+                        raise RuntimeError('HDMI console not ready; see log')
                 saved = subprocess.run(['pcp', 'bu'], capture_output=True, timeout=120)
                 if saved.returncode:
                     raise RuntimeError('Backup failed; see system log')
@@ -753,6 +760,9 @@ class PiCoreMenu(MenuScreen):
 
 
 def main():
+    if '--sim' not in __import__('sys').argv:
+        from .hdmi import select_graphics_console
+        threading.Thread(target=select_graphics_console, daemon=True, name='hdmi-console').start()
     parser = argparse.ArgumentParser()
     parser.add_argument('--server', default='http://127.0.0.1:9000')
     parser.add_argument('--player', default=None)

@@ -2,6 +2,10 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## HDMI console fix — 10 October 2026
+
+HDMI now selects the graphics console opened by Jivelite at startup and when enabled from Settings, rather than assuming a fixed console number. This fixes the observed boot-console/black-screen mismatch. A full reboot was tested on Graeme’s unit and the HDMI picture was confirmed. Apply the update and reboot. HDMI receiver metadata remains unfinished.
+
 ## Receiver controls and Bluetooth update — 10 October 2026
 
 Settings → Audio now includes AirPlay On/Off and Bluetooth pairing discovery for three minutes. AirPlay follows the device hostname after restarting the receiver or rebooting. Built-in Bluetooth is enabled at boot, and local playback releases the audio device before the Bluetooth helper starts. Audio was tested after disconnecting and reconnecting an iPhone. Apply the update and reboot.
