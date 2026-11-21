@@ -620,6 +620,38 @@ class PiCoreMenu(MenuScreen):
             ('Later', self._update_later), ('Reboot now', self._reboot_after_update)]))
         self.app.render()
 
+    def _show_update_channel(self):
+        from .update import alpha_target, channel
+        try:
+            current = channel()
+            choices = [('Public', 'public')]
+            if alpha_target() is not None:
+                choices.append(('Alpha (local trial)', 'alpha'))
+            rows = [(label + (' *' if value == current else ''),
+                     lambda value=value: self._set_update_channel(value))
+                    for label, value in choices]
+            self.stack.append(self._frame('UPDATE CHANNEL', rows + [('Back', '__back__')]))
+            self.app._osd = None
+            self.app.render()
+        except Exception:
+            self.app.show_osd('UPDATE CHANNEL', 'Package check failed', duration=6)
+
+    def _set_update_channel(self, value):
+        self.app.show_osd('UPDATE CHANNEL', 'Saving...', duration=180)
+        def work():
+            try:
+                from .update import set_channel
+                set_channel(value)
+                result = subprocess.run(['pcp', 'bu'], capture_output=True, timeout=180)
+                if result.returncode:
+                    raise RuntimeError('Backup failed')
+                self.app.listener.dispatch(lambda: self.app.show_osd(
+                    'CHANNEL SAVED', value.title(), duration=5))
+            except Exception:
+                self.app.listener.dispatch(lambda: self.app.show_osd(
+                    'UPDATE CHANNEL', 'Change / backup failed', duration=8))
+        self._wifi_jobs.submit(work)
+
     def _apply_updates(self):
         if getattr(self, '_update_busy', False):
             self.app.show_osd('UPDATE', 'Already running', duration=5)
@@ -700,6 +732,7 @@ class PiCoreMenu(MenuScreen):
                 ('Clock dim after', 'dim_s', 120), ('Display off after', 'idle_s', 3600)]
             ] + [('Back', '__back__')]))
         tree.insert(-1, ('Check / Apply Updates', [
+            ('Update channel', self._show_update_channel),
             ('Apply latest patches?', [
                 ('Cancel', '__back__'), ('Yes, apply patches', self._apply_updates)]),
             ('Back', '__back__')]))

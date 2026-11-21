@@ -2,6 +2,12 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## Public updates and private Alpha testing
+
+Public is the default update channel. Existing playback, sign-ins, playlists and hardware settings are preserved. **Settings → System → Check / Apply Updates → Update channel** shows Public; Alpha is offered only on a development unit with a separately provisioned local package and matching checksum. Selecting Alpha never downloads an unpublished plugin from this public repository.
+
+The TIDAL Hi-Res engine selector, sampler playlist and Radio Paradise panel integration are currently private development tests. They are **not included in this public release**. Redistribution permission for the modified Hi-Res plugin is being discussed [upstream](https://github.com/smoothquark/lms-plugin-tidal/discussions/7). Publishing experimental features requires a separate reviewed release; choosing a channel does not publish anything.
+
 ## Material player shortcut
 
 **Settings → Network & Services → Service URLs → Web player** now opens Material through `http://YOUR-IP/player/`. The Web player card on `http://YOUR-IP/sable-config.html` uses the same shortcut. It redirects to the address you opened, port 9000, path `/material/`; no fixed IP address is distributed. `http://YOUR-HOSTNAME.local/player/` also works where your network supports local hostname resolution.

@@ -74,6 +74,7 @@ Settings
 ├── System
 │   ├── Storage
 │   ├── Check / Apply Updates
+│   │   ├── Update channel → Public (Alpha only with a private local package)
 │   │   └── Apply latest patches? → Cancel / Yes, apply patches
 │   │       └── When complete → Later / Reboot now
 │   └── Shutdown → Confirm Shutdown / Cancel
@@ -151,3 +152,5 @@ Sable Config page
 **Hardware Setup: Alpha — Not Supported — Use at own risk. Encoder switch GPIO4 / IR GPIO27 is user confirmed after reboot; other mappings and alternative hardware remain unverified.** Browser save/restart was exercised with unchanged wiring. It is a browser page, not an OLED menu item. See [hardware details](HARDWARE.md) and the [testing status list](README.md#features-awaiting-testing-or-completion).
 
 The Web player service URL uses `http://YOUR-IP/player/`, a shortcut to Material on the same host at port 9000. Sable Config page uses `http://YOUR-IP/sable-config.html`.
+
+Public remains the default. Private Alpha packages and their per-device channel configuration are not distributed in this repository. The experimental TIDAL Hi-Res selector and Radio Paradise carousel are not yet part of the public menu.
