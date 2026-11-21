@@ -2,6 +2,14 @@
 
 A piCorePlayer port of the Empowered Quadify/Sable interface for FM4 hardware.
 
+## Material player shortcut
+
+**Settings → Network & Services → Service URLs → Web player** now opens Material through `http://YOUR-IP/player/`. The Web player card on `http://YOUR-IP/sable-config.html` uses the same shortcut. It redirects to the address you opened, port 9000, path `/material/`; no fixed IP address is distributed. `http://YOUR-HOSTNAME.local/player/` also works where your network supports local hostname resolution.
+
+The Service URLs menu explicitly lists **Sable Config page**, alongside the Web player and FM4 Favorites page. Included in fresh installs and Settings updates; reboot after updating the panel menu.
+
+These changes do not replace saved panel settings, GPIO mappings, accounts, Favorites, or existing Lyrion music/playlist folder preferences. A library-folder repair performed on the development unit is not applied to other users by this update.
+
 ## Display settings persistence fix
 
 Brightness and Screen Rotation now trigger piCorePlayer's native backup and are restored from the panel's active settings at startup, including the early OLED screen. Wait for **DISPLAY SAVED — Safe to reboot** before rebooting. Saving runs the full piCorePlayer backup and can take a while; a failure is reported rather than claiming the settings are safely stored.

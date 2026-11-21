@@ -721,8 +721,8 @@ class PiCoreMenu(MenuScreen):
                 ('Cancel learning', self._cancel_ir_learn),
                 ('Restore Apple defaults', self._reset_ir_learn), ('Back', '__back__')]))
         tree.insert(-1, ('Service URLs', [
-            ('Sable configuration', lambda: self._show_signin('Sable configuration', 'sable-config.html', 80)),
-            ('Web player', lambda: self._show_signin('FM4 web player', '')),
+            ('Sable Config page', lambda: self._show_signin('Sable Config', 'sable-config.html', 80)),
+            ('Web player', lambda: self._show_signin('FM4 web player', 'player/', 80)),
             ('FM4 Favorites page', lambda: self._show_signin('FM4 Favorites', 'fm4-favorites.html', 80)), 
             ('BBC Sounds', lambda: self._show_signin('BBC Sounds sign-in',
                 'plugins/BBCSounds/settings/basic.html')),

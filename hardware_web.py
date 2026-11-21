@@ -243,7 +243,8 @@ def main():
 
 def install_web():
     """Recreate web assets from the persistent stage on panel startup."""
-    for source, target in [('sable-status.html', '/var/www/sable-status.html'),
+    for source, target in [('sable-player.html', '/var/www/player/index.html'),
+                           ('sable-status.html', '/var/www/sable-status.html'),
                            ('sable-status.cgi', '/var/www/cgi-bin/sable-status.cgi'),
                            ('sable-hardware.html', '/var/www/sable-hardware.html'),
                            ('sable-hardware.cgi', '/var/www/cgi-bin/sable-hardware.cgi')]:
@@ -255,7 +256,7 @@ def install_web():
     filelist = Path('/opt/.filetool.lst')
     if filelist.exists():
         entries = filelist.read_text().splitlines()
-        for entry in ('var/www/sable-hardware.html', 'var/www/cgi-bin/sable-hardware.cgi', 'var/www/sable-status.html', 'var/www/cgi-bin/sable-status.cgi'):
+        for entry in ('var/www/player', 'var/www/sable-hardware.html', 'var/www/cgi-bin/sable-hardware.cgi', 'var/www/sable-status.html', 'var/www/cgi-bin/sable-status.cgi'):
             if entry not in entries:
                 with filelist.open('a') as out:
                     out.write('\n' + entry + '\n')

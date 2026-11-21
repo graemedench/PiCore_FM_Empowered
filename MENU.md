@@ -59,8 +59,8 @@ Settings
 │   │   ├── Wi-Fi Networks → choose network → enter password → join
 │   │   └── Wi-Fi status / IP
 │   └── Service URLs
-│       ├── Sable configuration
-│       ├── Web player
+│       ├── Sable Config page
+│       ├── Web player → /player/ → :9000/material/
 │       ├── FM4 Favorites page
 │       ├── BBC Sounds
 │       ├── TIDAL
@@ -131,9 +131,9 @@ Screen Rotation and Brightness apply immediately. Wait for DISPLAY SAVED — Saf
 `http://YOUR-IP/sable-config.html`
 
 ```text
-Sable configuration
+Sable Config page
 ├── Streaming accounts → BBC Sounds / TIDAL / Beta Spotify / Beta Qobuz
-├── Web player
+├── Web player → /player/ → :9000/material/
 ├── FM4 Favorites
 ├── Lyrion settings
 ├── System status → CPU / memory / temperature / uptime / drive activity / storage
@@ -149,3 +149,5 @@ Sable configuration
 ```
 
 **Hardware Setup: Alpha — Not Supported — Use at own risk. Encoder switch GPIO4 / IR GPIO27 is user confirmed after reboot; other mappings and alternative hardware remain unverified.** Browser save/restart was exercised with unchanged wiring. It is a browser page, not an OLED menu item. See [hardware details](HARDWARE.md) and the [testing status list](README.md#features-awaiting-testing-or-completion).
+
+The Web player service URL uses `http://YOUR-IP/player/`, a shortcut to Material on the same host at port 9000. Sable Config page uses `http://YOUR-IP/sable-config.html`.

@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>FM4 Web Player</title></head><body><p>Opening the Material music player…</p><a id="player">Open player</a><noscript><p>Enable JavaScript, or open this device on port 9000 with /material/.</p></noscript><script>
+const target = new URL(location.href);
+target.port = '9000'; target.pathname = '/material/'; target.search = ''; target.hash = '';
+document.getElementById('player').href = target.href;
+location.replace(target.href);
+</script></body></html>
